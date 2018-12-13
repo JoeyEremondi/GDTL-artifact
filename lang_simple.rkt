@@ -10,41 +10,41 @@
 ;; #source file ./ott/lang_simple.ott  lines 81 - 83 
 ;; #source file ./ott/lang_simple.ott  lines 86 - 86 
 ;; #source file ./ott/lang_simple.ott  lines 92 - 99 and file ./ott/lang_simple.ott  lines 104 - 128 and file ./ott/lang_simple.ott  lines 132 - 141 and file ./ott/lang_simple.ott  lines 143 - 148 and file ./ott/lang_simple.ott  lines 150 - 155 and file ./ott/lang_simple.ott  lines 158 - 163 and file ./ott/lang_simple.ott  lines 165 - 167 and file ./ott/lang_simple.ott  lines 172 - 192 and file ./ott/lang_simple.ott  lines 197 - 206 and file ./ott/lang_simple.ott  lines 208 - 213 and file ./ott/lang_simple.ott  lines 215 - 218 and file ./ott/lang_simple.ott  lines 226 - 227 and file ./ott/lang_simple.ott  lines 235 - 246 and file ./ott/lang_simple.ott  lines 250 - 256 and file ./ott/lang_simple.ott  lines 259 - 264 and file ./ott/lang_simple.ott  lines 266 - 274 and file ./ott/lang_simple.ott  lines 278 - 280 and file ./ott/lang_simple.ott  lines 282 - 284 and file ./ott/lang_simple.ott  lines 286 - 288 and file ./ott/lang_simple.ott  lines 291 - 296 and file ./ott/lang_simple.ott  lines 298 - 303 and file ./ott/lang_simple.ott  lines 349 - 352 and file ./ott/lang_simple.ott  lines 354 - 358 and file ./ott/lang_simple.ott  lines 360 - 364 and file ./ott/lang_simple.ott  lines 465 - 470 and file ./ott/lang_simple.ott  lines 473 - 475 and file ./ott/lang_simple.ott  lines 477 - 479 
-(define-language L
+(define-language L  
 
 ;; #source file ./ott/lang_simple.ott  lines 92 - 99 
-  (level
+  (level i j ::= 
     (LevelRdx index))
 
 ;; #source file ./ott/lang_simple.ott  lines 197 - 206 
-  (canonical
+  (canonical gu gv gU gV ::= 
     (CanonicalLam var canonical)
     CanonicalDyn
     (CanonicalAtomic atomic)
     (CanonicalPi var canonical canonical))
   ;grammar_pp, 2817: and 
 ;; #source file ./ott/lang_simple.ott  lines 208 - 213 
-  (atomic
+  (atomic grr gRR ::= 
     (AtomicSpine var spine)
     (AtomicSet level))
   ;grammar_pp, 2817: and 
 ;; #source file ./ott/lang_simple.ott  lines 215 - 218 
-  (spine
+  (spine ge ::= 
     SpineEmpty
     (SpineCons spine canonical))
 
 ;; #source file ./ott/lang_simple.ott  lines 226 - 227 
-  (epsilon
+  (epsilon ep ::= 
     (EvidencePair canonical canonical))
 
 ;; #source file ./ott/lang_simple.ott  lines 360 - 364 
-  (Env
+  (Env ::= 
     EnvEmpty
     (EnvExt var canonical Env)
     (Envconcat Env Env))
 
 ;; #source file ./ott/lang_simple.ott  lines 104 - 128 
-  (term
+  (term ss tt ett SS TT ::= 
     (TermLam var term)
     (TermApp term term)
     var
@@ -57,12 +57,12 @@
     TermError)
 
 ;; #source file ./ott/lang_simple.ott  lines 465 - 470 
-  (iinf
+  (iinf jinf ::= 
     (UniverseLevel level)
     UniverseInf)
 
 ;; #source file ./ott/lang_simple.ott  lines 291 - 296 
-  (simpleContext
+  (simpleContext SC ::= 
     (SimpleContextPi1 var term)
     (SimpleContextPi2 var term)
     (SimpleContextApp1 term)
@@ -70,12 +70,12 @@
     (SimpleContextAnn term))
 
 ;; #source file ./ott/lang_simple.ott  lines 278 - 280 
-  (dummyeu
+  (dummyeu dummyev dummyeueU dummyeueV ::= 
     (DummyEvidenceValueEv epsilon term)
     (DummyEvidenceValueRaw term))
 
 ;; #source file ./ott/lang_simple.ott  lines 298 - 303 
-  (evalContext
+  (evalContext EC ::= 
     (EvalContextPi1 var term)
     (EvalContextPi2 var term)
     (EvalContextApp1 term)
@@ -83,12 +83,12 @@
     (EvalContextEp epsilon))
 
 ;; #source file ./ott/lang_simple.ott  lines 473 - 475 
-  (is
+  (is js ::= 
     (LevelMultiSetSingleton level)
     (LevelMultiSetSum is is))
 
 ;; #source file ./ott/lang_simple.ott  lines 477 - 479 
-  (iinfs
+  (iinfs jinfs ::= 
     (UniverseMultiSetSingleton iinf)
     (UniverseMultiSetSum iinfs iinfs))
   (var variable-not-otherwise-mentioned)
@@ -434,17 +434,17 @@
 
 [(is_es_of_term eT)
 ------------------
- (is_evalContext_of_evalContext (EvalContextPi1 x eT))
+ (is_evalContext_of_evalContext (EvalContextPi1 x hole eT))
 ]
 
 [(is_eu_of_term eV)
 ------------------
- (is_evalContext_of_evalContext (EvalContextPi2 x eV))
+ (is_evalContext_of_evalContext (EvalContextPi2 x eV hole))
 ]
 
 [(is_es_of_term et)
 ------------------
- (is_evalContext_of_evalContext (EvalContextApp1 et))
+ (is_evalContext_of_evalContext (EvalContextApp1 hole))
 ]
 
 [(is_eu_of_term ev)
@@ -497,17 +497,17 @@
 
 [(is_s_of_term T)
 ------------------
- (is_simpleContext_of_simpleContext (SimpleContextPi1 x T))
+ (is_simpleContext_of_simpleContext (SimpleContextPi1 x hole T))
 ]
 
 [(is_simpleValue_of_term sV)
 ------------------
- (is_simpleContext_of_simpleContext (SimpleContextPi2 x sV))
+ (is_simpleContext_of_simpleContext (SimpleContextPi2 x sV hole))
 ]
 
 [(is_s_of_term t)
 ------------------
- (is_simpleContext_of_simpleContext (SimpleContextApp1 t))
+ (is_simpleContext_of_simpleContext (SimpleContextApp1 hole))
 ]
 
 [(is_simpleValue_of_term sv)
@@ -517,7 +517,7 @@
 
 [(is_s_of_term T)
 ------------------
- (is_simpleContext_of_simpleContext (SimpleContextAnn T))
+ (is_simpleContext_of_simpleContext (SimpleContextAnn hole))
 ]
 )
 
@@ -1905,7 +1905,7 @@
 
 
 ;; #source file ./ott/lang_simple.ott  lines 1584 - 1587 
- [ (error "Ep1 Ep2 undefined") 
+ [ (side-condition (empty? (judgment-holds (ConsistentTrans  ep1   ep2  ep9999) ep9999))) 
   ------------------------------------------------------
   (SmallStep (TermEp ep1  (TermEp ep2 et) ) TermError)]
 
@@ -1963,7 +1963,7 @@
  [(is_ru_of_term ru)
   (is_ru_of_term rv)
   (EvDom ep1 ep3)
-   (error "Ep1 Ep2 undefined") 
+   (side-condition (empty? (judgment-holds (ConsistentTrans  ep2   ep3  ep9999) ep9999))) 
   ---------------------------------------------------------------------
   (SmallStep (TermApp  (TermEp ep1 ru)   (TermEp ep2 rv) ) TermError)]
 
@@ -1972,7 +1972,7 @@
 ;; #source file ./ott/lang_simple.ott  lines 1619 - 1622 
  [(is_ru_of_term rv)
   (is_eu_of_term ev)
-   (error "Dom ep undefined") 
+   (side-condition (empty? (judgment-holds (EvDomain  ep1  ep9999) ep9999))) 
   ------------------------------------------------------
   (SmallStep (TermApp  (TermEp ep1 rv)  ev) TermError)]
 
@@ -1980,7 +1980,7 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 1628 - 1631 
  [(is_eu_of_term ev)
-   (error "Dom gU Undefined") 
+   (side-condition (empty? (judgment-holds (Domain  gU  gV9999) gV9999))) 
   -------------------------------------------------------------------
   (SmallStep (TermApp  (TermEp ep1 (TermDynAnn gU))  ev) TermError)]
 
@@ -1989,7 +1989,7 @@
 ;; #source file ./ott/lang_simple.ott  lines 1634 - 1638 
  [(is_es_of_term es)
   (SmallStep es et)
-   (error "TODO neqError") 
+   (side-condition (not (equal?  et  TermError))) 
   -----------------------------------------------------
   (SmallStep  (error "TODO EC")   (error "TODO EC") )]
 
