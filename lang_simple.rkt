@@ -1864,14 +1864,14 @@
 
 (define-judgment-form
   L
-  #:mode (EvType I I I)
+  #:mode (EvSynth I I O)
 
 
 ;; #source file ./ott/lang_simple.ott  lines 1558 - 1561 
  [(is_Gamma_of_Env Gamma)
    (side-condition (>  i  0)) 
-  -----------------------------------------------------------------------
-  (EvType Gamma (TermSet i) (CanonicalAtomic  (AtomicSet (+  i  1) ) ))]
+  ------------------------------------------------------------------------
+  (EvSynth Gamma (TermSet i) (CanonicalAtomic  (AtomicSet (+  i  1) ) ))]
 
 
 
@@ -1879,67 +1879,71 @@
  [(is_Gamma_of_Env Gamma)
   (WellFormed Gamma)
   (GVarLook x gU Gamma)
-  -------------------------------
-  (EvType Gamma (TermVar x) gU)]
+  --------------------------------
+  (EvSynth Gamma (TermVar x) gU)]
 
 
 
-;; #source file ./ott/lang_simple.ott  lines 1569 - 1574 
- [(is_es_of_term eS)
-  (is_Gamma_of_Env Gamma)
-  (GradualNormCheck Gamma gU eS gV)
-  (WellFormed (EnvExt x gU Gamma))
-  (EvType (EnvExt x gU Gamma) eT gV)
-  ------------------------------------
-  (EvType Gamma (TermPi x eS eT) gV)]
-
-
-
-;; #source file ./ott/lang_simple.ott  lines 1576 - 1582 
+;; #source file ./ott/lang_simple.ott  lines 1571 - 1577 
  [(is_es_of_term es)
   (is_Gamma_of_Env Gamma)
   (is_es_of_term et)
-  (EvType Gamma es gV)
+  (EvSynth Gamma es gV)
   (Domain gV gU)
   (GradualNormCheck Gamma gv et gU)
   (CodSub gU gv gV gV2)
-  ------------------------------------
-  (EvType Gamma (TermApp es et) gV2)]
+  -------------------------------------
+  (EvSynth Gamma (TermApp es et) gV2)]
 
+)
+(define-judgment-form L 
+ 
+  #:mode (EvCheck I I I)
 
 
 ;; #source file ./ott/lang_simple.ott  lines 1584 - 1588 
  [(is_Gamma_of_Env Gamma)
-  (EvType Gamma et gU)
+  (EvSynth Gamma et gU)
   (EvConsistent ep gU gV)
-  ----------------------------------
-  (EvType Gamma (TermEp ep et) gV)]
+  -----------------------------------
+  (EvCheck Gamma (TermEp ep et) gV)]
 
 
 
-;; #source file ./ott/lang_simple.ott  lines 1590 - 1594 
+;; #source file ./ott/lang_simple.ott  lines 1589 - 1594 
+ [(is_es_of_term eS)
+  (is_Gamma_of_Env Gamma)
+  (GradualNormCheck Gamma gU eS gV)
+  (WellFormed (EnvExt x gU Gamma))
+  (EvCheck (EnvExt x gU Gamma) eT gV)
+  -------------------------------------
+  (EvCheck Gamma (TermPi x eS eT) gV)]
+
+
+
+;; #source file ./ott/lang_simple.ott  lines 1597 - 1601 
  [(is_Gamma_of_Env Gamma)
   (WellFormed (EnvExt x gU Gamma))
-  (EvType (EnvExt x gU Gamma) et gV)
-  -------------------------------------------------------
-  (EvType Gamma  (TermLam x et)  (CanonicalPi x gU gV))]
+  (EvCheck (EnvExt x gU Gamma) et gV)
+  --------------------------------------------------------
+  (EvCheck Gamma  (TermLam x et)  (CanonicalPi x gU gV))]
 
 
 
-;; #source file ./ott/lang_simple.ott  lines 1596 - 1600 
+;; #source file ./ott/lang_simple.ott  lines 1603 - 1607 
  [(is_Gamma_of_Env Gamma)
   (WellFormed (EnvExt x CanonicalDyn Gamma))
-  (EvType (EnvExt x CanonicalDyn Gamma) et CanonicalDyn)
-  ----------------------------------------------
-  (EvType Gamma  (TermLam x et)  CanonicalDyn)]
+  (EvCheck (EnvExt x CanonicalDyn Gamma) et CanonicalDyn)
+  -----------------------------------------------
+  (EvCheck Gamma  (TermLam x et)  CanonicalDyn)]
 
 
 
-;; #source file ./ott/lang_simple.ott  lines 1601 - 1604 
+;; #source file ./ott/lang_simple.ott  lines 1608 - 1611 
  [(is_Gamma_of_Env Gamma)
   (GradualSet Gamma gU)
-  -----------------------------------
-  (EvType Gamma (TermDynAnn gU) gU)]
+  ------------------------------------
+  (EvCheck Gamma (TermDynAnn gU) gU)]
 
 )
 (define-judgment-form L 
@@ -1947,21 +1951,21 @@
   #:mode (SimpleSmallStep I O)
 
 
-;; #source file ./ott/lang_simple.ott  lines 1620 - 1622 
+;; #source file ./ott/lang_simple.ott  lines 1627 - 1629 
  [(is_simpleValue_of_term sv)
   ---------------------------------------
   (SimpleSmallStep  (TermAnn sv T)  sv)]
 
 
 
-;; #source file ./ott/lang_simple.ott  lines 1623 - 1625 
+;; #source file ./ott/lang_simple.ott  lines 1630 - 1632 
  [(is_simpleValue_of_term sv)
   ------------------------------------------------------------------------
   (SimpleSmallStep (TermApp  (TermLam x t)  sv)  (error "TODO tsubst") )]
 
 
 
-;; #source file ./ott/lang_simple.ott  lines 1627 - 1630 
+;; #source file ./ott/lang_simple.ott  lines 1634 - 1637 
  [(is_s_of_term s)
   (SimpleSmallStep s t)
   -----------------------------------------------------------
@@ -1973,28 +1977,28 @@
   #:mode (SmallStep I O)
 
 
-;; #source file ./ott/lang_simple.ott  lines 1638 - 1641 
+;; #source file ./ott/lang_simple.ott  lines 1645 - 1648 
  [(ConsistentTrans ep1 ep2 ep3)
   ------------------------------------------------------------
   (SmallStep (TermEp ep1  (TermEp ep2 et) ) (TermEp ep3 et))]
 
 
 
-;; #source file ./ott/lang_simple.ott  lines 1644 - 1647 
+;; #source file ./ott/lang_simple.ott  lines 1651 - 1654 
  [ (side-condition (empty? (judgment-holds (ConsistentTrans  ep1   ep2  ep9999) ep9999))) 
   ------------------------------------------------------
   (SmallStep (TermEp ep1  (TermEp ep2 et) ) TermError)]
 
 
 
-;; #source file ./ott/lang_simple.ott  lines 1648 - 1650 
+;; #source file ./ott/lang_simple.ott  lines 1655 - 1657 
  [(is_eu_of_term ev)
   -------------------------------------------------------------------
   (SmallStep (TermApp  (TermLam x et)  ev)  (error "TODO tsubst") )]
 
 
 
-;; #source file ./ott/lang_simple.ott  lines 1651 - 1656 
+;; #source file ./ott/lang_simple.ott  lines 1658 - 1663 
  [(is_eu_of_term ev)
   (Domain gU gV1)
   (GradualNormCheck EnvEmpty gv ev gV1)
@@ -2004,7 +2008,7 @@
 
 
 
-;; #source file ./ott/lang_simple.ott  lines 1657 - 1662 
+;; #source file ./ott/lang_simple.ott  lines 1664 - 1669 
  [(is_ru_of_term rv)
   (EvDom ep1 ep3)
   (ConsistentTrans ep2 ep3 ep4)
@@ -2014,7 +2018,7 @@
 
 
 
-;; #source file ./ott/lang_simple.ott  lines 1663 - 1669 
+;; #source file ./ott/lang_simple.ott  lines 1670 - 1676 
  [(is_ru_of_term rv)
   (is_eu_of_term ev)
   (Domain gV gV9) ...
@@ -2026,7 +2030,7 @@
 
 
 
-;; #source file ./ott/lang_simple.ott  lines 1670 - 1673 
+;; #source file ./ott/lang_simple.ott  lines 1677 - 1680 
  [(is_ru_of_term rv)
   (is_es_of_term es)
   (SmallStep (TermApp  (TermEp ep1 rv)   (TermEp (EvidencePair CanonicalDyn CanonicalDyn) rv) ) es)
@@ -2035,7 +2039,7 @@
 
 
 
-;; #source file ./ott/lang_simple.ott  lines 1674 - 1678 
+;; #source file ./ott/lang_simple.ott  lines 1681 - 1685 
  [(is_ru_of_term ru)
   (is_ru_of_term rv)
   (EvDom ep1 ep3)
@@ -2045,7 +2049,7 @@
 
 
 
-;; #source file ./ott/lang_simple.ott  lines 1679 - 1682 
+;; #source file ./ott/lang_simple.ott  lines 1686 - 1689 
  [(is_ru_of_term rv)
   (is_eu_of_term ev)
    (side-condition (empty? (judgment-holds (EvDomain  ep1  ep9999) ep9999))) 
@@ -2054,7 +2058,7 @@
 
 
 
-;; #source file ./ott/lang_simple.ott  lines 1688 - 1691 
+;; #source file ./ott/lang_simple.ott  lines 1695 - 1698 
  [(is_eu_of_term ev)
    (side-condition (empty? (judgment-holds (Domain  gU  gV9999) gV9999))) 
   -------------------------------------------------------------------
@@ -2062,7 +2066,7 @@
 
 
 
-;; #source file ./ott/lang_simple.ott  lines 1694 - 1698 
+;; #source file ./ott/lang_simple.ott  lines 1701 - 1705 
  [(is_es_of_term es)
   (SmallStep es et)
    (side-condition (not (equal?  et  TermError))) 
@@ -2071,7 +2075,7 @@
 
 
 
-;; #source file ./ott/lang_simple.ott  lines 1699 - 1702 
+;; #source file ./ott/lang_simple.ott  lines 1706 - 1709 
  [(is_es_of_term es)
   (SmallStep es TermError)
   -------------------------------------------
@@ -2083,7 +2087,7 @@
   #:mode (ConsistentTrans I I O)
 
 
-;; #source file ./ott/lang_simple.ott  lines 1708 - 1712 
+;; #source file ./ott/lang_simple.ott  lines 1715 - 1719 
  [(Meet gU1 gU2 gU3)
   (Meet gV1 gV2 gV3)
   ----------------------------------------------------------------------------------------
@@ -2095,7 +2099,7 @@
   #:mode (EvDom I O)
 
 
-;; #source file ./ott/lang_simple.ott  lines 1718 - 1722 
+;; #source file ./ott/lang_simple.ott  lines 1725 - 1729 
  [(Domain gU gU9)
   (Domain gV gV9)
   -----------------------------------------------------
@@ -2107,7 +2111,7 @@
   #:mode (EvCod I I O)
 
 
-;; #source file ./ott/lang_simple.ott  lines 1729 - 1737 
+;; #source file ./ott/lang_simple.ott  lines 1736 - 1744 
  [(is_eu_of_term ev)
   (Domain gU gU1)
   (Domain gV gV1)
