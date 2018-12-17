@@ -63,11 +63,11 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 291 - 296 
   (simpleContext SC ::= 
-    (SimpleContextPi1 var term)
-    (SimpleContextPi2 var term)
-    (SimpleContextApp1 term)
-    (SimpleContextApp2 term)
-    (SimpleContextAnn term))
+    (SimpleContextPi1 var hole term)
+    (SimpleContextPi2 var term hole)
+    (SimpleContextApp1 hole term)
+    (SimpleContextApp2 term hole)
+    (SimpleContextAnn hole term))
 
 ;; #source file ./ott/lang_simple.ott  lines 278 - 280 
   (dummyeu dummyev dummyeueU dummyeueV ::= 
@@ -76,11 +76,11 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 298 - 303 
   (evalContext EC ::= 
-    (EvalContextPi1 var term)
-    (EvalContextPi2 var term)
-    (EvalContextApp1 term)
-    (EvalContextApp2 term)
-    (EvalContextEp epsilon))
+    (EvalContextPi1 var hole term)
+    (EvalContextPi2 var term hole)
+    (EvalContextApp1 hole term)
+    (EvalContextApp2 term hole)
+    (EvalContextEp epsilon hole))
 
 ;; #source file ./ott/lang_simple.ott  lines 473 - 475 
   (is js ::= 
@@ -92,6 +92,39 @@
     (UniverseMultiSetSingleton iinf)
     (UniverseMultiSetSum iinfs iinfs))
   (var variable-not-otherwise-mentioned)
+
+    #:binding-forms
+
+    (TermLam x tt #:refers-to (shadow x))
+    (TermPi x SS TT #:refers-to (shadow x))
+    (StaticTermLam x t #:refers-to (shadow x))
+    (StaticTermPi x S T #:refers-to (shadow x))
+    (StaticTermNoAnnLam x ta)
+    (StaticTermNoAnnPi x Sa Ta)
+    (StaticCanonicalLam x u #:refers-to (shadow x))
+
+
+    (GradualTermLam x gt #:refers-to (shadow x))
+    (GradualTermPi x gS gT #:refers-to (shadow x))
+    (CanonicalLam x gu #:refers-to (shadow x))
+    (CanonicalPi x gU gV #:refers-to (shadow x))
+
+
+
+    (EvidenceTermLam x et #:refers-to (shadow x))
+    (RawValueLam x et #:refers-to (shadow x))
+    (SimpleValueLam x ta)
+    (EvidenceValueLam x et #:refers-to (shadow x))
+
+
+
+
+
+
+
+
+
+
 )
 
 ;;;; subrules 
@@ -1240,12 +1273,7 @@
 
 
 
-;; #source file ./ott/lang_simple.ott  lines 1093 - 1099 
- [(GradualHsubR x gU gu  [grr]  CanonicalDyn (CanonicalPi y gU1 gU2))
-  (GradualHsub x gU gu gv gv2)
-  (GradualHsub y gU1 gv gU2 gV)
-  ------------------------------------------------
-  (GradualHsubR x gU gu  [grr]  CanonicalDyn gV)]
+
 
 )
 (define-judgment-form L 
@@ -1985,7 +2013,7 @@
 
 
 ;; #source file ./ott/lang_simple.ott  lines 1651 - 1654 
- [ (side-condition (empty? (judgment-holds (ConsistentTrans  ep1   ep2  ep9999) ep9999))) 
+ [ (side-condition ,(empty? (judgment-holds (ConsistentTrans  ep1   ep2  ep9999) ep9999))) 
   ------------------------------------------------------
   (SmallStep (TermEp ep1  (TermEp ep2 et) ) TermError)]
 
@@ -2018,17 +2046,6 @@
 
 
 
-;; #source file ./ott/lang_simple.ott  lines 1670 - 1676 
- [(is_ru_of_term rv)
-  (is_eu_of_term ev)
-  (Domain gV gV9) ...
-  (ConsistentTrans ep1 (EvidencePair gV91 gV92) ep2)
-  (GradualNormCheck EnvEmpty gv (TermEp ep1 ev) gV9) ...
-  (CodSub gV9 gv gV gV99) ...
-  ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  (SmallStep (TermApp  (TermEp (EvidencePair (error "TODO Pp symterm ") (error "TODO Pp symterm ")) (TermDynAnn (error "TODO Pp symterm ")))   (TermEp ep1 rv) ) (TermEp (EvidencePair gV991 gV992) (TermDynAnn (error "TODO Pp symterm "))))]
-
-
 
 ;; #source file ./ott/lang_simple.ott  lines 1677 - 1680 
  [(is_ru_of_term rv)
@@ -2043,7 +2060,7 @@
  [(is_ru_of_term ru)
   (is_ru_of_term rv)
   (EvDom ep1 ep3)
-   (side-condition (empty? (judgment-holds (ConsistentTrans  ep2   ep3  ep9999) ep9999))) 
+   (side-condition ,(empty? (judgment-holds (ConsistentTrans  ep2   ep3  ep9999) ep9999))) 
   ---------------------------------------------------------------------
   (SmallStep (TermApp  (TermEp ep1 ru)   (TermEp ep2 rv) ) TermError)]
 
@@ -2052,7 +2069,7 @@
 ;; #source file ./ott/lang_simple.ott  lines 1686 - 1689 
  [(is_ru_of_term rv)
   (is_eu_of_term ev)
-   (side-condition (empty? (judgment-holds (EvDomain  ep1  ep9999) ep9999))) 
+   (side-condition ,(empty? (judgment-holds (EvDom  ep1  ep9999) ep9999))) 
   ------------------------------------------------------
   (SmallStep (TermApp  (TermEp ep1 rv)  ev) TermError)]
 
@@ -2060,7 +2077,7 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 1695 - 1698 
  [(is_eu_of_term ev)
-   (side-condition (empty? (judgment-holds (Domain  gU  gV9999) gV9999))) 
+   (side-condition ,(empty? (judgment-holds (Domain  gU  gV9999) gV9999))) 
   -------------------------------------------------------------------
   (SmallStep (TermApp  (TermEp ep1 (TermDynAnn gU))  ev) TermError)]
 
