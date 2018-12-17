@@ -99,8 +99,8 @@
     (TermPi x SS TT #:refers-to (shadow x))
     (StaticTermLam x t #:refers-to (shadow x))
     (StaticTermPi x S T #:refers-to (shadow x))
-    (StaticTermNoAnnLam x ta)
-    (StaticTermNoAnnPi x Sa Ta)
+    (StaticTermNoAnnLam x ta #:refers-to (shadow x))
+    (StaticTermNoAnnPi x Sa Ta #:refers-to (shadow x))
     (StaticCanonicalLam x u #:refers-to (shadow x))
 
 
@@ -805,8 +805,8 @@
   (StaticHsubR x U u1 (AtomicSpine x e)  (CanonicalLam y v1)  (CanonicalPi y V1 V2))
   (StaticHsub y V1 u3 v1 v2)
   (StaticHsub y V1 u3 V2 V9)
-  ------------------------------------
-  (StaticHsubR x U u1  [grr]  v2 V9)]
+  ---------------------------------------------------------------
+  (StaticHsubR x U u1  (AtomicSpine x (SpineCons e u2))  v2 V9)]
 )
 
 ;;; definitions 
@@ -1257,23 +1257,28 @@
 
 
 ;; #source file ./ott/lang_simple.ott  lines 1077 - 1082 
- [(GradualHsubR x gU gu1  [grr]  gv1 CanonicalDyn)
-  -----------------------------------------------------------
-  (GradualHsubR x gU gu1  [grr]  CanonicalDyn CanonicalDyn)]
+ [(GradualHsubR x gU gu1  (AtomicSpine x ge)  gv1 CanonicalDyn)
+  ----------------------------------------------------------------------------------------
+  (GradualHsubR x gU gu1  (AtomicSpine x (SpineCons ge gu2))  CanonicalDyn CanonicalDyn)]
 
 
 
 ;; #source file ./ott/lang_simple.ott  lines 1084 - 1091 
- [(GradualHsubR x gU gu  [grr]   (CanonicalLam y gu2)  (CanonicalPi y gU1 gU2))
+ [(GradualHsubR x gU gu  (AtomicSpine x ge)   (CanonicalLam y gu2)  (CanonicalPi y gU1 gU2))
   (GradualHsub x gU gu gv1 gv2)
   (GradualHsub y gU1 gv2 gu2 gv3)
   (GradualHsub y gU1 gv2 gU2 gV)
-  ---------------------------------------
-  (GradualHsubR x gU gu  [grr]  gv3 gV)]
+  --------------------------------------------------------------------
+  (GradualHsubR x gU gu  (AtomicSpine x (SpineCons ge gv1))  gv3 gV)]
 
 
 
-
+;; #source file ./ott/lang_simple.ott  lines 1093 - 1099 
+ [(GradualHsubR x gU gu  (AtomicSpine x ge)  CanonicalDyn (CanonicalPi y gU1 gU2))
+  (GradualHsub x gU gu gv gv2)
+  (GradualHsub y gU1 gv gU2 gV)
+  ----------------------------------------------------------------------------
+  (GradualHsubR x gU gu  (AtomicSpine x (SpineCons ge gv))  CanonicalDyn gV)]
 
 )
 (define-judgment-form L 
@@ -2046,8 +2051,25 @@
 
 
 
+;; #source file ./ott/lang_simple.ott  lines 1670 - 1682 
+ [(is_ru_of_term rv)
+  (is_eu_of_term ev)
+  (Domain gV1 gV19)
+  (Domain gV2 gV29)
+  (Domain gV3 gV39)
+  (ConsistentTrans ep1 (EvidencePair gV91 gV92) ep2)
+  (GradualNormCheck EnvEmpty gv1 (TermEp ep1 ev) gV19)
+  (GradualNormCheck EnvEmpty gV2 (TermEp ep1 ev) gV29)
+  (GradualNormCheck EnvEmpty gV3 (TermEp ep1 ev) gV39)
+  (CodSub gV19 gvn gV1 gV199)
+  (CodSub gV29 gvn gV2 gV299)
+  (CodSub gV39 gvn gV3 gV399)
+  ---------------------------------------------------------------------------------------------------------------------------------------------------
+  (SmallStep (TermApp  (TermEp (EvidencePair gV1 gV2) (TermDynAnn gV3))   (TermEp ep1 rv) ) (TermEp (EvidencePair gV991 gV992) (TermDynAnn gV399)))]
 
-;; #source file ./ott/lang_simple.ott  lines 1677 - 1680 
+
+
+;; #source file ./ott/lang_simple.ott  lines 1683 - 1686 
  [(is_ru_of_term rv)
   (is_es_of_term es)
   (SmallStep (TermApp  (TermEp ep1 rv)   (TermEp (EvidencePair CanonicalDyn CanonicalDyn) rv) ) es)
@@ -2056,7 +2078,7 @@
 
 
 
-;; #source file ./ott/lang_simple.ott  lines 1681 - 1685 
+;; #source file ./ott/lang_simple.ott  lines 1687 - 1691 
  [(is_ru_of_term ru)
   (is_ru_of_term rv)
   (EvDom ep1 ep3)
@@ -2066,7 +2088,7 @@
 
 
 
-;; #source file ./ott/lang_simple.ott  lines 1686 - 1689 
+;; #source file ./ott/lang_simple.ott  lines 1692 - 1695 
  [(is_ru_of_term rv)
   (is_eu_of_term ev)
    (side-condition ,(empty? (judgment-holds (EvDom  ep1  ep9999) ep9999))) 
@@ -2075,7 +2097,7 @@
 
 
 
-;; #source file ./ott/lang_simple.ott  lines 1695 - 1698 
+;; #source file ./ott/lang_simple.ott  lines 1701 - 1704 
  [(is_eu_of_term ev)
    (side-condition ,(empty? (judgment-holds (Domain  gU  gV9999) gV9999))) 
   -------------------------------------------------------------------
@@ -2083,7 +2105,7 @@
 
 
 
-;; #source file ./ott/lang_simple.ott  lines 1701 - 1705 
+;; #source file ./ott/lang_simple.ott  lines 1707 - 1711 
  [(is_es_of_term es)
   (SmallStep es et)
    (side-condition (not (equal?  et  TermError))) 
@@ -2092,7 +2114,7 @@
 
 
 
-;; #source file ./ott/lang_simple.ott  lines 1706 - 1709 
+;; #source file ./ott/lang_simple.ott  lines 1712 - 1715 
  [(is_es_of_term es)
   (SmallStep es TermError)
   -------------------------------------------
@@ -2104,7 +2126,7 @@
   #:mode (ConsistentTrans I I O)
 
 
-;; #source file ./ott/lang_simple.ott  lines 1715 - 1719 
+;; #source file ./ott/lang_simple.ott  lines 1721 - 1725 
  [(Meet gU1 gU2 gU3)
   (Meet gV1 gV2 gV3)
   ----------------------------------------------------------------------------------------
@@ -2116,7 +2138,7 @@
   #:mode (EvDom I O)
 
 
-;; #source file ./ott/lang_simple.ott  lines 1725 - 1729 
+;; #source file ./ott/lang_simple.ott  lines 1731 - 1735 
  [(Domain gU gU9)
   (Domain gV gV9)
   -----------------------------------------------------
@@ -2128,7 +2150,7 @@
   #:mode (EvCod I I O)
 
 
-;; #source file ./ott/lang_simple.ott  lines 1736 - 1744 
+;; #source file ./ott/lang_simple.ott  lines 1742 - 1750 
  [(is_eu_of_term ev)
   (Domain gU gU1)
   (Domain gV gV1)
