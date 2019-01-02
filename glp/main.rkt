@@ -1,8 +1,9 @@
 #lang racket
-(provide (rename-out [glp-top #%top-interaction]
+(provide (rename-out [glp-topi #%top-interaction]
                      [glp-module #%module-begin]
                      [glp-lambda lambda]
-                     [glp-app #%app])
+                     [glp-app #%app]
+                     [glp-top #%top])
          Set
          ->)
 
@@ -11,38 +12,45 @@
 (require redex/reduction-semantics)
 (require "lang_simple.rkt")
 
+(define-for-syntax (lexpand e)
+  (local-expand e 'expression #f))
+
+(define-syntax (glp-top stx)
+  (syntax-parse stx
+    [(_ . x)
+     #`(term x)]))
 
 (define-syntax (glp-lambda stx)
   (syntax-parse stx
     [(_ x:id body:expr)
-     #'(TermLam x body)]))
+     #`(term (TermLam x #,(lexpand #'(unquote body))))]))
 
 (define-syntax (glp-app stx)
   (syntax-parse stx
     [(_ s:expr t:expr)
-     #'(TermApp s t)]))
+     #`(term (TermApp #,(lexpand #'(unquote s)) #,(lexpand #'(unquote t))))]))
 
 (define-syntax (Set stx)
   (syntax-parse stx
     [(_ i:nat)
-     #'(TermSet i)]))
+     #`(term (TermSet i))]))
 
 (define-syntax (-> stx)
   (syntax-parse stx
     #:datum-literals (:)
     [(_ (x:id : s:expr) t:expr )
-     #'(TermPi x s t)]))
+     #`(term (TermPi x #,(lexpand #'(unquote s)) #,(lexpand #'(unquote t))))]))
 
 (define-for-syntax (eval-rdx e)
   (let
       ([expanded (local-expand e 'expression #f)])
     #`(apply values
-                (apply-reduction-relation* red (term #,expanded )))
+                (apply-reduction-relation* red #,expanded))
     )
   )
 
 
-(define-syntax (glp-top stx)
+(define-syntax (glp-topi stx)
   (syntax-parse stx
     [(_ . e)
      (eval-rdx #'e)
