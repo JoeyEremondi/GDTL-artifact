@@ -1,3 +1,6 @@
-#lang s-exp glp
+#lang sweet-exp glp
 
-(lambda x x)
+{
+ {(x : Set(1)) -> Set(1) }
+ :: Set(2)
+ }

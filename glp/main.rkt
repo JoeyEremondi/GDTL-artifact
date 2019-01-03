@@ -5,7 +5,9 @@
                      [glp-app #%app]
                      [glp-top #%top])
          Set
-         ->)
+         ->
+         ::
+         ?)
 
 
 (require (for-syntax syntax/parse))
@@ -35,6 +37,16 @@
     [(_ i:nat)
      #`(term (TermSet i))]))
 
+(define-syntax (? stx)
+  (syntax-parse stx
+    [(_)
+     #`(term (TermDyn))]))
+
+(define-syntax (:: stx)
+  (syntax-parse stx
+    [(_ s:expr t:expr)
+     #`(term (TermAnn #,(lexpand #'(unquote s)) #,(lexpand #'(unquote t))))]))
+
 (define-syntax (-> stx)
   (syntax-parse stx
     #:datum-literals (:)
@@ -44,8 +56,15 @@
 (define-for-syntax (eval-rdx e)
   (let
       ([expanded (local-expand e 'expression #f)])
-    #`(apply values
-                (apply-reduction-relation* red #,expanded))
+    #`(let*
+          ([elabList (judgment-holds (GradualElabSynth EnvEmpty (unquote #,expanded) es gU) es)]
+           [elab (cond
+                  [(null? elabList) (error "No type for expression" #,expanded )]
+                  [(< 1 (length elabList)) (error "Too many elaborations for expression" #,expanded) ]
+                  [else (first elabList)]
+                  )])
+       (apply values
+                (apply-reduction-relation* red elab)))
     )
   )
 
