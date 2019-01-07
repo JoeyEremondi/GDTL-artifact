@@ -3,6 +3,7 @@
 
 #lang racket
 (require redex)
+(require typeset-rewriter)
 
 ;; #source file ./ott/lang_simple.ott  lines 4 - 6 
 ;; #source file ./ott/lang_simple.ott  lines 8 - 10 
@@ -217,7 +218,258 @@
 ;; BLOCK level term s sa u rr e gs canonical atomic spine epsilon es ru simpleValue eu dummyeu evidenceSpine simpleSpine simpleContext evalContext SGamma Gamma Env iinf is iinfs
 ;;;; subrules 
 ;; #source file ./ott/lang_simple.ott  lines 499 - 499 and file ./ott/lang_simple.ott  lines 500 - 500 and file ./ott/lang_simple.ott  lines 503 - 503 and file ./ott/lang_simple.ott  lines 504 - 504 and file ./ott/lang_simple.ott  lines 505 - 505 and file ./ott/lang_simple.ott  lines 506 - 506 and file ./ott/lang_simple.ott  lines 507 - 507 and file ./ott/lang_simple.ott  lines 509 - 509 and file ./ott/lang_simple.ott  lines 510 - 510 and file ./ott/lang_simple.ott  lines 511 - 511 and file ./ott/lang_simple.ott  lines 512 - 512 and file ./ott/lang_simple.ott  lines 513 - 513 and file ./ott/lang_simple.ott  lines 514 - 514 and file ./ott/lang_simple.ott  lines 515 - 515 and file ./ott/lang_simple.ott  lines 516 - 516 and file ./ott/lang_simple.ott  lines 517 - 517 and file ./ott/lang_simple.ott  lines 518 - 518 and file ./ott/lang_simple.ott  lines 519 - 519 and file ./ott/lang_simple.ott  lines 520 - 520 
-;; #source file ./ott/lang_simple.ott  lines 531 - 542 
+(define-rw-context ott-rewrites
+  #:atomic(
+   ['SpineEmpty (identity "empty")]
+  ['TermDyn (identity "?")]
+  ['EnvEmpty (identity "empty")]
+  ['TermError (identity "error")]
+  ['EnvEmpty (identity "empty")]
+  ['TermError (identity "error")]
+  ['TermDyn (identity "?")]
+  ['EnvEmpty (identity "empty")]
+  ['SpineEmpty (identity "empty")]
+  ['CanonicalDyn (identity "?")]
+)  #:compound(
+   ['AtomicSet (rw-lambda
+    [`(AtomicSet ,i)
+      => (list "Set" i)])]
+  ['AtomicSpine (rw-lambda
+    [`(AtomicSpine ,x ,e)
+      => (list x e)])]
+  ['SpineCons (rw-lambda
+    [`(SpineCons ,e ,u)
+      => (list e u)])]
+  ['TermDynAnn (rw-lambda
+    [`(TermDynAnn ,gU)
+      => (list "?" "_" gU)])]
+  ['TermSet (rw-lambda
+    [`(TermSet ,i)
+      => (list "Set" i)])]
+  ['TermApp (rw-lambda
+    [`(TermApp ,ve ,ev)
+      => (list ve ev)])]
+  ['TermVar (rw-lambda
+    [`,x
+      => x])]
+  ['TermLam (rw-lambda
+    [`(TermLam ,x ,et)
+      => (list "\\" x "." et)])]
+  ['TermPi (rw-lambda
+    [`(TermPi ,x ,eU ,eV)
+      => (list "(" x ":" eU ")" "->" eV)])]
+  ['TermEp (rw-lambda
+    [`(TermEp ,ep ,rv)
+      => (list ep rv)])]
+  ['TermAnn (rw-lambda
+    [`(TermAnn ,gt ,gT)
+      => (list gt ":" gT)])]
+  ['TermPi (rw-lambda
+    [`(TermPi ,x ,gS ,gT)
+      => (list "(" x ":" gS ")" "->" gT)])]
+  ['TermSet (rw-lambda
+    [`(TermSet ,i)
+      => (list "Set" i)])]
+  ['TermVar (rw-lambda
+    [`,x
+      => x])]
+  ['TermApp (rw-lambda
+    [`(TermApp ,gs ,gt)
+      => (list gs gt)])]
+  ['TermLam (rw-lambda
+    [`(TermLam ,x ,gt)
+      => (list "\\" x "." gt)])]
+  ['Envconcat (rw-lambda
+    [`(Envconcat ,Gamma_11 ,Gamma_22)
+      => (list Gamma_11 Gamma_22)])]
+  ['EnvExt (rw-lambda
+    [`(EnvExt ,x ,gU ,Gamma)
+      => (list "(" x ":" gU ")" Gamma)])]
+  ['TermAnn (rw-lambda
+    [`(TermAnn ,t ,T)
+      => (list t ":" T)])]
+  ['TermSet (rw-lambda
+    [`(TermSet ,i)
+      => (list "Set" i)])]
+  ['TermPi (rw-lambda
+    [`(TermPi ,x ,S ,T)
+      => (list "(" x ":" S ")" "->" T)])]
+  ['TermVar (rw-lambda
+    [`,x
+      => x])]
+  ['TermApp (rw-lambda
+    [`(TermApp ,s ,t)
+      => (list s t)])]
+  ['TermLam (rw-lambda
+    [`(TermLam ,x ,t)
+      => (list "\\" x "." t)])]
+  ['TermApp (rw-lambda
+    [`(TermApp ,se ,sv)
+      => (list se sv)])]
+  ['TermVar (rw-lambda
+    [`,x
+      => x])]
+  ['TermDynAnn (rw-lambda
+    [`(TermDynAnn ,gU)
+      => (list "?" "_" gU)])]
+  ['TermSet (rw-lambda
+    [`(TermSet ,i)
+      => (list "Set" i)])]
+  ['TermApp (rw-lambda
+    [`(TermApp ,ve ,ev)
+      => (list ve ev)])]
+  ['TermVar (rw-lambda
+    [`,x
+      => x])]
+  ['TermLam (rw-lambda
+    [`(TermLam ,x ,et)
+      => (list "\\" x "." et)])]
+  ['TermPi (rw-lambda
+    [`(TermPi ,x ,eU ,eV)
+      => (list "(" x ":" eU ")" "->" eV)])]
+  ['TermSet (rw-lambda
+    [`(TermSet ,i)
+      => (list "Set" i)])]
+  ['TermPi (rw-lambda
+    [`(TermPi ,x ,Sa ,Ta)
+      => (list "(" x ":" Sa ")" "->" Ta)])]
+  ['TermVar (rw-lambda
+    [`,x
+      => x])]
+  ['TermApp (rw-lambda
+    [`(TermApp ,sa ,ta)
+      => (list sa ta)])]
+  ['TermLam (rw-lambda
+    [`(TermLam ,x ,ta)
+      => (list "\\" x "." ta)])]
+  ['TermEp (rw-lambda
+    [`(TermEp ,ep ,es)
+      => (list ep es)])]
+  ['TermSet (rw-lambda
+    [`(TermSet ,i)
+      => (list "Set" i)])]
+  ['TermDynAnn (rw-lambda
+    [`(TermDynAnn ,gU)
+      => (list "?" "_" gU)])]
+  ['TermApp (rw-lambda
+    [`(TermApp ,es ,et)
+      => (list es et)])]
+  ['TermVar (rw-lambda
+    [`,x
+      => x])]
+  ['TermLam (rw-lambda
+    [`(TermLam ,x ,et)
+      => (list "\\" x "." et)])]
+  ['TermPi (rw-lambda
+    [`(TermPi ,x ,eS ,eT)
+      => (list "(" x ":" eS ")" "->" eT)])]
+  ['TermApp (rw-lambda
+    [`(TermApp ,ve ,ev)
+      => (list ve ev)])]
+  ['TermVar (rw-lambda
+    [`,x
+      => x])]
+  ['Envconcat (rw-lambda
+    [`(Envconcat ,SGamma_11 ,SGamma_22)
+      => (list SGamma_11 SGamma_22)])]
+  ['EnvExt (rw-lambda
+    [`(EnvExt ,x ,U ,SGamma)
+      => (list "(" x ":" U ")" SGamma)])]
+  ['TermSet (rw-lambda
+    [`(TermSet ,i)
+      => (list "Set" i)])]
+  ['TermApp (rw-lambda
+    [`(TermApp ,se ,sv)
+      => (list se sv)])]
+  ['TermVar (rw-lambda
+    [`,x
+      => x])]
+  ['TermLam (rw-lambda
+    [`(TermLam ,x ,ta)
+      => (list "\\" x "." ta)])]
+  ['TermPi (rw-lambda
+    [`(TermPi ,x ,sU ,sV)
+      => (list "(" x ":" sU ")" "->" sV)])]
+  ['CanonicalPi (rw-lambda
+    [`(CanonicalPi ,x ,U ,V)
+      => (list "(" x ":" U ")" "->" V)])]
+  ['CanonicalAtomic (rw-lambda
+    [`(CanonicalAtomic ,rr)
+      => (list rr)])]
+  ['CanonicalLam (rw-lambda
+    [`(CanonicalLam ,x ,u)
+      => (list "\\" x "." u)])]
+  ['UniverseMultiSetSum (rw-lambda
+    [`(UniverseMultiSetSum ,iinfs ,jinfs)
+      => (list iinfs "++" jinfs)])]
+  ['UniverseMultiSetSingleton (rw-lambda
+    [`(UniverseMultiSetSingleton ,iinf)
+      => (list "{" iinf "}")])]
+  ['LevelMultiSetSum (rw-lambda
+    [`(LevelMultiSetSum ,is ,js)
+      => (list is "++" js)])]
+  ['LevelMultiSetSingleton (rw-lambda
+    [`(LevelMultiSetSingleton ,i)
+      => (list "{" i "}")])]
+  ['DummyEvidenceValueRaw (rw-lambda
+    [`(DummyEvidenceValueRaw ,rv)
+      => (list rv)])]
+  ['DummyEvidenceValueEv (rw-lambda
+    [`(DummyEvidenceValueEv ,ep ,rv)
+      => (list ep rv)])]
+  ['TermDynAnn (rw-lambda
+    [`(TermDynAnn ,gU)
+      => (list "?" "_" gU)])]
+  ['TermEp (rw-lambda
+    [`(TermEp ,ep ,ss)
+      => (list ep ss)])]
+  ['TermAnn (rw-lambda
+    [`(TermAnn ,tt ,TT)
+      => (list tt ":" TT)])]
+  ['TermPi (rw-lambda
+    [`(TermPi ,x ,SS ,TT)
+      => (list "(" x ":" SS ")" "->" TT)])]
+  ['TermSet (rw-lambda
+    [`(TermSet ,i)
+      => (list "Set" i)])]
+  ['TermVar (rw-lambda
+    [`,x
+      => x])]
+  ['TermApp (rw-lambda
+    [`(TermApp ,ss ,tt)
+      => (list ss tt)])]
+  ['TermLam (rw-lambda
+    [`(TermLam ,x ,tt)
+      => (list "\\" x "." tt)])]
+  ['Envconcat (rw-lambda
+    [`(Envconcat ,Env_11 ,Env_22)
+      => (list Env_11 Env_22)])]
+  ['EnvExt (rw-lambda
+    [`(EnvExt ,x ,gU ,Env)
+      => (list "(" x ":" gU ")" Env)])]
+  ['EvidencePair (rw-lambda
+    [`(EvidencePair ,gU ,gV)
+      => (list "<<" gU "," gV ">>")])]
+  ['SpineCons (rw-lambda
+    [`(SpineCons ,ge ,gu)
+      => (list ge gu)])]
+  ['AtomicSet (rw-lambda
+    [`(AtomicSet ,i)
+      => (list "Set" i)])]
+  ['AtomicSpine (rw-lambda
+    [`(AtomicSpine ,x ,ge)
+      => (list x ge)])]
+  ['CanonicalPi (rw-lambda
+    [`(CanonicalPi ,x ,gU ,gV)
+      => (list "(" x ":" gU ")" "->" gV)])]
+  ['CanonicalAtomic (rw-lambda
+    [`(CanonicalAtomic ,grr)
+      => (list grr)])]
+  ['CanonicalLam (rw-lambda
+    [`(CanonicalLam ,x ,gu)
+      => (list "\\" x "." gu)])]
+)
+);; #source file ./ott/lang_simple.ott  lines 531 - 542 
 ;; #source file ./ott/lang_simple.ott  lines 544 - 552 
 
 (define-metafunction L 
@@ -243,7 +495,7 @@
 ;; #source file ./ott/lang_simple.ott  lines 564 - 568 
  [
   (GVarLook x gU Gamma)
-   (side-condition (not (equal?  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) )   (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) ))) 
+   (side-condition ,(not (equal? (term  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) ) ) (term  (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) )))) 
   ------------------------------------- "GVarLookTail"
   (GVarLook x gU (EnvExt y gV Gamma))]
 
@@ -259,7 +511,7 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 575 - 579 
  [
-   (side-condition (not (equal?  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) )   (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) ))) 
+   (side-condition ,(not (equal? (term  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) ) ) (term  (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) )))) 
   (GVarFree x Gamma)
   ---------------------------------- "GFreeLookCons"
   (GVarFree x (EnvExt y gU Gamma))]
@@ -274,7 +526,7 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 600 - 603 
  [
-   (side-condition (>  i  0)) 
+   (side-condition ,(> (term  i ) 0)) 
   ----------------------------------------------------------------- "UniverseSet"
   (Universe Gamma (CanonicalAtomic (AtomicSet i))   (succ  i )  )]
 
@@ -282,7 +534,7 @@
  [
   (GVarLook x gV Gamma)
   (Universe Gamma gV  i )
-   (side-condition (>  i  0)) 
+   (side-condition ,(> (term  i ) 0)) 
   ---------------------------------------------------------------------------------- "UniverseVar"
   (Universe Gamma (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) )   (pred  i )  )]
 
@@ -319,7 +571,7 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 632 - 635 
  [
-   (side-condition (>  i  0)) 
+   (side-condition ,(> (term  i ) 0)) 
   ----------------------------------------------------------------- "SUniverseSet"
   (SUniverse SGamma (CanonicalAtomic (AtomicSet i))  (succ  i ) )]
 
@@ -327,7 +579,7 @@
  [
   (GVarLook x V SGamma)
   (SUniverse SGamma V i)
-   (side-condition (>  i  0)) 
+   (side-condition ,(> (term  i ) 0)) 
   ---------------------------------------------------------------------------------- "SUniverseVar"
   (SUniverse SGamma (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) )  (pred  i ) )]
 
@@ -369,27 +621,27 @@
  [
   (StaticHsub x U u U U_^)
   (StaticHsub x U u V V_^)
-   (side-condition (not (equal?  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) )   (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) ))) 
+   (side-condition ,(not (equal? (term  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) ) ) (term  (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) )))) 
   ---------------------------------------------------------------- "StaticHsubPi"
   (StaticHsub x U u (CanonicalPi y U V) (CanonicalPi y U_^ V_^))]
 
 ;; #source file ./ott/lang_simple.ott  lines 697 - 701 
  [
   (StaticHsub x U u v v_^)
-   (side-condition (not (equal?  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) )   (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) ))) 
+   (side-condition ,(not (equal? (term  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) ) ) (term  (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) )))) 
   ---------------------------------------------------------------- "StaticHsubLam"
   (StaticHsub x U u  (CanonicalLam y v)   (CanonicalLam y v_^) )]
 
 ;; #source file ./ott/lang_simple.ott  lines 704 - 707 
  [
-   (side-condition (not (equal?  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) )   (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) ))) 
+   (side-condition ,(not (equal? (term  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) ) ) (term  (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) )))) 
   ---------------------------------------------------------------------------------------------------------------------- "StaticHsubDiffNil"
   (StaticHsub x U u (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ))]
 
 ;; #source file ./ott/lang_simple.ott  lines 708 - 713 
  [
   
-   (side-condition (not (equal?  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) )   (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) ))) 
+   (side-condition ,(not (equal? (term  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) ) ) (term  (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) )))) 
   (StaticHsub x U u (CanonicalAtomic (AtomicSpine y e)) (CanonicalAtomic (AtomicSpine y e_^)))
   (StaticHsub x U u v v_^)
   ---------------------------------------------------------------------------------------------------------------------------- "StaticHsubDiffCons"
@@ -472,7 +724,7 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 786 - 789 
  [
-   (side-condition (>  i  0)) 
+   (side-condition ,(> (term  i ) 0)) 
   --------------------------------------------------------------------------------- "StaticCSynthSet"
   (StaticCSynth SGamma (AtomicSet i) (CanonicalAtomic  (AtomicSet (succ  i ) ) ))]
 
@@ -510,7 +762,7 @@
  [
   
   (StaticCSynth SGamma rr (CanonicalAtomic (AtomicSet i)))
-   (side-condition (and (< 0  i ) (<  i   j ))) 
+   (side-condition ,(and (< 0 (term  i )) (< (term  i ) (term  j )))) 
   ---------------------------------------------------------------------------- "StaticCCheckLevel"
   (StaticCCheck SGamma (CanonicalAtomic rr) (CanonicalAtomic (AtomicSet j)))]
 
@@ -547,7 +799,7 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 848 - 851 
  [
-   (side-condition (>  i  0)) 
+   (side-condition ,(> (term  i ) 0)) 
   ------------------------------------------------------------------------------ "StaticSynthSet"
   (StaticSynth SGamma (TermSet i) (CanonicalAtomic  (AtomicSet (succ  i ) ) ))]
 
@@ -583,7 +835,7 @@
 ;; #source file ./ott/lang_simple.ott  lines 879 - 883 
  [
   (StaticSynth SGamma t (CanonicalAtomic (AtomicSet i)))
-   (side-condition (and (< 0  i ) (<  i   j ))) 
+   (side-condition ,(and (< 0 (term  i )) (< (term  i ) (term  j )))) 
   -------------------------------------------------------- "StaticCheckLevel"
   (StaticCheck SGamma t (CanonicalAtomic (AtomicSet j)))]
 
@@ -636,7 +888,7 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 925 - 928 
  [
-   (side-condition (>  i  0)) 
+   (side-condition ,(> (term  i ) 0)) 
   ------------------------------------------------------------------------------------------------------------------ "StaticNormSynthSet"
   (StaticNormSynth SGamma (TermSet i) (CanonicalAtomic (AtomicSet i)) (CanonicalAtomic  (AtomicSet (succ  i ) ) ))]
 
@@ -673,7 +925,7 @@
 ;; #source file ./ott/lang_simple.ott  lines 959 - 963 
  [
   (StaticNormSynth SGamma t v (CanonicalAtomic (AtomicSet i)))
-   (side-condition (and (< 0  i ) (<  i   j ))) 
+   (side-condition ,(and (< 0 (term  i )) (< (term  i ) (term  j )))) 
   -------------------------------------------------------------- "StaticNormCheckLevel"
   (StaticNormCheck SGamma v t (CanonicalAtomic (AtomicSet j)))]
 
@@ -742,7 +994,7 @@
   
   (GradualHsub x gU gu gU gU_^)
   (GradualEnvSub x gU gu Gamma Gamma_^)
-   (side-condition (not (equal?  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) )   (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) ))) 
+   (side-condition ,(not (equal? (term  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) ) ) (term  (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) )))) 
   --------------------------------------------------------------------- "GradualEnvSubVarDiff"
   (GradualEnvSub x gU gu (EnvExt y gU Gamma) (EnvExt y gU_^ Gamma_^))]
 
@@ -770,23 +1022,23 @@
 ;; #source file ./ott/lang_simple.ott  lines 1044 - 1049 
  [(GradualHsub x gU gu gU gU_^)
   (GradualHsub x gU gu gV gV_^)
-   (side-condition (not (equal?  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) )   (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) ))) 
+   (side-condition ,(not (equal? (term  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) ) ) (term  (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) )))) 
   ----------------------------------------------------------------------- "GradualHsubPi"
   (GradualHsub x gU gu (CanonicalPi y gU gV) (CanonicalPi y gU_^ gV_^))]
 
 ;; #source file ./ott/lang_simple.ott  lines 1051 - 1055 
  [(GradualHsub x gU gu gv gv_^)
-   (side-condition (not (equal?  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) )   (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) ))) 
+   (side-condition ,(not (equal? (term  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) ) ) (term  (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) )))) 
   --------------------------------------------------------------------- "GradualHsubLam"
   (GradualHsub x gU gu  (CanonicalLam y gv)   (CanonicalLam y gv_^) )]
 
 ;; #source file ./ott/lang_simple.ott  lines 1058 - 1061 
- [ (side-condition (not (equal?  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) )   (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) ))) 
+ [ (side-condition ,(not (equal? (term  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) ) ) (term  (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) )))) 
   ------------------------------------------------------------------------------------------------------------------------- "GradualHsubDiffNil"
   (GradualHsub x gU gu (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ))]
 
 ;; #source file ./ott/lang_simple.ott  lines 1062 - 1067 
- [ (side-condition (not (equal?  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) )   (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) ))) 
+ [ (side-condition ,(not (equal? (term  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) ) ) (term  (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) )))) 
   (GradualHsub x gU gu (CanonicalAtomic (AtomicSpine y ge)) (CanonicalAtomic (AtomicSpine y ge_^)))
   (GradualHsub x gU gu gv gv_^)
   ----------------------------------------------------------------------------------------------------------------------------------- "GradualHsubDiffCons"
@@ -916,7 +1168,7 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 1191 - 1194 
  [
-   (side-condition (>  i  0)) 
+   (side-condition ,(> (term  i ) 0)) 
   --------------------------------------------------------------------------------- "GradualCSynthSet"
   (GradualCSynth Gamma (AtomicSet i) (CanonicalAtomic  (AtomicSet (succ  i ) ) ))]
 
@@ -952,7 +1204,7 @@
 ;; #source file ./ott/lang_simple.ott  lines 1223 - 1227 
  [
   (GradualCSynth Gamma grr (CanonicalAtomic (AtomicSet i)))
-   (side-condition (and (< 0  i ) (<  i   j ))) 
+   (side-condition ,(and (< 0 (term  i )) (< (term  i ) (term  j )))) 
   ----------------------------------------------------------------------------- "GradualCCheckLevel"
   (GradualCCheck Gamma (CanonicalAtomic grr) (CanonicalAtomic (AtomicSet j)))]
 
@@ -1115,7 +1367,7 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 1367 - 1370 
  [
-   (side-condition (>  i  0)) 
+   (side-condition ,(> (term  i ) 0)) 
   ------------------------------------------------------------------------------ "GradualSynthSet"
   (GradualSynth Gamma (TermSet i) (CanonicalAtomic  (AtomicSet (succ  i ) ) ))]
 
@@ -1152,7 +1404,7 @@
 ;; #source file ./ott/lang_simple.ott  lines 1401 - 1405 
  [
   (GradualSynth Gamma gt (CanonicalAtomic (AtomicSet i)))
-   (side-condition (and (< 0  i ) (<  i   j ))) 
+   (side-condition ,(and (< 0 (term  i )) (< (term  i ) (term  j )))) 
   --------------------------------------------------------- "GradualCheckLevel"
   (GradualCheck Gamma gt (CanonicalAtomic (AtomicSet j)))]
 
@@ -1241,7 +1493,7 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 1478 - 1481 
  [
-   (side-condition (>  i  0)) 
+   (side-condition ,(> (term  i ) 0)) 
   ------------------------------------------------------------------------------------------------------------------ "GradualNormSynthSet"
   (GradualNormSynth Gamma (TermSet i) (CanonicalAtomic (AtomicSet i)) (CanonicalAtomic  (AtomicSet (succ  i ) ) ))]
 
@@ -1281,14 +1533,14 @@
   (GradualNormSynth Gamma tt gv gV)
   (Consistent gU gV)
   (Meet gU gV gU_^)
-   (side-condition (not (equal?  gU_^   gV ))) 
+   (side-condition ,(not (equal? (term  gU_^ ) (term  gV )))) 
   --------------------------------------------- "GradualNormCheckSynthDown"
   (GradualNormCheck Gamma CanonicalDyn tt gU)]
 
 ;; #source file ./ott/lang_simple.ott  lines 1520 - 1524 
  [
   (GradualNormSynth Gamma tt gv (CanonicalAtomic (AtomicSet i)))
-   (side-condition (and (< 0  i ) (<  i   j ))) 
+   (side-condition ,(and (< 0 (term  i )) (< (term  i ) (term  j )))) 
   ---------------------------------------------------------------- "GradualNormCheckLevel"
   (GradualNormCheck Gamma gv tt (CanonicalAtomic (AtomicSet j)))]
 
@@ -1334,7 +1586,7 @@
   (GradualNormSynth Gamma ett gv gV)
   (Meet gU gV gU_^)
   (EvConsistent (EvidencePair gU_^ gU_^) gU gV)
-   (side-condition (not (equal?  gU_^   gV ))) 
+   (side-condition ,(not (equal? (term  gU_^ ) (term  gV )))) 
   ---------------------------------------------------------- "GradualNormCheckEvDown"
   (GradualNormCheck Gamma CanonicalDyn (TermEp ep ett) gU)]
 
@@ -1359,7 +1611,7 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 1578 - 1581 
  [
-   (side-condition (>  i  0)) 
+   (side-condition ,(> (term  i ) 0)) 
   ---------------------------------------------------------------------------------------------- "GradualElabSynthSet"
   (GradualElabSynth Gamma (TermSet i) (TermSet i) (CanonicalAtomic  (AtomicSet (succ  i ) ) ))]
 
@@ -1387,21 +1639,28 @@
   #:mode (GradualElabCheck I O I I)
   #:contract (GradualElabCheck Gamma et gt gU)
 
-;; #source file ./ott/lang_simple.ott  lines 1607 - 1611 
+;; #source file ./ott/lang_simple.ott  lines 1607 - 1610 
+ [
+  (GradualElabSynth Gamma gt et gV)
+  ----------------------------------- "GradualElabCheckSynthEq"
+  (GradualElabCheck Gamma et gt gV)]
+
+;; #source file ./ott/lang_simple.ott  lines 1611 - 1616 
  [
   (GradualElabSynth Gamma gt et gV)
   (Meet gU gV gV_^)
+   (side-condition ,(not (equal? (term  gU ) (term  gV )))) 
   --------------------------------------------------------------------- "GradualElabCheckSynth"
   (GradualElabCheck Gamma (TermEp (EvidencePair gV_^ gV_^) et) gt gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 1613 - 1617 
+;; #source file ./ott/lang_simple.ott  lines 1618 - 1622 
  [
   (GradualElabSynth Gamma gt et (CanonicalAtomic (AtomicSet i)))
-   (side-condition (and (< 0  i ) (<  i   j ))) 
+   (side-condition ,(and (< 0 (term  i )) (< (term  i ) (term  j )))) 
   ---------------------------------------------------------------- "GradualElabCheckLevel"
   (GradualElabCheck Gamma et gt (CanonicalAtomic (AtomicSet j)))]
 
-;; #source file ./ott/lang_simple.ott  lines 1619 - 1628 
+;; #source file ./ott/lang_simple.ott  lines 1624 - 1633 
  [
   
   (ConsistentSet gV)
@@ -1412,21 +1671,21 @@
   --------------------------------------------------------------- "GradualElabCheckPi"
   (GradualElabCheck Gamma (TermPi x eS eT) (TermPi x gS gT) gV)]
 
-;; #source file ./ott/lang_simple.ott  lines 1629 - 1633 
+;; #source file ./ott/lang_simple.ott  lines 1634 - 1638 
  [
   (WellFormed (EnvExt x gU Gamma))
   (GradualElabCheck (EnvExt x gU Gamma) et gt gV)
   ---------------------------------------------------------------------------------- "GradualElabCheckLamPi"
   (GradualElabCheck Gamma  (TermLam x et)   (TermLam x gt)  (CanonicalPi x gU gV))]
 
-;; #source file ./ott/lang_simple.ott  lines 1634 - 1638 
+;; #source file ./ott/lang_simple.ott  lines 1639 - 1643 
  [
   (WellFormed (EnvExt x CanonicalDyn Gamma))
   (GradualElabCheck (EnvExt x CanonicalDyn Gamma) et gt CanonicalDyn)
   ------------------------------------------------------------------------- "GradualElabCheckLamDyn"
   (GradualElabCheck Gamma  (TermLam x et)   (TermLam x gt)  CanonicalDyn)]
 
-;; #source file ./ott/lang_simple.ott  lines 1639 - 1642 
+;; #source file ./ott/lang_simple.ott  lines 1644 - 1647 
  [
   (GradualSet Gamma gU)
   ----------------------------------------------------- "GradualElabCheckDyn"
@@ -1440,20 +1699,20 @@
   #:mode (EvSynth I I O)
   #:contract (EvSynth Gamma et gU)
 
-;; #source file ./ott/lang_simple.ott  lines 1655 - 1658 
+;; #source file ./ott/lang_simple.ott  lines 1660 - 1663 
  [
-   (side-condition (>  i  0)) 
+   (side-condition ,(> (term  i ) 0)) 
   ------------------------------------------------------------------------- "EvSynthSet"
   (EvSynth Gamma (TermSet i) (CanonicalAtomic  (AtomicSet (succ  i ) ) ))]
 
-;; #source file ./ott/lang_simple.ott  lines 1660 - 1664 
+;; #source file ./ott/lang_simple.ott  lines 1665 - 1669 
  [
   (WellFormed Gamma)
   (GVarLook x gU Gamma)
   -------------------------------- "EvSynthVar"
   (EvSynth Gamma x gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 1668 - 1674 
+;; #source file ./ott/lang_simple.ott  lines 1673 - 1679 
  [
   
   (EvSynth Gamma es gV)
@@ -1469,14 +1728,14 @@
   #:mode (EvCheck I I I)
   #:contract (EvCheck Gamma et gU)
 
-;; #source file ./ott/lang_simple.ott  lines 1681 - 1685 
+;; #source file ./ott/lang_simple.ott  lines 1686 - 1690 
  [
   (EvSynth Gamma et gU)
   (EvConsistent ep gU gV)
   ----------------------------------- "EvCheckEv"
   (EvCheck Gamma (TermEp ep et) gV)]
 
-;; #source file ./ott/lang_simple.ott  lines 1686 - 1691 
+;; #source file ./ott/lang_simple.ott  lines 1691 - 1696 
  [
   
   (GradualNormCheck Gamma gU eS gV)
@@ -1485,21 +1744,21 @@
   ------------------------------------- "EvCheckPi"
   (EvCheck Gamma (TermPi x eS eT) gV)]
 
-;; #source file ./ott/lang_simple.ott  lines 1694 - 1698 
+;; #source file ./ott/lang_simple.ott  lines 1699 - 1703 
  [
   (WellFormed (EnvExt x gU Gamma))
   (EvCheck (EnvExt x gU Gamma) et gV)
   -------------------------------------------------------- "EvCheckLamPi"
   (EvCheck Gamma  (TermLam x et)  (CanonicalPi x gU gV))]
 
-;; #source file ./ott/lang_simple.ott  lines 1700 - 1704 
+;; #source file ./ott/lang_simple.ott  lines 1705 - 1709 
  [
   (WellFormed (EnvExt x CanonicalDyn Gamma))
   (EvCheck (EnvExt x CanonicalDyn Gamma) et CanonicalDyn)
   ----------------------------------------------- "EvCheckLamDyn"
   (EvCheck Gamma  (TermLam x et)  CanonicalDyn)]
 
-;; #source file ./ott/lang_simple.ott  lines 1705 - 1708 
+;; #source file ./ott/lang_simple.ott  lines 1710 - 1713 
  [
   (GradualSet Gamma gU)
   ------------------------------------ "EvCheckDyn"
@@ -1511,17 +1770,17 @@
   #:mode (SimpleSmallStep I O)
   #:contract (SimpleSmallStep s t)
 
-;; #source file ./ott/lang_simple.ott  lines 1724 - 1726 
+;; #source file ./ott/lang_simple.ott  lines 1729 - 1731 
  [
   --------------------------------------- "SimpleSmallStepAnn"
   (SimpleSmallStep  (TermAnn sv T)  sv)]
 
-;; #source file ./ott/lang_simple.ott  lines 1727 - 1729 
+;; #source file ./ott/lang_simple.ott  lines 1732 - 1734 
  [
   ---------------------------------------------------------------------------- "SimpleSmallStepApp"
   (SimpleSmallStep (TermApp  (TermLam x t)  sv)  (substitute  t   x   sv ) )]
 
-;; #source file ./ott/lang_simple.ott  lines 1731 - 1734 
+;; #source file ./ott/lang_simple.ott  lines 1736 - 1739 
  [
   (SimpleSmallStep s t)
   ------------------------------------------------------------- "SimpleSmallStepContext"
@@ -1533,22 +1792,22 @@
   #:mode (SmallStep I O)
   #:contract (SmallStep es et)
 
-;; #source file ./ott/lang_simple.ott  lines 1742 - 1745 
+;; #source file ./ott/lang_simple.ott  lines 1747 - 1750 
  [(ConsistentTrans ep_11 ep_22 ep_33)
   ------------------------------------------------------------------ "SmallStepAscr"
   (SmallStep (TermEp ep_11  (TermEp ep_22 et) ) (TermEp ep_33 et))]
 
-;; #source file ./ott/lang_simple.ott  lines 1748 - 1751 
+;; #source file ./ott/lang_simple.ott  lines 1753 - 1756 
  [ (side-condition ,(empty? (judgment-holds (ConsistentTrans  ep_11   ep_22  ep9999) ep9999))) 
   ---------------------------------------------------------- "SmallStepAscrFail"
   (SmallStep (TermEp ep_11  (TermEp ep_22 et) ) TermError)]
 
-;; #source file ./ott/lang_simple.ott  lines 1752 - 1754 
+;; #source file ./ott/lang_simple.ott  lines 1757 - 1759 
  [
   ------------------------------------------------------------------------ "SmallStepApp"
   (SmallStep (TermApp  (TermLam x et)  ev)  (substitute  et   x   ev ) )]
 
-;; #source file ./ott/lang_simple.ott  lines 1755 - 1760 
+;; #source file ./ott/lang_simple.ott  lines 1760 - 1765 
  [
   (Domain gU gV_11)
   (GradualNormCheck EnvEmpty gv ev gV_11)
@@ -1556,7 +1815,7 @@
   ------------------------------------------------------------- "SmallStepAppDyn"
   (SmallStep (TermApp (TermDynAnn gU) ev) (TermDynAnn gV_22))]
 
-;; #source file ./ott/lang_simple.ott  lines 1761 - 1766 
+;; #source file ./ott/lang_simple.ott  lines 1766 - 1771 
  [
   (EvDom ep_11 ep_33)
   (ConsistentTrans ep_22 ep_33 ep_44)
@@ -1564,7 +1823,7 @@
   ------------------------------------------------------------------------------------------------------------------------------------------ "SmallStepAppEv"
   (SmallStep (TermApp  (TermEp ep_11  (TermLam x et) )   (TermEp ep_22 rv) ) (TermEp ep_55   (substitute  et   x   (TermEp ep_44 rv) )  ))]
 
-;; #source file ./ott/lang_simple.ott  lines 1767 - 1779 
+;; #source file ./ott/lang_simple.ott  lines 1772 - 1784 
  [
   (Domain gV_11 gV_11^)
   (Domain gV_22 gV_22^)
@@ -1579,14 +1838,14 @@
   ----------------------------------------------------------------------------------------------------------------------------------------------------------------- "SmallStepAppEvDyn"
   (SmallStep (TermApp  (TermEp (EvidencePair gV_11 gV_22) (TermDynAnn gV_33))   (TermEp ep_11 rv) ) (TermEp (EvidencePair gV_11^^ gV_22^^) (TermDynAnn gV_33^^)))]
 
-;; #source file ./ott/lang_simple.ott  lines 1780 - 1783 
+;; #source file ./ott/lang_simple.ott  lines 1785 - 1788 
  [
   
   (SmallStep (TermApp  (TermEp ep_11 rv)   (TermEp (EvidencePair CanonicalDyn CanonicalDyn) rv) ) es)
   ------------------------------------------------- "SmallStepAppEvRaw"
   (SmallStep (TermApp  (TermEp ep_11 rv)  rv) es)]
 
-;; #source file ./ott/lang_simple.ott  lines 1784 - 1788 
+;; #source file ./ott/lang_simple.ott  lines 1789 - 1793 
  [
   
   (EvDom ep_11 ep_33)
@@ -1594,27 +1853,27 @@
   ------------------------------------------------------------------------- "SmallStepAppFailTrans"
   (SmallStep (TermApp  (TermEp ep_11 ru)   (TermEp ep_22 rv) ) TermError)]
 
-;; #source file ./ott/lang_simple.ott  lines 1789 - 1792 
+;; #source file ./ott/lang_simple.ott  lines 1794 - 1797 
  [
   
    (side-condition ,(empty? (judgment-holds (EvDom  ep_11  ep9999) ep9999))) 
   -------------------------------------------------------- "SmallStepAppFailDom"
   (SmallStep (TermApp  (TermEp ep_11 rv)  ev) TermError)]
 
-;; #source file ./ott/lang_simple.ott  lines 1798 - 1801 
+;; #source file ./ott/lang_simple.ott  lines 1803 - 1806 
  [
    (side-condition ,(empty? (judgment-holds (Domain  gU  gV9999) gV9999))) 
   --------------------------------------------------------------------- "SmallStepAppDynFail"
   (SmallStep (TermApp  (TermEp ep_11 (TermDynAnn gU))  ev) TermError)]
 
-;; #source file ./ott/lang_simple.ott  lines 1804 - 1808 
+;; #source file ./ott/lang_simple.ott  lines 1809 - 1813 
  [
   (SmallStep es et)
-   (side-condition (not (equal?  et  TermError))) 
+   (side-condition ,(not (equal? (term  et ) (term TermError)))) 
   --------------------------------------------------------- "SmallStepContext"
   (SmallStep  (in-hole  EC   es )   (in-hole  EC   et ) )]
 
-;; #source file ./ott/lang_simple.ott  lines 1809 - 1812 
+;; #source file ./ott/lang_simple.ott  lines 1814 - 1817 
  [
   (SmallStep es TermError)
   --------------------------------------------- "SmallStepContextErr"
@@ -1626,7 +1885,7 @@
   #:mode (ConsistentTrans I I O)
   #:contract (ConsistentTrans ep_11 ep_22 ep_33)
 
-;; #source file ./ott/lang_simple.ott  lines 1818 - 1822 
+;; #source file ./ott/lang_simple.ott  lines 1823 - 1827 
  [(Meet gU_11 gU_22 gU_33)
   (Meet gV_11 gV_22 gV_33)
   ---------------------------------------------------------------------------------------------------- "ConsistentTransDef"
@@ -1638,7 +1897,7 @@
   #:mode (EvDom I O)
   #:contract (EvDom ep_11 ep_22)
 
-;; #source file ./ott/lang_simple.ott  lines 1828 - 1832 
+;; #source file ./ott/lang_simple.ott  lines 1833 - 1837 
  [(Domain gU gU_^)
   (Domain gV gV_^)
   ------------------------------------------------------- "EvDomPair"
@@ -1650,7 +1909,7 @@
   #:mode (EvCod I I O)
   #:contract (EvCod ev ep_11 ep_22)
 
-;; #source file ./ott/lang_simple.ott  lines 1839 - 1847 
+;; #source file ./ott/lang_simple.ott  lines 1844 - 1852 
  [
   (Domain gU gU_11)
   (Domain gV gV_11)
@@ -1661,7 +1920,7 @@
   ------------------------------------------------------------ "EvCodPair"
   (EvCod ev (EvidencePair gU gV) (EvidencePair gU_22 gV_22))]
 )
-;; #source file ./ott/lang_simple.ott  lines 1862 - 1906 
+;; #source file ./ott/lang_simple.ott  lines 1867 - 1911 
 (define red
   (reduction-relation
    L
