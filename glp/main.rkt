@@ -11,13 +11,24 @@
          Set
          ->
          ::
-         ?)
+         ?
+         nfx)
 
 
 (require (for-syntax syntax/parse))
+ (require (for-syntax racket/syntax))
 (require redex/reduction-semantics)
 (require redex/gui )
 (require "lang_simple.rkt")
+
+(begin-for-syntax
+  (define-syntax-class arrow-dom
+    #:datum-literals (:)
+    (pattern (var:id : ty:expr))
+    (pattern ty:expr
+             #:attr var (generate-temporary 'x)         )
+    )
+  )
 
 (define-for-syntax (lexpand e)
   (local-expand e 'expression #f))
@@ -31,7 +42,7 @@
   (syntax-parse stx
     [(_ x:id body:expr)
      #`(term (TermLam x #,(lexpand #'(unquote body))))]
-    [(_ (x:id ...+) body:expr)
+    [(_ (x:id ...) body:expr)
      (foldr (lambda (arg funBody)
               #`(term (TermLam (unquote #,arg) (unquote #,(lexpand funBody) )))) 
             #'body
@@ -40,8 +51,13 @@
 
 (define-syntax (glp-app stx)
   (syntax-parse stx
-    [(_ s:expr t:expr)
-     #`(term (TermApp #,(lexpand #'(unquote s)) #,(lexpand #'(unquote t))))]))
+    [(_ s:expr t:expr ...)
+     (foldr
+      (lambda (fn arg)
+        #`(term (TermApp (unquote #,(lexpand fn)) (unquote #,(lexpand arg)))))
+      #'s
+      (syntax->list #'(t ...) ))
+     ]))
 
 (define-syntax (Set stx)
   (syntax-parse stx
@@ -60,19 +76,14 @@
 
 (define-syntax (-> stx)
   (syntax-parse stx
-    #:datum-literals (:)
-    [(_ (x:id : s:expr) ...+ t:expr )
-     #:do [
-     [define xlist (syntax->list #'(x ...)) ]
-     [define slist (syntax->list #'(s ...))]
-     ]
+    [(_ dom:arrow-dom ...+ t:expr )
      (foldr
       (lambda (xarg sarg cod)
      #`(term (TermPi #,xarg (unquote #,(lexpand sarg)) (unquote #,(lexpand cod))))
         )
         #'t
-        xlist
-        slist
+        (attribute dom.var)
+        (attribute dom.ty)
       )
         ]))
 
@@ -153,3 +164,9 @@
     [(_ body)
       #`(show-derivations (build-derivations (GradualElabSynth EnvEmpty (unquote body) es gU))
       )]))
+
+(define-syntax (nfx stx)
+  (syntax-parse stx
+    #:datum-literals (:)
+  [(nfx dom:arrow-dom ...+ -> cod:expr) #'(-> dom ... cod)]
+  ))

@@ -2,7 +2,11 @@
 
 
 define
-  f : (-> (x : (Set 1)) (y : (Set 1)) (Set 1))
-  f x y = x
+  nat : Set(2)
+  nat = {(A : Set(1)) {A -> A} A -> A}
 
-f
+define
+  zero : nat
+  zero A f z = z
+
+(zero)
