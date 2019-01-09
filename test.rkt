@@ -1,8 +1,8 @@
 #lang sweet-exp glp
 
-(define Set2 Set(2))
 
- (stepper (
- {(lambda x x)
- :: {(x : Set2) -> Set2 }
- } Set(1)))
+define
+  f : (-> (x : (Set 1)) (y : (Set 1)) (Set 1))
+  f x y = x
+
+f

@@ -30,7 +30,13 @@
 (define-syntax (glp-lambda stx)
   (syntax-parse stx
     [(_ x:id body:expr)
-     #`(term (TermLam x #,(lexpand #'(unquote body))))]))
+     #`(term (TermLam x #,(lexpand #'(unquote body))))]
+    [(_ (x:id ...+) body:expr)
+     (foldr (lambda (arg funBody)
+              #`(term (TermLam (unquote #,arg) (unquote #,(lexpand funBody) )))) 
+            #'body
+            (syntax->list #'(x ...) ))]
+    ))
 
 (define-syntax (glp-app stx)
   (syntax-parse stx
@@ -55,13 +61,25 @@
 (define-syntax (-> stx)
   (syntax-parse stx
     #:datum-literals (:)
-    [(_ (x:id : s:expr) t:expr )
-     #`(term (TermPi x #,(lexpand #'(unquote s)) #,(lexpand #'(unquote t))))]))
+    [(_ (x:id : s:expr) ...+ t:expr )
+     #:do [
+     [define xlist (syntax->list #'(x ...)) ]
+     [define slist (syntax->list #'(s ...))]
+     ]
+     (foldr
+      (lambda (xarg sarg cod)
+     #`(term (TermPi #,xarg (unquote #,(lexpand sarg)) (unquote #,(lexpand cod))))
+        )
+        #'t
+        xlist
+        slist
+      )
+        ]))
 
 (define (elab-and-typecheck e)
   (let ([elabList (judgment-holds (GradualElabSynth EnvEmpty (unquote e) es gU) es)])
            (cond
-                  [(null? elabList) (error "No type for expression" e )]
+                  [(null? elabList) (error "Can't infer type for expression (try adding an annotation?)" e )]
                   [(< 1 (length elabList)) (error "Too many elaborations for expression" e) ]
                   [else (first elabList)]
                   )))
@@ -105,9 +123,18 @@
 
 (define-syntax (glp-define stx)
   (syntax-parse stx
+    #:datum-literals (:=)
     [(_ x:id body)
       #`(define x body
-      )]))
+      )]
+    ;[(_ (f:id arg:id ...) body)
+    ;  #`(define f (glp-lambda (arg ...) body)
+    ;  )]
+    [(_ (f1:id : tp:expr) (f2:id arg:id ... = body))
+     #:fail-unless (equal? (syntax-e #'f1) (syntax-e #'f2)) "Must give definition to match type declaration"
+      #`(define f1 (:: (glp-lambda (arg ...) body) tp)
+      )]
+    ))
 
 (define-syntax (glp-traces stx)
   (syntax-parse stx
