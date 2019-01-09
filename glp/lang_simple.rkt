@@ -193,29 +193,8 @@
     (AtomicSpine var spine)
     (AtomicSet level))
    (var x y z X Y Z ::= variable-not-otherwise-mentioned)
-
-    #:binding-forms
-
-    (TermLam x tt #:refers-to (shadow x))
-    (TermPi x SS TT #:refers-to (shadow x))
-    (StaticTermLam x t #:refers-to (shadow x))
-    (StaticTermPi x S T #:refers-to (shadow x))
-    (StaticTermNoAnnLam x ta #:refers-to (shadow x))
-    (StaticTermNoAnnPi x Sa Ta #:refers-to (shadow x))
-    (StaticCanonicalLam x u #:refers-to (shadow x))
-
-    (GradualTermLam x gt #:refers-to (shadow x))
-    (GradualTermPi x gS gT #:refers-to (shadow x))
-    (CanonicalLam x gu #:refers-to (shadow x))
-    (CanonicalPi x gU gV #:refers-to (shadow x))
-
-    (EvidenceTermLam x et #:refers-to (shadow x))
-    (RawValueLam x et #:refers-to (shadow x))
-    (SimpleValueLam x ta)
-    (EvidenceValueLam x et #:refers-to (shadow x))
-
 )
-;; BLOCK level term s sa u rr e gs canonical atomic spine epsilon es ru simpleValue eu dummyeu evidenceSpine simpleSpine simpleContext evalContext SGamma Gamma Env iinf is iinfs
+
 ;;;; subrules 
 ;; #source file ./ott/lang_simple.ott  lines 499 - 499 and file ./ott/lang_simple.ott  lines 500 - 500 and file ./ott/lang_simple.ott  lines 503 - 503 and file ./ott/lang_simple.ott  lines 504 - 504 and file ./ott/lang_simple.ott  lines 505 - 505 and file ./ott/lang_simple.ott  lines 506 - 506 and file ./ott/lang_simple.ott  lines 507 - 507 and file ./ott/lang_simple.ott  lines 509 - 509 and file ./ott/lang_simple.ott  lines 510 - 510 and file ./ott/lang_simple.ott  lines 511 - 511 and file ./ott/lang_simple.ott  lines 512 - 512 and file ./ott/lang_simple.ott  lines 513 - 513 and file ./ott/lang_simple.ott  lines 514 - 514 and file ./ott/lang_simple.ott  lines 515 - 515 and file ./ott/lang_simple.ott  lines 516 - 516 and file ./ott/lang_simple.ott  lines 517 - 517 and file ./ott/lang_simple.ott  lines 518 - 518 and file ./ott/lang_simple.ott  lines 519 - 519 and file ./ott/lang_simple.ott  lines 520 - 520 
 (define-rw-context ott-rewrites
@@ -1630,8 +1609,8 @@
   (GradualElabCheck Gamma et gt gV_11)
   (GradualNormCheck Gamma gv gt gV_11)
   (CodSub gV_11 gv gV gV_22)
-  --------------------------------------------------- "GradualElabSynthApp"
-  (GradualElabSynth Gamma (TermApp gs gt) et gV_22)]
+  ---------------------------------------------------------------- "GradualElabSynthApp"
+  (GradualElabSynth Gamma (TermApp gs gt) (TermApp es et) gV_22)]
 
 )
 (define-judgment-form L 

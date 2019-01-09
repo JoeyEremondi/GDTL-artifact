@@ -3,7 +3,11 @@
                      [glp-module #%module-begin]
                      [glp-lambda lambda]
                      [glp-app #%app]
-                     [glp-top #%top])
+                     [glp-top #%top]
+                     [glp-define define]
+                     [glp-traces traces]
+                     [glp-stepper stepper]
+                     [glp-type type])
          Set
          ->
          ::
@@ -12,6 +16,7 @@
 
 (require (for-syntax syntax/parse))
 (require redex/reduction-semantics)
+(require redex/gui )
 (require "lang_simple.rkt")
 
 (define-for-syntax (lexpand e)
@@ -53,20 +58,30 @@
     [(_ (x:id : s:expr) t:expr )
      #`(term (TermPi x #,(lexpand #'(unquote s)) #,(lexpand #'(unquote t))))]))
 
-(define-for-syntax (eval-rdx e)
-  (let
-      ([expanded (local-expand e 'expression #f)])
-    #`(let*
-          ([elabList (judgment-holds (GradualElabSynth EnvEmpty (unquote #,expanded) es gU) es)]
-           [elab (cond
-                  [(null? elabList) (error "No type for expression" #,expanded )]
-                  [(< 1 (length elabList)) (error "Too many elaborations for expression" #,expanded) ]
+(define (elab-and-typecheck e)
+  (let ([elabList (judgment-holds (GradualElabSynth EnvEmpty (unquote e) es gU) es)])
+           (cond
+                  [(null? elabList) (error "No type for expression" e )]
+                  [(< 1 (length elabList)) (error "Too many elaborations for expression" e) ]
                   [else (first elabList)]
-                  )])
-       (apply values
-                (apply-reduction-relation* red elab)))
-    )
+                  )))
+
+(define-for-syntax (eval-rdx e)
+  (syntax-parse e
+    [(glp-define x body)
+     #'(glp-define x body)]
+    [(glp-traces body)
+     #'(glp-traces body)]
+    [(glp-stepper body)
+     #'(glp-stepper body)]
+    [_
+   (let
+      ([expanded (local-expand e 'expression #f)])
+    #`(apply values
+                (apply-reduction-relation* red (elab-and-typecheck #,expanded)))
+    )]
   )
+)
 
 
 (define-syntax (glp-topi stx)
@@ -85,6 +100,29 @@
      [define elist (syntax->list #'(e ...)) ]
      [define explist (map eval-rdx elist)]
      ]
-      #`(#%module-begin #,@explist
+      #`(#%module-begin  #,@explist
       )]))
-     
+
+(define-syntax (glp-define stx)
+  (syntax-parse stx
+    [(_ x:id body)
+      #`(define x body
+      )]))
+
+(define-syntax (glp-traces stx)
+  (syntax-parse stx
+    [(_ body)
+      #`(traces red (elab-and-typecheck body)
+      )]))
+
+(define-syntax (glp-stepper stx)
+  (syntax-parse stx
+    [(_ body)
+      #`(stepper red (elab-and-typecheck body)
+      )]))
+
+(define-syntax (glp-type stx)
+  (syntax-parse stx
+    [(_ body)
+      #`(show-derivations (build-derivations (GradualElabSynth EnvEmpty (unquote body) es gU))
+      )]))
