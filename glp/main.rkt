@@ -7,12 +7,15 @@
                      [glp-define define]
                      [glp-traces traces]
                      [glp-stepper stepper]
-                     [glp-type type])
+                     [glp-type type]
+                     [glp-normalize normalize])
          Set
          ->
          ::
          ?
-         nfx)
+         nfx
+         trace-on
+         trace-off)
 
 
 (require (for-syntax syntax/parse))
@@ -52,8 +55,8 @@
 (define-syntax (glp-app stx)
   (syntax-parse stx
     [(_ s:expr t:expr ...)
-     (foldr
-      (lambda (fn arg)
+     (foldl
+      (lambda (arg fn)
         #`(term (TermApp (unquote #,(lexpand fn)) (unquote #,(lexpand arg)))))
       #'s
       (syntax->list #'(t ...) ))
@@ -91,14 +94,26 @@
   (let ([elabList (judgment-holds (GradualElabSynth EnvEmpty (unquote e) es gU) es)])
            (cond
                   [(null? elabList) (error "Can't infer type for expression (try adding an annotation?)" e )]
-                  [(< 1 (length elabList)) (error "Too many elaborations for expression" e) ]
+                  [(< 1 (length elabList)) (error "Too many elaborations for expression" e elabList) ]
                   [else (first elabList)]
+                  )))
+
+(define (norm-and-typecheck e)
+  (let ([normList (judgment-holds (GradualNormSynth EnvEmpty (unquote e) gu gU) gu)])
+           (cond
+                  [(null? normList) (error "Can't infer type to normalize expression (try adding an annotation?)" e )]
+                  [(< 1 (length normList)) (error "Too many normalizations for expression" e normList) ]
+                  [else (first normList)]
                   )))
 
 (define-for-syntax (eval-rdx e)
   (syntax-parse e
     [(glp-define x body)
      #'(glp-define x body)]
+    [(trace-on)
+     #'(trace-on)]
+    [(trace-off)
+     #'(trace-off)]
     [(glp-traces body)
      #'(glp-traces body)]
     [(glp-stepper body)
@@ -164,6 +179,18 @@
     [(_ body)
       #`(show-derivations (build-derivations (GradualElabSynth EnvEmpty (unquote body) es gU))
       )]))
+
+(define-syntax (glp-normalize stx)
+  (syntax-parse stx
+    [(_ body)
+      #`(norm-and-typecheck body
+      )]))
+
+(define-syntax (trace-on stx)
+  #'(current-traced-metafunctions 'all))
+
+(define-syntax (trace-off stx)
+  #'(current-traced-metafunctions '()))
 
 (define-syntax (nfx stx)
   (syntax-parse stx
