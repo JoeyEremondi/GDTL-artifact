@@ -21,9 +21,17 @@
 
 (require (for-syntax syntax/parse))
  (require (for-syntax racket/syntax))
-(require redex/reduction-semantics)
-(require redex/gui )
-(require "lang_simple.rkt")
+(require (only-in redex/reduction-semantics
+                  judgment-holds
+                  term
+                  apply-reduction-relation*))
+(require (only-in redex/gui
+                  traces
+                  stepper))
+(require (only-in "lang_simple.rkt"
+                  GradualElabSynth
+                  GradualNormSynth
+                  red))
 
 (begin-for-syntax
   (define-syntax-class arrow-dom
@@ -34,9 +42,6 @@
     )
   )
 
-(define-for-syntax (lexpand e)
-  e)
-;  (local-expand e 'expression #f))
 
 (define-syntax (glp-top stx)
   (syntax-parse stx
@@ -46,10 +51,10 @@
 (define-syntax (glp-lambda stx)
   (syntax-parse stx
     [(_ x:id body:expr)
-     #`(term (TermLam x #,(lexpand #'(unquote body))))]
+     #`(term (TermLam x (unquote body)))]
     [(_ (x:id ...) body:expr)
      (foldr (lambda (arg funBody)
-              #`(term (TermLam (unquote #,arg) (unquote #,(lexpand funBody) )))) 
+              #`(term (TermLam (unquote #,arg) (unquote #,funBody )))) 
             #'body
             (syntax->list #'(x ...) ))]
     ))
@@ -59,7 +64,7 @@
     [(_ s:expr t:expr ...)
      (foldl
       (lambda (arg fn)
-        #`(term (TermApp (unquote #,(lexpand fn)) (unquote #,(lexpand arg)))))
+        #`(term (TermApp (unquote #,fn) (unquote #,arg))))
       #'s
       (syntax->list #'(t ...) ))
      ]))
@@ -77,14 +82,14 @@
 (define-syntax (:: stx)
   (syntax-parse stx
     [(_ s:expr t:expr)
-     #`(term (TermAnn #,(lexpand #'(unquote s)) #,(lexpand #'(unquote t))))]))
+     #`(term (TermAnn (unquote s) (unquote t)))]))
 
 (define-syntax (-> stx)
   (syntax-parse stx
     [(_ dom:arrow-dom ...+ t:expr )
      (foldr
       (lambda (xarg sarg cod)
-     #`(term (TermPi #,xarg (unquote #,(lexpand sarg)) (unquote #,(lexpand cod))))
+     #`(term (TermPi #,xarg (unquote #,sarg) (unquote #,cod)))
         )
         #'t
         (attribute dom.var)
@@ -110,6 +115,7 @@
 
 (define-for-syntax (eval-rdx e)
   (syntax-parse e
+    #:literals (glp-define trace-on trace-off glp-traces glp-stepper)
     [(glp-define x body)
      #'(glp-define x body)]
     [(trace-on)
@@ -121,11 +127,9 @@
     [(glp-stepper body)
      #'(glp-stepper body)]
     [_
-   (let
-      ([expanded (local-expand e 'expression #f)])
     #`(apply values
-                (apply-reduction-relation* red (elab-and-typecheck #,expanded)))
-    )]
+                (apply-reduction-relation* red (elab-and-typecheck #,e)))
+    ]
   )
 )
 
@@ -146,7 +150,7 @@
      [define elist (syntax->list #'(e ...)) ]
      [define explist (map eval-rdx elist)]
      ]
-      #`(#%module-begin  #,@explist
+      #`(#%module-begin 'foo  #,@explist
       )]))
 
 (define-syntax (glp-define stx)
@@ -196,6 +200,7 @@
 
 (define-syntax (nfx stx)
   (syntax-parse stx
-    #:datum-literals (:)
+    ; #:datum-literals (: )
+    #:literals (->)
   [(nfx dom:arrow-dom ...+ -> cod:expr) #'(-> dom ... cod)]
   ))

@@ -37,7 +37,7 @@ define
 
 define
   vec : {Set(4) -> Set(4)}
-  vec A = { (M : {nat -> Set(3)}) (n : nat) {(m : nat) A M(m) M(succ m)} -> M(n) }
+  vec A = { (M : {nat -> Set(3)}) (n : nat) {(m : nat) A M(m) -> M(succ m)} -> M(n) }
 
 (succ zero)
 
