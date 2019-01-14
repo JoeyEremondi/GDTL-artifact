@@ -25,13 +25,15 @@
                   judgment-holds
                   term
                   apply-reduction-relation*))
-(require (only-in redex/gui
-                  traces
-                  stepper))
+(require redex)
 (require (only-in "lang_simple.rkt"
                   GradualElabSynth
                   GradualNormSynth
-                  red))
+                  GradualSynth
+                  red
+                  L))
+
+(require typeset-rewriter)
 
 (begin-for-syntax
   (define-syntax-class arrow-dom
@@ -74,10 +76,7 @@
     [(_ i:nat)
      #`(term (TermSet i))]))
 
-(define-syntax (? stx)
-  (syntax-parse stx
-    [(_)
-     #`(term (TermDyn))]))
+(define ? (term TermDyn))
 
 (define-syntax (:: stx)
   (syntax-parse stx
@@ -103,6 +102,14 @@
                   [(null? elabList) (error "Can't infer type for expression (try adding an annotation?)" e )]
                   [(< 1 (length elabList)) (error "Too many elaborations for expression" e elabList) ]
                   [else (first elabList)]
+                  )))
+
+(define (typecheck e)
+  (let ([tlist (judgment-holds (GradualSynth EnvEmpty (unquote e) gU) gU)])
+           (cond
+                  [(null? tlist) (error "Can't infer type for expression (try adding an annotation?)" e )]
+                  [(< 1 (length tlist)) (error "Too many types for expression" e tlist) ]
+                  [else (first tlist)]
                   )))
 
 (define (norm-and-typecheck e)
@@ -150,21 +157,21 @@
      [define elist (syntax->list #'(e ...)) ]
      [define explist (map eval-rdx elist)]
      ]
-      #`(#%module-begin 'foo  #,@explist
+      #`(#%module-begin  #,@explist
       )]))
 
 (define-syntax (glp-define stx)
   (syntax-parse stx
     #:datum-literals (:=)
     [(_ x:id body)
-      #`(define x body
+      #`(define x (begin  (typecheck body)  body)
       )]
     ;[(_ (f:id arg:id ...) body)
     ;  #`(define f (glp-lambda (arg ...) body)
     ;  )]
     [(_ (f1:id : tp:expr) (f2:id arg:id ... = body))
      #:fail-unless (equal? (syntax-e #'f1) (syntax-e #'f2)) "Must give definition to match type declaration"
-      #`(define f1 (:: (glp-lambda (arg ...) body) tp)
+      #`(glp-define f1 (:: (glp-lambda (arg ...) body) tp)
       )]
     ))
 
@@ -204,3 +211,12 @@
     #:literals (->)
   [(nfx dom:arrow-dom ...+ -> cod:expr) #'(-> dom ... cod)]
   ))
+
+(define lambda-rw
+  (rw-lambda
+   [`(TermLam ,x ,body) => (list "λ" x ". " body)
+    ]))
+
+(define-rw-context with-glp-rewrites
+  #:atomic (['TermDyn "?"])
+  #:compound (['TermLam lambda-rw]))

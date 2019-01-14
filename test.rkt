@@ -36,10 +36,19 @@ define
     n bool (lambda (x) false) true 
 
 define
-  vec : {Set(4) -> Set(4)}
-  vec A = { (M : {nat -> Set(3)}) (n : nat) {(m : nat) A M(m) -> M(succ m)} -> M(n) }
-
-(succ zero)
+  vec : {Set(4) nat -> Set(4)}
+  vec A n = { (M : {nat -> Set(3)}) {(m : nat) A M(m) -> M(succ(m))} M(zero) -> M(n) }
 
 
 
+define
+  nil : {(A : Set(4)) -> vec(A zero)}
+  nil A M f mz = mz
+
+define
+  foo : ?
+  foo = zero
+
+define
+  cons : {(A : Set(4)) (n : nat) (hd : A) (tl : vec(A n)) -> vec(A succ(n) )}
+  cons A n hd tl M f mz = (f n hd (tl M f mz))
