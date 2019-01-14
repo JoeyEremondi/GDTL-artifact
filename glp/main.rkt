@@ -15,7 +15,8 @@
          ?
          nfx
          trace-on
-         trace-off)
+         trace-off
+         glp-app)
 
 
 (require (for-syntax syntax/parse))
@@ -34,7 +35,8 @@
   )
 
 (define-for-syntax (lexpand e)
-  (local-expand e 'expression #f))
+  e)
+;  (local-expand e 'expression #f))
 
 (define-syntax (glp-top stx)
   (syntax-parse stx
