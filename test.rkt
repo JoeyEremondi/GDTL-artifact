@@ -49,6 +49,8 @@ define
   foo : ?
   foo = zero
 
+
+
 define
   cons : {(A : Set(4)) (n : nat) (hd : A) (tl : vec(A n)) -> vec(A succ(n) )}
   cons A n hd tl M f mz = (f n hd (tl M f mz))
