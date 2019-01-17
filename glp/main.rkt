@@ -164,7 +164,7 @@
   (syntax-parse stx
     #:datum-literals (:=)
     [(_ x:id body)
-      #`(define x (begin  (typecheck body)  body)
+      #`(define x (begin  (typecheck body) (println (list "defined" (quote x)))  body)
       )]
     ;[(_ (f:id arg:id ...) body)
     ;  #`(define f (glp-lambda (arg ...) body)
