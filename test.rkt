@@ -63,5 +63,11 @@ define
   cons A n hd tl M f mz = (f n hd (tl M f mz))
 
 
+define
+  unsafeNil : vec(Set(2) ?)
+  unsafeNil = { (nil Set(2)) :: vec(Set(2) ?)}
 
+;(trace-on)
+
+(traces (head Set(2) zero unsafeNil))
 
