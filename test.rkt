@@ -1,8 +1,8 @@
 #lang sweet-exp glp
 
 define
-  bool : Set(2)
-  bool = {(A : Set(1)) A A -> A}
+  bool : Set(5)
+  bool = {(A : Set(4)) A A -> A}
 
 define
   true : bool
@@ -13,13 +13,13 @@ define
   false A x y = y
 
 define
-  if : {(A : Set(1)) bool A A -> A}
+  if : {(A : Set(4)) bool A A -> A}
   if A b x y =
     b A x y
 
 define
-  nat : Set(3)
-  nat = {(A : Set(2)) {A -> A} A -> A}
+  nat : Set(6)
+  nat = {(A : Set(5)) {A -> A} A -> A}
 ;
 define
   zero : nat
@@ -36,21 +36,33 @@ define
     n bool (lambda (x) false) true 
 
 define
-  vec : {Set(4) nat -> Set(4)}
-  vec A n = { (M : {nat -> Set(3)}) {(m : nat) A M(m) -> M(succ(m))} M(zero) -> M(n) }
+  vec : {Set(6) nat -> Set(6)}
+  vec A n = { (M : {nat -> Set(4)}) {(m : nat) A M(m) -> M(succ(m))} M(zero) -> M(n) }
 
+trace-on()
+
+define
+  head : { (A : Set(3)) (n : nat) (vec(A succ(n))) -> A}
+  head A n v = (v 
+       (lambda (m)
+         (if Set(3) (zero? m) ? ?)
+         ;(if Set(3) (zero? m) Set(2) A)
+         )
+       (lambda (m elem prev) elem) Set(1)
+       ;Set(1)
+       )      
+        
 
 
 define
-  nil : {(A : Set(4)) -> vec(A zero)}
+  nil : {(A : Set(6)) -> vec(A zero)}
   nil A M f mz = mz
 
-define
-  foo : ?
-  foo = zero
-
-
 
 define
-  cons : {(A : Set(4)) (n : nat) (hd : A) (tl : vec(A n)) -> vec(A succ(n) )}
+  cons : {(A : Set(6)) (n : nat) (hd : A) (tl : vec(A n)) -> vec(A succ(n) )}
   cons A n hd tl M f mz = (f n hd (tl M f mz))
+
+
+
+

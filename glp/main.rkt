@@ -16,6 +16,7 @@
          nfx
          trace-on
          trace-off
+         trace-list
          glp-app)
 
 
@@ -122,13 +123,15 @@
 
 (define-for-syntax (eval-rdx e)
   (syntax-parse e
-    #:literals (glp-define trace-on trace-off glp-traces glp-stepper)
+    #:literals (glp-define trace-on trace-off trace-list glp-traces glp-stepper)
     [(glp-define x body)
      #'(glp-define x body)]
     [(trace-on)
      #'(trace-on)]
     [(trace-off)
      #'(trace-off)]
+    [(trace-list l)
+     #'(trace-list l)]
     [(glp-traces body)
      #'(glp-traces body)]
     [(glp-stepper body)
@@ -201,6 +204,11 @@
 
 (define-syntax (trace-on stx)
   #'(current-traced-metafunctions 'all))
+
+(define-syntax (trace-list stx)
+  (syntax-parse stx
+    [(_ . (x:id ...)) #'(current-traced-metafunctions (list 'x ... ))]
+  ))
 
 (define-syntax (trace-off stx)
   #'(current-traced-metafunctions '()))
