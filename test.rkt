@@ -39,17 +39,16 @@ define
   vec : {Set(6) nat -> Set(6)}
   vec A n = { (M : {nat -> Set(4)}) {(m : nat) A M(m) -> M(succ(m))} M(zero) -> M(n) }
 
-trace-on()
+;trace-on()
 
 define
   head : { (A : Set(3)) (n : nat) (vec(A succ(n))) -> A}
   head A n v = (v 
        (lambda (m)
-         (if Set(3) (zero? m) ? ?)
-         ;(if Set(3) (zero? m) Set(2) A)
+         (if Set(3) (zero? m) Set(2) A)
          )
-       (lambda (m elem prev) elem) Set(1)
-       ;Set(1)
+       (lambda (m elem prev) elem)
+       Set(1)
        )      
         
 
