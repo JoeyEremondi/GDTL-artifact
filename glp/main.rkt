@@ -17,6 +17,7 @@
          trace-on
          trace-off
          trace-list
+         reductions
          glp-app)
 
 
@@ -27,14 +28,11 @@
                   term
                   apply-reduction-relation*))
 (require redex)
-(require (only-in "lang_simple.rkt"
-                  GradualElabSynth
-                  GradualNormSynth
-                  GradualSynth
-                  red
-                  L))
+(require  "lang_simple.rkt" )
 
-(require typeset-rewriter)
+
+;(check-redundancy #t)
+(caching-enabled? #t)
 
 (begin-for-syntax
   (define-syntax-class arrow-dom
@@ -44,6 +42,8 @@
              #:attr var (generate-temporary 'x)         )
     )
   )
+
+(define defined-vars (make-hasheq))
 
 
 (define-syntax (glp-top stx)
@@ -136,9 +136,11 @@
      #'(glp-traces body)]
     [(glp-stepper body)
      #'(glp-stepper body)]
+    [(reductions body)
+     #'(reductions body)]
     [_
     #`(apply values
-                (apply-reduction-relation* red (elab-and-typecheck #,e)))
+                (map pt (apply-reduction-relation* SmallStep (elab-and-typecheck #,e))))
     ]
   )
 )
@@ -167,7 +169,10 @@
   (syntax-parse stx
     #:datum-literals (:=)
     [(_ x:id body)
-      #`(define x (begin  (typecheck body) (println (list "defined" (quote x)))  body)
+      #`(define x (begin
+                    (hash-set! defined-vars '#,(syntax->datum #'x) body)
+                    (typecheck body)
+                    (println (list "defined" (quote x)))  body)
       )]
     ;[(_ (f:id arg:id ...) body)
     ;  #`(define f (glp-lambda (arg ...) body)
@@ -181,13 +186,20 @@
 (define-syntax (glp-traces stx)
   (syntax-parse stx
     [(_ body)
-      #`(traces red (elab-and-typecheck body)
+      #`(traces SmallStep (elab-and-typecheck body) #:pp pt
       )]))
+
+(define-syntax (reductions stx)
+  (syntax-parse stx
+    [(_ body)
+      #`(apply-reduction-relation/tag-with-names SmallStep (elab-and-typecheck body)
+      )]))
+
 
 (define-syntax (glp-stepper stx)
   (syntax-parse stx
     [(_ body)
-      #`(stepper red (elab-and-typecheck body)
+      #`(stepper SmallStep (elab-and-typecheck body) pt
       )]))
 
 (define-syntax (glp-type stx)
@@ -220,11 +232,37 @@
   [(nfx dom:arrow-dom ...+ -> cod:expr) #'(-> dom ... cod)]
   ))
 
-(define lambda-rw
-  (rw-lambda
-   [`(TermLam ,x ,body) => (list "λ" x ". " body)
-    ]))
 
-(define-rw-context with-glp-rewrites
-  #:atomic (['TermDyn "?"])
-  #:compound (['TermLam lambda-rw]))
+(define (pt tm)
+  (with-handlers ([exn:fail:redex?
+                   (lambda (exn) (format "~a" tm))])
+    (pretty-term tm)
+;    (let ([natbody (hash-ref! defined-vars 'nat)])
+;      (cond
+;    [(and natbody (alpha-equivalent? (term (TermAnn ,natbody (TermSet 5))))) (term nat)]
+;    [else (pretty-term tm)]))
+    ))
+
+(define pretty-term
+    (term-match/single L
+    [x (symbol->string (term x))]
+    [(TermLam x tt) (string-append "(λ " (pt (term x)) " . " (pt (term tt)) ")")]
+    [(TermPi x SS TT) (string-append "(( " (pt (term x)) " : " (pt (term SS)) ") -> " (pt (term TT)) ")")]
+    [(TermSet i) (string-append "Set" (number->string (term i)))]
+    [(TermApp ss tt) (string-append "(" (pt (term ss)) " " (pt (term tt)) ")")]
+    [TermDyn "?"]
+    [TermError "⊥"]
+    [(TermAnn ss tt) (string-append (pt (term ss)) " :: " (pt (term tt)))]
+    [(TermDynAnn gU) (string-append "?" (pt (term gU)))]
+    [(TermEp (EvidencePair gU gV) tt) (string-append "〈" (pt (term gU)) ", " (pt (term gV)) "〉" (pt (term tt)))]
+    [(CanonicalAtomic grr) (pt (term grr))]
+    [(CanonicalLam x gu) (string-append "(λ " (pt (term x)) " . " (pt (term gu)) ")")]
+    [(CanonicalPi x gU gV) (string-append "(( " (pt (term x)) " : " (pt (term gU)) ") -> " (pt (term gV)) ")")]
+    [(AtomicSet i) (string-append "Set" (number->string (term i)))]
+    [CanonicalDyn "?"]
+    [(AtomicSpine x ge) (string-append "(" (pt (term x)) " " (pt (term ge)) ")")]
+    [SpineEmpty ""]
+    [(SpineCons ge gu) (string-append (pt (term ge)) " " (pt (term gu)))]
+    
+    ))
+
