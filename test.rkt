@@ -1,5 +1,14 @@
 #lang sweet-exp glp
 
+
+define
+   loop : {(A : Set(10)) (B : Set(10)) {{A -> B} -> {A -> B} } ? -> {A -> B} }
+   loop A B f x = (f (lambda (y) (x x y)))
+
+define
+   Z : {(A : Set(10)) (B : Set(10)) {{A -> B} -> {A -> B} } -> {A -> B} }
+   Z A B f = ((loop A B f) (loop A B f))
+
 define
   bool : Set(5)
   bool = {(A : Set(4)) A A -> A}
@@ -67,6 +76,8 @@ define
   unsafeNil : vec(Set(2) ?)
   unsafeNil = { (nil Set(2)) :: vec(Set(2) ?)}
 
+
+ 
 ;(trace-on)
 
  (head Set(2) zero unsafeNil)
