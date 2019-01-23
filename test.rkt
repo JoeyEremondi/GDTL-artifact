@@ -69,5 +69,5 @@ define
 
 ;(trace-on)
 
-(stepper (head Set(2) zero unsafeNil))
+(head Set(2) zero unsafeNil)
 

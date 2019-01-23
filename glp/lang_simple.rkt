@@ -33,15 +33,15 @@
     SpineEmpty
     (SpineCons ge gu))
 
-;; #source file ./ott/lang_simple.ott  lines 235 - 236 
-  (epsilon ep ::= 
-    (EvidencePair gU gV))
-
 ;; #source file ./ott/lang_simple.ott  lines 371 - 375 
   (Env ::= 
     EnvEmpty
     (EnvExt var gU Env)
     (Envconcat Env_11 Env_22))
+
+;; #source file ./ott/lang_simple.ott  lines 235 - 236 
+  (epsilon ep ::= 
+    (EvidenceEv Gamma gU gV))
 
 ;; #source file ./ott/lang_simple.ott  lines 109 - 134 
   (term ss tt ett SS TT ::= 
@@ -67,19 +67,6 @@
   (esgU ::= 
     (ElabTypePair es gU))
 
-;; #source file ./ott/lang_simple.ott  lines 300 - 306 
-  (simpleContext SC ::= 
-    (TermPi x hole T)
-    (TermPi x sV hole)
-    (TermApp hole t)
-    (TermApp sv hole)
-    (TermAnn hole T))
-
-;; #source file ./ott/lang_simple.ott  lines 488 - 490 
-  (is js ::= 
-    (LevelMultiSetSingleton i)
-    (LevelMultiSetSum is js))
-
 ;; #source file ./ott/lang_simple.ott  lines 287 - 289 
   (dummyeu dummyev dummyeueU dummyeueV ::= 
     (DummyEvidenceValueEv ep rv)
@@ -92,24 +79,24 @@
     (TermApp ev hole)
     (TermEp ep hole))
 
+;; #source file ./ott/lang_simple.ott  lines 488 - 490 
+  (is js ::= 
+    (LevelMultiSetSingleton i)
+    (LevelMultiSetSum is js))
+
+;; #source file ./ott/lang_simple.ott  lines 300 - 306 
+  (simpleContext SC ::= 
+    (TermPi x hole T)
+    (TermPi x sV hole)
+    (TermApp hole t)
+    (TermApp sv hole)
+    (TermAnn hole T))
+
 ;; #source file ./ott/lang_simple.ott  lines 360 - 363 
   (SGamma ::= 
     EnvEmpty
     (EnvExt var U SGamma)
     (Envconcat SGamma_11 SGamma_22))
-
-;; #source file ./ott/lang_simple.ott  lines 150 - 155 
-  (sa ta Sa Ta ::= 
-    (TermLam var ta)
-    (TermApp sa ta)
-    var
-    (TermPi var Sa Ta)
-    (TermSet i))
-
-;; #source file ./ott/lang_simple.ott  lines 172 - 174 
-  (e ::= 
-    SpineEmpty
-    (SpineCons e u))
 
 ;; #source file ./ott/lang_simple.ott  lines 139 - 148 
   (s t S T ::= 
@@ -120,39 +107,10 @@
     (TermSet i)
     (TermAnn t T))
 
-;; #source file ./ott/lang_simple.ott  lines 259 - 265 
-  (ru rv rU rV ::= 
-    (TermPi var eU eV)
-    (TermLam var et)
-    (TermSet i)
-    (TermDynAnn gU))
-
 ;; #source file ./ott/lang_simple.ott  lines 165 - 170 
   (rr RR ::= 
     (AtomicSpine var e)
     (AtomicSet i))
-
-;; #source file ./ott/lang_simple.ott  lines 179 - 200 
-  (gs gt gS gT ::= 
-    (TermLam var gt)
-    (TermApp gs gt)
-    var
-    (TermSet i)
-    (TermPi var gS gT)
-    (TermAnn gt gT)
-    TermDyn)
-
-;; #source file ./ott/lang_simple.ott  lines 365 - 369 
-  (Gamma ::= 
-    EnvEmpty
-    (EnvExt var gU Gamma)
-    (Envconcat Gamma_11 Gamma_22))
-
-;; #source file ./ott/lang_simple.ott  lines 157 - 162 
-  (u v U V ::= 
-    (CanonicalLam var u)
-    (CanonicalAtomic rr)
-    (CanonicalPi var U V))
 
 ;; #source file ./ott/lang_simple.ott  lines 244 - 255 
   (es et eS eT ::= 
@@ -165,6 +123,23 @@
     (TermEp ep es)
     TermError)
 
+;; #source file ./ott/lang_simple.ott  lines 157 - 162 
+  (u v U V ::= 
+    (CanonicalLam var u)
+    (CanonicalAtomic rr)
+    (CanonicalPi var U V))
+
+;; #source file ./ott/lang_simple.ott  lines 172 - 174 
+  (e ::= 
+    SpineEmpty
+    (SpineCons e u))
+
+;; #source file ./ott/lang_simple.ott  lines 365 - 369 
+  (Gamma ::= 
+    EnvEmpty
+    (EnvExt var gU Gamma)
+    (Envconcat Gamma_11 Gamma_22))
+
 ;; #source file ./ott/lang_simple.ott  lines 275 - 283 
   (eu ev eU eV ::= 
     (TermEp ep rv)
@@ -173,11 +148,36 @@
     (TermSet i)
     (TermDynAnn gU))
 
+;; #source file ./ott/lang_simple.ott  lines 150 - 155 
+  (sa ta Sa Ta ::= 
+    (TermLam var ta)
+    (TermApp sa ta)
+    var
+    (TermPi var Sa Ta)
+    (TermSet i))
+
+;; #source file ./ott/lang_simple.ott  lines 179 - 200 
+  (gs gt gS gT ::= 
+    (TermLam var gt)
+    (TermApp gs gt)
+    var
+    (TermSet i)
+    (TermPi var gS gT)
+    (TermAnn gt gT)
+    TermDyn)
+
 ;; #source file ./ott/lang_simple.ott  lines 268 - 273 
   (simpleValue su sv sU sV ::= 
     (TermPi var sU sV)
     (TermLam var ta)
     (TermSet i))
+
+;; #source file ./ott/lang_simple.ott  lines 259 - 265 
+  (ru rv rU rV ::= 
+    (TermPi var eU eV)
+    (TermLam var et)
+    (TermSet i)
+    (TermDynAnn gU))
    (var x y z X Y Z ::= variable-not-otherwise-mentioned)
 
     #:binding-forms
@@ -1144,11 +1144,12 @@
   #:contract (EvConsistent ep gU gV)
 
 ;; #source file ./ott/lang_simple.ott  lines 1411 - 1416 
- [(Meet gV_11 gV_22 gV_33)
+ [
+  (Meet gV_11 gV_22 gV_33)
   (MorePrecise gU_11 gV_33)
   (MorePrecise gU_22 gV_33)
-  ------------------------------------------------------- "EvConsistentDef"
-  (EvConsistent (EvidencePair gU_11 gU_22) gV_11 gV_22)]
+  ----------------------------------------------------------- "EvConsistentDef"
+  (EvConsistent (EvidenceEv Gamma gU_11 gU_22) gV_11 gV_22)]
 )
 
 ;;; definitions 
@@ -1537,8 +1538,8 @@
   (GradualElabSynth Gamma gt et gV)
    (side-condition ,(not (alpha-equivalent? (term  gU ) (term  gV )))) 
   (Meet gU gV gV_^)
-  --------------------------------------------------------------------- "GradualElabCheckSynth"
-  (GradualElabCheck Gamma (TermEp (EvidencePair gV_^ gV_^) et) gt gU)]
+  ------------------------------------------------------------------------- "GradualElabCheckSynth"
+  (GradualElabCheck Gamma (TermEp (EvidenceEv Gamma gV_^ gV_^) et) gt gU)]
 
 ;; #source file ./ott/lang_simple.ott  lines 1764 - 1768 
  [
@@ -1687,7 +1688,7 @@
 (define-judgment-form L 
  
   #:mode (SmallStep I O)
-  ; #:contract (SmallStep es et)
+  #:contract (SmallStep es et)
 
 ;; #source file ./ott/lang_simple.ott  lines 1901 - 1904 
  [
@@ -1701,12 +1702,12 @@
   ---------------------------------------------------------- "SmallStepAscrFail"
   (SmallStep (TermEp ep_11  (TermEp ep_22 rv) ) TermError)]
 
-;; #source file ./ott/lang_simple.ott  lines 1911 - 1913 
+;; #source file ./ott/lang_simple.ott  lines 1914 - 1916 
  [
   ------------------------------------------------------------------------ "SmallStepApp"
   (SmallStep (TermApp  (TermLam x et)  ev)  (substitute  et   x   ev ) )]
 
-;; #source file ./ott/lang_simple.ott  lines 1914 - 1919 
+;; #source file ./ott/lang_simple.ott  lines 1917 - 1922 
  [
   (Domain gU gV_11)
   (GradualNormCheck EnvEmpty gv ev gV_11)
@@ -1714,7 +1715,7 @@
   ------------------------------------------------------------- "SmallStepAppDyn"
   (SmallStep (TermApp (TermDynAnn gU) ev) (TermDynAnn gV_22))]
 
-;; #source file ./ott/lang_simple.ott  lines 1920 - 1925 
+;; #source file ./ott/lang_simple.ott  lines 1923 - 1928 
  [
   (EvDom ep_11 ep_33)
   (ConsistentTrans ep_22 ep_33 ep_44)
@@ -1722,29 +1723,29 @@
   ------------------------------------------------------------------------------------------------------------------------------------------ "SmallStepAppEv"
   (SmallStep (TermApp  (TermEp ep_11  (TermLam x et) )   (TermEp ep_22 rv) ) (TermEp ep_55   (substitute  et   x   (TermEp ep_44 rv) )  ))]
 
-;; #source file ./ott/lang_simple.ott  lines 1926 - 1938 
+;; #source file ./ott/lang_simple.ott  lines 1929 - 1942 
  [
   (Domain gV_11 gV_11^)
   (Domain gV_22 gV_22^)
   (Domain gV_33 gV_33^)
-  (ConsistentTrans ep_11 (EvidencePair gV_11^ gV_22^) ep_22)
+  (ConsistentTrans ep_11 (EvidenceEv EnvEmpty gV_11^ gV_22^) ep_22)
   (GradualNormCheck EnvEmpty gv_11 (TermEp ep_11 rv) gV_11^)
   (GradualNormCheck EnvEmpty gv_22 (TermEp ep_11 rv) gV_22^)
   (GradualNormCheck EnvEmpty gv_33 (TermEp ep_11 rv) gV_33^)
   (CodSub gV_11^ gv_11 gV_11 gV_11^^)
   (CodSub gV_22^ gv_22 gV_22 gV_22^^)
   (CodSub gV_33^ gv_33 gV_33 gV_33^^)
-  ----------------------------------------------------------------------------------------------------------------------------------------------------------------- "SmallStepAppEvDyn"
-  (SmallStep (TermApp  (TermEp (EvidencePair gV_11 gV_22) (TermDynAnn gV_33))   (TermEp ep_11 rv) ) (TermEp (EvidencePair gV_11^^ gV_22^^) (TermDynAnn gV_33^^)))]
+  ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- "SmallStepAppEvDyn"
+  (SmallStep (TermApp  (TermEp (EvidenceEv EnvEmpty gV_11 gV_22) (TermDynAnn gV_33))   (TermEp ep_11 rv) ) (TermEp (EvidenceEv EnvEmpty gV_11^^ gV_22^^) (TermDynAnn gV_33^^)))]
 
-;; #source file ./ott/lang_simple.ott  lines 1939 - 1942 
+;; #source file ./ott/lang_simple.ott  lines 1943 - 1946 
  [
   
-  (SmallStep (TermApp  (TermEp ep_11 rv)   (TermEp (EvidencePair CanonicalDyn CanonicalDyn) rv) ) es)
+  (SmallStep (TermApp  (TermEp ep_11 rv)   (TermEp (EvidenceEv EnvEmpty CanonicalDyn CanonicalDyn) rv) ) es)
   ------------------------------------------------- "SmallStepAppEvRaw"
   (SmallStep (TermApp  (TermEp ep_11 rv)  rv) es)]
 
-;; #source file ./ott/lang_simple.ott  lines 1943 - 1947 
+;; #source file ./ott/lang_simple.ott  lines 1947 - 1951 
  [
   
   (EvDom ep_11 ep_33)
@@ -1752,20 +1753,20 @@
   ------------------------------------------------------------------------- "SmallStepAppFailTrans"
   (SmallStep (TermApp  (TermEp ep_11 ru)   (TermEp ep_22 rv) ) TermError)]
 
-;; #source file ./ott/lang_simple.ott  lines 1948 - 1951 
+;; #source file ./ott/lang_simple.ott  lines 1952 - 1955 
  [
   
    (side-condition ,(empty? (judgment-holds (EvDom  ep_11  ep_9999) ep_9999))) 
   -------------------------------------------------------- "SmallStepAppFailDom"
   (SmallStep (TermApp  (TermEp ep_11 rv)  ev) TermError)]
 
-;; #source file ./ott/lang_simple.ott  lines 1957 - 1960 
+;; #source file ./ott/lang_simple.ott  lines 1961 - 1964 
  [
    (side-condition ,(empty? (judgment-holds (Domain  gU  gV_9999) gV_9999))) 
   --------------------------------------------------------------------- "SmallStepAppDynFail"
   (SmallStep (TermApp  (TermEp ep_11 (TermDynAnn gU))  ev) TermError)]
 
-;; #source file ./ott/lang_simple.ott  lines 1963 - 1968 
+;; #source file ./ott/lang_simple.ott  lines 1967 - 1972 
  [
   (SmallStep es et)
    (side-condition ,(not (alpha-equivalent? (term  es ) (term TermError)))) 
@@ -1773,7 +1774,7 @@
   --------------------------------------------------------- "SmallStepContext"
   (SmallStep  (in-hole  EC   es )   (in-hole  EC   et ) )]
 
-;; #source file ./ott/lang_simple.ott  lines 1969 - 1972 
+;; #source file ./ott/lang_simple.ott  lines 1973 - 1976 
  [
   (SmallStep es TermError)
   --------------------------------------------- "SmallStepContextErr"
@@ -1785,11 +1786,13 @@
   #:mode (ConsistentTrans I I O)
   #:contract (ConsistentTrans ep_11 ep_22 ep_33)
 
-;; #source file ./ott/lang_simple.ott  lines 1978 - 1982 
- [(Meet gU_11 gU_22 gU_33)
+;; #source file ./ott/lang_simple.ott  lines 1982 - 1986 
+ [
+  
+  (Meet gU_11 gU_22 gU_33)
   (Meet gV_11 gV_22 gV_33)
-  ---------------------------------------------------------------------------------------------------- "ConsistentTransDef"
-  (ConsistentTrans (EvidencePair gU_11 gV_11) (EvidencePair gU_22 gV_22) (EvidencePair gU_33 gV_33))]
+  ---------------------------------------------------------------------------------------------------------------------------------------------- "ConsistentTransDef"
+  (ConsistentTrans (EvidenceEv Gamma_11 gU_11 gV_11) (EvidenceEv Gamma_22 gU_22 gV_22) (EvidenceEv (Envconcat Gamma_11 Gamma_22) gU_33 gV_33))]
 
 )
 (define-judgment-form L 
@@ -1797,11 +1800,12 @@
   #:mode (EvDom I O)
   #:contract (EvDom ep_11 ep_22)
 
-;; #source file ./ott/lang_simple.ott  lines 1988 - 1992 
- [(Domain gU gU_^)
+;; #source file ./ott/lang_simple.ott  lines 1992 - 1996 
+ [
+  (Domain gU gU_^)
   (Domain gV gV_^)
-  ------------------------------------------------------- "EvDomPair"
-  (EvDom (EvidencePair gU gV) (EvidencePair gU_^ gV_^))]
+  --------------------------------------------------------------- "EvDomPair"
+  (EvDom (EvidenceEv Gamma gU gV) (EvidenceEv Gamma gU_^ gV_^))]
 
 )
 (define-judgment-form L 
@@ -1809,18 +1813,19 @@
   #:mode (EvCod I I O)
   #:contract (EvCod ev ep_11 ep_22)
 
-;; #source file ./ott/lang_simple.ott  lines 1999 - 2007 
+;; #source file ./ott/lang_simple.ott  lines 2003 - 2011 
  [
+  
   (Domain gU gU_11)
   (Domain gV gV_11)
   (GradualNormCheck EnvEmpty gu ev gU_11)
   (GradualNormCheck EnvEmpty gv ev gV_11)
   (CodSub gU_11 gu gU gU_22)
   (CodSub gV_11 gv gV gV_22)
-  ------------------------------------------------------------ "EvCodPair"
-  (EvCod ev (EvidencePair gU gV) (EvidencePair gU_22 gV_22))]
+  -------------------------------------------------------------------- "EvCodPair"
+  (EvCod ev (EvidenceEv Gamma gU gV) (EvidenceEv Gamma gU_22 gV_22))]
 )
-;; #source file ./ott/lang_simple.ott  lines 2022 - 2098 
+;; #source file ./ott/lang_simple.ott  lines 2026 - 2102 
 (define-judgment-form
   L
   #:mode (ElabAndType I I O)
