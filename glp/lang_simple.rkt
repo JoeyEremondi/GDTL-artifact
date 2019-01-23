@@ -53,7 +53,7 @@
     (TermAnn tt TT)
     (TermEp ep ss)
     TermDyn
-    (TermDynAnn gU)
+    (TermDynAnn Gamma gU)
     TermError)
 
 (iinf ::= number)
@@ -118,7 +118,7 @@
     (TermLam var et)
     var
     (TermApp es et)
-    (TermDynAnn gU)
+    (TermDynAnn Gamma gU)
     (TermSet i)
     (TermEp ep es)
     TermError)
@@ -146,7 +146,7 @@
     (TermPi var eU eT)
     (TermLam var et)
     (TermSet i)
-    (TermDynAnn gU))
+    (TermDynAnn Gamma gU))
 
 ;; #source file ./ott/lang_simple.ott  lines 150 - 155 
   (sa ta Sa Ta ::= 
@@ -177,7 +177,7 @@
     (TermPi var eU eV)
     (TermLam var et)
     (TermSet i)
-    (TermDynAnn gU))
+    (TermDynAnn Gamma gU))
    (var x y z X Y Z ::= variable-not-otherwise-mentioned)
 
     #:binding-forms
@@ -1500,8 +1500,8 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 1730 - 1732 
  [
-  ---------------------------------------------------------- "GradualNormCheckDynAnn"
-  (GradualNormCheck Gamma CanonicalDyn (TermDynAnn gU) gU)]
+  ---------------------------------------------------------------- "GradualNormCheckDynAnn"
+  (GradualNormCheck Gamma CanonicalDyn (TermDynAnn Gamma gU) gU)]
 
 )
 (define-judgment-form L 
@@ -1606,8 +1606,8 @@
 ;; #source file ./ott/lang_simple.ott  lines 1818 - 1821 
  [
   (GradualSet Gamma gU)
-  ----------------------------------------------------- "GradualElabCheckDyn"
-  (GradualElabCheck Gamma (TermDynAnn gU) TermDyn gU)]
+  ----------------------------------------------------------- "GradualElabCheckDyn"
+  (GradualElabCheck Gamma (TermDynAnn Gamma gU) TermDyn gU)]
 )
 
 ;;; definitions 
@@ -1680,8 +1680,8 @@
 ;; #source file ./ott/lang_simple.ott  lines 1885 - 1888 
  [
   (GradualSet Gamma gU)
-  ------------------------------------ "EvCheckDyn"
-  (EvCheck Gamma (TermDynAnn gU) gU)]
+  ------------------------------------------ "EvCheckDyn"
+  (EvCheck Gamma (TermDynAnn Gamma gU) gU)]
 
 )
 (define-judgment-form L 
@@ -1733,8 +1733,8 @@
   (Domain gU gV_11)
   (GradualNormCheck EnvEmpty gv ev gV_11)
   (CodSub gV_11 gv gU gV_22)
-  ------------------------------------------------------------- "SmallStepAppDyn"
-  (SmallStep (TermApp (TermDynAnn gU) ev) (TermDynAnn gV_22))]
+  ------------------------------------------------------------------------------- "SmallStepAppDyn"
+  (SmallStep (TermApp (TermDynAnn EnvEmpty gU) ev) (TermDynAnn EnvEmpty gV_22))]
 
 ;; #source file ./ott/lang_simple.ott  lines 1944 - 1949 
  [
@@ -1756,8 +1756,8 @@
   (CodSub gV_11^ gv_11 gV_11 gV_11^^)
   (CodSub gV_22^ gv_22 gV_22 gV_22^^)
   (CodSub gV_33^ gv_33 gV_33 gV_33^^)
-  ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- "SmallStepAppEvDyn"
-  (SmallStep (TermApp  (TermEp (EvidenceEv EnvEmpty gV_11 gV_22) (TermDynAnn gV_33))   (TermEp ep_11 rv) ) (TermEp (EvidenceEv EnvEmpty gV_11^^ gV_22^^) (TermDynAnn gV_33^^)))]
+  ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- "SmallStepAppEvDyn"
+  (SmallStep (TermApp  (TermEp (EvidenceEv EnvEmpty gV_11 gV_22) (TermDynAnn EnvEmpty gV_33))   (TermEp ep_11 rv) ) (TermEp (EvidenceEv EnvEmpty gV_11^^ gV_22^^) (TermDynAnn EnvEmpty gV_33^^)))]
 
 ;; #source file ./ott/lang_simple.ott  lines 1964 - 1967 
  [
@@ -1784,8 +1784,8 @@
 ;; #source file ./ott/lang_simple.ott  lines 1982 - 1985 
  [
    (side-condition ,(empty? (judgment-holds (Domain  gU  gV_9999) gV_9999))) 
-  --------------------------------------------------------------------- "SmallStepAppDynFail"
-  (SmallStep (TermApp  (TermEp ep_11 (TermDynAnn gU))  ev) TermError)]
+  ------------------------------------------------------------------------------ "SmallStepAppDynFail"
+  (SmallStep (TermApp  (TermEp ep_11 (TermDynAnn EnvEmpty gU))  ev) TermError)]
 
 ;; #source file ./ott/lang_simple.ott  lines 1988 - 1993 
  [
@@ -1809,11 +1809,10 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 2003 - 2007 
  [
-  
   (Meet gU_11 gU_22 gU_33)
   (Meet gV_11 gV_22 gV_33)
-  ---------------------------------------------------------------------------------------------------------------------------------------------- "ConsistentTransDef"
-  (ConsistentTrans (EvidenceEv Gamma_11 gU_11 gV_11) (EvidenceEv Gamma_22 gU_22 gV_22) (EvidenceEv (Envconcat Gamma_11 Gamma_22) gU_33 gV_33))]
+  ---------------------------------------------------------------------------------------------------------------- "ConsistentTransDef"
+  (ConsistentTrans (EvidenceEv Gamma gU_11 gV_11) (EvidenceEv Gamma gU_22 gV_22) (EvidenceEv Gamma gU_33 gV_33))]
 
 )
 (define-judgment-form L 
