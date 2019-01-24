@@ -53,12 +53,12 @@ define
 define
   head : { (A : Set(3)) (n : nat) (vec(A succ(n))) -> A}
   head A n v = (v 
-       (lambda (m)
-         (if Set(3) (zero? m) Set(2) A)
-         )
-       (lambda (m elem prev) elem)
-       Set(1)
-       )      
+                (lambda (m)
+                  (if Set(3) (zero? m) Set(2) A)
+                  )
+                (lambda (m elem prev) elem)
+                Set(1)
+                )      
         
 
 
@@ -76,9 +76,6 @@ define
   unsafeNil : vec(Set(2) ?)
   unsafeNil = { (nil Set(2)) :: vec(Set(2) ?)}
 
-
- 
-;(trace-on)
 
  (head Set(2) zero unsafeNil)
 
