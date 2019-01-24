@@ -171,7 +171,7 @@
       #`(define x (begin
                     (hash-set! defined-vars '#,(syntax->datum #'x) body)
                     (typecheck body)
-                    (println (list "defined" (quote x)))  body)
+                    (printf (list "defined ~a\n" (quote x)))  body)
       )]
     ;[(_ (f:id arg:id ...) body)
     ;  #`(define f (glp-lambda (arg ...) body)
@@ -236,10 +236,6 @@
   (with-handlers ([exn:fail:redex?
                    (lambda (exn) (format "~a" tm))])
     (pretty-term tm)
-;    (let ([natbody (hash-ref! defined-vars 'nat)])
-;      (cond
-;    [(and natbody (alpha-equivalent? (term (TermAnn ,natbody (TermSet 5))))) (term nat)]
-;    [else (pretty-term tm)]))
     ))
 
 (define pretty-term

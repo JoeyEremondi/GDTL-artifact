@@ -12,8 +12,8 @@
 
 This is a thin set of macros provided on top of the redex-model for the Gradual Dependently-typed language.
 
-Right now, this is only intended for playing around with examples from the paper. Notably, it's *very* slow
-and the type-error messages are incomprehensible.
+Right now, this is only intended for playing around with examples from the paper. Notably, it's very slow.
+Compile-time and runtime error messages are okay, but might be ininformative in some cases.
 
 @defmodule[glp/main]
 
