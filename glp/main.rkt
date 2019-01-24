@@ -16,9 +16,7 @@
          nfx
          trace-on
          trace-off
-         trace-list
-         reductions
-         glp-app)
+         reductions)
 
 
 (require (for-syntax syntax/parse))
