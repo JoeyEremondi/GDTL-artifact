@@ -171,7 +171,7 @@
       #`(define x (begin
                     (hash-set! defined-vars '#,(syntax->datum #'x) body)
                     (typecheck body)
-                    (printf (list "defined ~a\n" (quote x)))  body)
+                    (printf  "defined ~a\n" (quote x))  body)
       )]
     ;[(_ (f:id arg:id ...) body)
     ;  #`(define f (glp-lambda (arg ...) body)
