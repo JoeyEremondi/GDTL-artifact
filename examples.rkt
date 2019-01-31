@@ -27,6 +27,11 @@ define
   if A b x y =
     b A x y
 
+;define 
+;  iff : {(A : bool -> Set) b:bool A(true) A(false) -> A(b)}
+;  iff A b x y = ...
+     
+
 define
   nat : Set(6)
   nat = {(A : Set(5)) {A -> A} A -> A}
