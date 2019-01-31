@@ -1293,7 +1293,6 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 1567 - 1572 
  [
-   (where #f (is-check-only  gt )) 
   (GradualSynth Gamma gt gU)
   (Consistent gU gV)
   ---------------------------- "GradualCheckSynth"
@@ -1301,7 +1300,6 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 1573 - 1578 
  [
-   (where #f (is-check-only  gt )) 
   (GradualSynth Gamma gt (CanonicalAtomic (AtomicSet i)))
    (side-condition ,(and (< 0 (term  i )) (< (term  i ) (term  j )))) 
   --------------------------------------------------------- "GradualCheckLevel"
@@ -1517,7 +1515,6 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 1776 - 1782 
  [
-   (where #f (is-check-only  tt )) 
   (GradualNormSynth Gamma tt gv gV)
   (Meet gU gV gU_^)
    (where  gv_^  ,(if (alpha-equivalent? (term  gV ) (term  gU_^ )) (term  gv ) (term  CanonicalDyn ))) 
@@ -1526,7 +1523,6 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 1791 - 1796 
  [
-   (where #f (is-check-only  tt )) 
   (GradualNormSynth Gamma tt gv (CanonicalAtomic (AtomicSet i)))
    (side-condition ,(and (< 0 (term  i )) (< (term  i ) (term  j )))) 
   ---------------------------------------------------------------- "GradualNormCheckLevel"
@@ -1635,7 +1631,6 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 1894 - 1900 
  [
-   (where #f (is-check-only  gt )) 
   (GradualElabSynth Gamma gt et gV)
   (Meet gU gV gV_^)
   ------------------------------------------------------------------------- "GradualElabCheckSynth"
@@ -1643,7 +1638,6 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 1901 - 1906 
  [
-   (where #f (is-check-only  gt )) 
   (GradualElabSynth Gamma gt et (CanonicalAtomic (AtomicSet i)))
    (side-condition ,(and (< 0 (term  i )) (< (term  i ) (term  j )))) 
   ---------------------------------------------------------------- "GradualElabCheckLevel"
@@ -1736,7 +1730,6 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 2006 - 2013 
  [
-   (where #f (is-check-only  gt )) 
   (GradualNESynth Gamma gt et gu gV)
   (Meet gU gV gV_^)
    (where  gu_^  ,(if (alpha-equivalent? (term  gV ) (term  gV_^ )) (term  gu ) (term  CanonicalDyn ))) 
@@ -1745,7 +1738,6 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 2014 - 2019 
  [
-   (where #f (is-check-only  gt )) 
   (GradualNESynth Gamma gt et gu (CanonicalAtomic (AtomicSet i)))
    (side-condition ,(and (< 0 (term  i )) (< (term  i ) (term  j )))) 
   ----------------------------------------------------------------- "GradualNECheckLevel"
