@@ -1,6 +1,6 @@
 #lang sweet-exp glp
 
-
+;(trace-on)
 
 define
    loop : {(A : Set(10)) (B : Set(10)) {{A -> B} -> {A -> B} } ? -> {A -> B} }
