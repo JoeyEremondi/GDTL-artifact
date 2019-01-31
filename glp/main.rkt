@@ -31,7 +31,7 @@
 
 ;(check-redundancy #t)
 (caching-enabled? #t)
-(set-cache-size! 1023)
+(set-cache-size! 1000000)
 
 (begin-for-syntax
   (define-syntax-class arrow-dom
