@@ -32,6 +32,7 @@
 ;(check-redundancy #t)
 (caching-enabled? #t)
 (set-cache-size! 1000000)
+(current-cache-all? #t)
 
 (begin-for-syntax
   (define-syntax-class arrow-dom
@@ -232,32 +233,4 @@
   ))
 
 
-(define (pt tm)
-  (with-handlers ([exn:fail:redex?
-                   (lambda (exn) (format "~a" tm))])
-    (pretty-term tm)
-    ))
-
-(define pretty-term
-    (term-match/single L
-    [x (symbol->string (term x))]
-    [(TermLam x tt) (string-append "(λ " (pt (term x)) " . " (pt (term tt)) ")")]
-    [(TermPi x SS TT) (string-append "(( " (pt (term x)) " : " (pt (term SS)) ") -> " (pt (term TT)) ")")]
-    [(TermSet i) (string-append "Set" (number->string (term i)))]
-    [(TermApp ss tt) (string-append "(" (pt (term ss)) " " (pt (term tt)) ")")]
-    [TermDyn "?"]
-    [TermError "⊥"]
-    [(TermAnn ss tt) (string-append (pt (term ss)) " :: " (pt (term tt)))]
-    [(TermDynAnn gU) (string-append "?" (pt (term gU)))]
-    [(TermEp (EvidencePair gU gV) tt) (string-append "〈" (pt (term gU)) ", " (pt (term gV)) "〉" (pt (term tt)))]
-    [(CanonicalAtomic grr) (pt (term grr))]
-    [(CanonicalLam x gu) (string-append "(λ " (pt (term x)) " . " (pt (term gu)) ")")]
-    [(CanonicalPi x gU gV) (string-append "(( " (pt (term x)) " : " (pt (term gU)) ") -> " (pt (term gV)) ")")]
-    [(AtomicSet i) (string-append "Set" (number->string (term i)))]
-    [CanonicalDyn "?"]
-    [(AtomicSpine x ge) (string-append "(" (pt (term x)) " " (pt (term ge)) ")")]
-    [SpineEmpty ""]
-    [(SpineCons ge gu) (string-append (pt (term ge)) " " (pt (term gu)))]
-    
-    ))
 

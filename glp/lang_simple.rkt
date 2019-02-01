@@ -282,7 +282,7 @@
     [TermError "⊥"]
     [(TermAnn ss tt) (string-append (pt (term ss)) " :: " (pt (term tt)))]
     [(TermDynAnn gU) (string-append "?" (pt (term gU)))]
-    [(TermEp (EvidencePair gU gV) tt) (string-append "〈" (pt (term gU)) ", " (pt (term gV)) "〉" (pt (term tt)))]
+    [(TermEp (EvidenceEv Gamma gU gV) tt) (string-append "〈" (pt (term gU)) "〉" (pt (term tt)))]
     [(CanonicalAtomic grr) (pt (term grr))]
     [(CanonicalLam x gu) (string-append "(λ " (pt (term x)) " . " (pt (term gu)) ")")]
     [(CanonicalPi x gU gV) (string-append "(( " (pt (term x)) " : " (pt (term gU)) ") -> " (pt (term gV)) ")")]
@@ -1487,11 +1487,10 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 1785 - 1789 
  [
-  
-  (GradualNESynth Gamma gt et gu gV)
-  (GradualNormSynthCheck Gamma gu_^ gt gu gV gU)
+  (GradualNormSynth Gamma tt gu gV)
+  (GradualNormSynthCheck Gamma gu_^ tt gu gV gU)
   ------------------------------------- "GradualNormCheckSynthOpt"
-  (GradualNormCheck Gamma gu_^ gt gU)]
+  (GradualNormCheck Gamma gu_^ tt gU)]
 
 ;; #source file ./ott/lang_simple.ott  lines 1790 - 1796 
 

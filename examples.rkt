@@ -89,5 +89,7 @@ define
   safeCons : vec(Set(2) ?)
   safeCons = { (cons(Set(2) zero Set(1) (nil Set(2)) )) :: vec(Set(2) ?)}
 
+;trace-on()
+
 ; ET: this takes for ever
-;(head Set(2) zero safeCons)
+ (head Set(2) zero safeCons)
