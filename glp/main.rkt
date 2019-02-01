@@ -107,7 +107,7 @@
 (define (typecheck e)
   (let ([tlist (judgment-holds (ElabNormType EnvEmpty (unquote e) ent) ent)])
            (cond
-                  [(null? tlist) (error "Can't infer type for expression (try adding an annotation?)" e )]
+                  [(null? tlist) (error "Can't infer type for definition (try adding an annotation?)" e )]
                   [(< 1 (length tlist)) (error "Too many types for expression" e tlist) ]
                   [else (first tlist)]
                   )))

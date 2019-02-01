@@ -2035,7 +2035,7 @@
   #:mode (ElabNormType I I O)
   [ (GradualNESynth Gamma gs es gu gU)
   ---------------------------------
-  (ElabNormType Gamma gs (ENTTriple gu es gU))]
+  (ElabNormType Gamma gs (ENTTriple es gu gU))]
 
 )
 
