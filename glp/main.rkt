@@ -26,7 +26,7 @@
                   term
                   apply-reduction-relation*))
 (require redex)
-(require  "lang_simple.rkt" )
+(require  (rename-in "lang_simple.rkt" (currently-defined-vars defined-vars )) )
 
 
 ;(check-redundancy #t)
@@ -42,7 +42,7 @@
     )
   )
 
-(define defined-vars (make-hasheq))
+;(define defined-vars (make-hasheq))
 
 
 (define-syntax (glp-top stx)
@@ -105,7 +105,7 @@
                   )))
 
 (define (typecheck e)
-  (let ([tlist (judgment-holds (GradualSynth EnvEmpty (unquote e) gU) gU)])
+  (let ([tlist (judgment-holds (ElabNormType EnvEmpty (unquote e) ent) ent)])
            (cond
                   [(null? tlist) (error "Can't infer type for expression (try adding an annotation?)" e )]
                   [(< 1 (length tlist)) (error "Too many types for expression" e tlist) ]
@@ -168,11 +168,11 @@
   (syntax-parse stx
     #:datum-literals (:=)
     [(_ x:id body)
-      #`(define x (begin
-                    (hash-set! defined-vars '#,(syntax->datum #'x) body)
-                    (typecheck body)
-                    (printf  "defined ~a\n" (quote x))  body)
-      )]
+      #`(match-let*
+              ([key '#,(syntax->datum #'x)]
+               [ent (typecheck body)])
+                    (printf  "defined ~a\n" (quote x))  (hash-set! defined-vars key ent))
+      ]
     ;[(_ (f:id arg:id ...) body)
     ;  #`(define f (glp-lambda (arg ...) body)
     ;  )]
