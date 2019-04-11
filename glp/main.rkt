@@ -26,7 +26,7 @@
                   term
                   apply-reduction-relation*))
 (require redex)
-(require  (rename-in "lang_simple.rkt" (currently-defined-vars defined-vars )) )
+(require  (rename-in "lang_simple_nongen.rkt" (currently-defined-vars defined-vars )) )
 
 
 ;(check-redundancy #t)
@@ -98,7 +98,7 @@
         ]))
 
 (define (elab-and-typecheck e)
-  (let ([elabList (judgment-holds (GradualElabSynth EnvEmpty (unquote e) es gU) es)])
+  (let ([elabList (judgment-holds (GElabSynth EnvEmpty (unquote e) et gU) et)])
            (cond
                   [(null? elabList) (error "Can't infer type for expression (try adding an annotation?)" e )]
                   [(< 1 (length elabList)) (error "Too many elaborations for expression" e elabList) ]
@@ -114,7 +114,7 @@
                   )))
 
 (define (norm-and-typecheck e)
-  (let ([normList (judgment-holds (GradualNormSynth EnvEmpty (unquote e) gu gU) gu)])
+  (let ([normList (judgment-holds (GNSynth EnvEmpty (unquote e) gu gU) gu)])
            (cond
                   [(null? normList) (error "Can't infer type to normalize expression (try adding an annotation?)" e )]
                   [(< 1 (length normList)) (error "Too many normalizations for expression" e normList) ]
@@ -140,7 +140,7 @@
      #'(reductions body)]
     [_
     #`(apply values
-                (map pt (apply-reduction-relation* SmallStep (elab-and-typecheck #,e))))
+                (map pt (apply-reduction-relation* Step (elab-and-typecheck #,e))))
     ]
   )
 )
