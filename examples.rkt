@@ -83,7 +83,7 @@ define
   unsafeNil = { (nil Set(2)) :: vec(Set(2) ?)}
 
 ;trace-on()
-;(head Set(2) zero unsafeNil)
+(head Set(2) zero unsafeNil)
 
 define
   safeCons : vec(Set(2) ?)
@@ -92,4 +92,4 @@ define
 trace-on()
 
 ; ET: this takes for ever
- (head Set(2) zero safeCons)
+ ;(head Set(2) zero safeCons)
