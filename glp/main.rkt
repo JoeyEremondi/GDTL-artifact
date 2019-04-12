@@ -31,7 +31,7 @@
 
 ;(check-redundancy #t)
 (caching-enabled? #t)
-(set-cache-size! 1000000)
+(set-cache-size! 10000)
 (current-cache-all? #t)
 
 (begin-for-syntax

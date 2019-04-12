@@ -66,7 +66,7 @@ define
                 Set(1)
                 )      
         
-
+trace-off()
 
 define
   nil : {(A : Set(6)) -> vec(A zero)}
