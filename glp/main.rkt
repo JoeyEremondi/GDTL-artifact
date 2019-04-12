@@ -97,6 +97,8 @@
       )
         ]))
 
+(define MultiStep (context-closure Red LContext redexContext))
+
 (define (elab-and-typecheck e)
   (let ([elabList (judgment-holds (GElabSynth EnvEmpty (unquote e) et gU) et)])
            (cond
@@ -140,7 +142,7 @@
      #'(reductions body)]
     [_
     #`(apply values
-                (map pt (apply-reduction-relation* Step (elab-and-typecheck #,e))))
+                (map pt (apply-reduction-relation* MultiStep (elab-and-typecheck #,e))))
     ]
   )
 )
