@@ -92,4 +92,4 @@ define
 trace-on()
 
 ; ET: this takes for ever
- ;(head Set(2) zero safeCons)
+; (head Set(2) zero safeCons)

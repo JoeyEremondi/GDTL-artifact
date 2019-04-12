@@ -26,7 +26,7 @@
                   term
                   apply-reduction-relation*))
 (require redex)
-(require  (rename-in "lang_simple_nongen.rkt" (currently-defined-vars defined-vars )) )
+(require  (rename-in "lang_simple.rkt" (currently-defined-vars defined-vars )) )
 
 
 ;(check-redundancy #t)
