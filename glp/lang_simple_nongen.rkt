@@ -876,43 +876,35 @@
   (GHsub x gU gu CanonicalDyn CanonicalDyn)]
 
 ;; #source file ./ott/lang_simple.ott  lines 1242 - 1247 
- [ (side-condition ,(not (alpha-equivalent? L (term  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) ) ) (term  (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) )))) 
+
+;; #source file ./ott/lang_simple.ott  lines 1248 - 1253 
+ [ (where   z  ,(gensym)) 
   (GHsub x gU gu gU_11 gU_11^)
-  (GHsub x gU gu gU_22 gU_22^)
-  --------------------------------------------------------------------------- "GHsubPi"
-  (GHsub x gU gu (CanonicalPi y gU_11 gU_22) (CanonicalPi y gU_11^ gU_22^))]
+  (GHsub x gU gu  (substitute  gU_22   y   z )  gU_22^)
+  --------------------------------------------------------------------------- "GHsubPiRdxAlpha"
+  (GHsub x gU gu (CanonicalPi y gU_11 gU_22) (CanonicalPi z gU_11^ gU_22^))]
 
-;; #source file ./ott/lang_simple.ott  lines 1248 - 1252 
- [ (where   y  ,(gensym)) 
-  (GHsub x gU gu (CanonicalPi y gU_11  (substitute  gU_22   x   y ) ) gU_33)
-  --------------------------------------------------- "GHsubPiRdxAlpha"
-  (GHsub x gU gu (CanonicalPi x gU_11 gU_22) gU_33)]
+;; #source file ./ott/lang_simple.ott  lines 1255 - 1259 
 
-;; #source file ./ott/lang_simple.ott  lines 1254 - 1258 
- [ (side-condition ,(not (alpha-equivalent? L (term  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) ) ) (term  (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) )))) 
-  (GHsub x gU gu gu_22 gu_33)
-  ------------------------------------------------------------------- "GHsubLam"
-  (GHsub x gU gu  (CanonicalLam y gu_22)   (CanonicalLam y gu_33) )]
+;; #source file ./ott/lang_simple.ott  lines 1260 - 1264 
+ [ (where   z  ,(gensym)) 
+  (GHsub x gU gu  (substitute  gu_22   y   z )  gu_22^)
+  -------------------------------------------------------------------- "GHsubLamRdxAlpha"
+  (GHsub x gU gu  (CanonicalLam y gu_22)   (CanonicalLam z gu_22^) )]
 
-;; #source file ./ott/lang_simple.ott  lines 1259 - 1263 
- [ (where   y  ,(gensym)) 
-  (GHsub x gU gu  (CanonicalLam y  (substitute  gu_22   x   y ) )  gu_33)
-  ------------------------------------------------ "GHsubLamRdxAlpha"
-  (GHsub x gU gu  (CanonicalLam x gu_22)  gu_33)]
-
-;; #source file ./ott/lang_simple.ott  lines 1264 - 1267 
+;; #source file ./ott/lang_simple.ott  lines 1265 - 1268 
  [ (side-condition ,(not (alpha-equivalent? L (term  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) ) ) (term  (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) )))) 
   ------------------------------------------------------------------------------------------------------------------- "GHsubDiffNil"
   (GHsub x gU gu (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ))]
 
-;; #source file ./ott/lang_simple.ott  lines 1268 - 1273 
+;; #source file ./ott/lang_simple.ott  lines 1269 - 1274 
  [ (side-condition ,(not (alpha-equivalent? L (term  (CanonicalAtomic  (AtomicSpine  x  SpineEmpty) ) ) (term  (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) )))) 
   (GHsub x gU gu (CanonicalAtomic (AtomicSpine y ge)) (CanonicalAtomic (AtomicSpine y ge_^)))
   (GHsub x gU gu gu_22 gu_33)
   --------------------------------------------------------------------------------------------------------------------------------- "GHsubDiffCons"
   (GHsub x gU gu (CanonicalAtomic (AtomicSpine y (SpineCons ge gu_22))) (CanonicalAtomic (AtomicSpine y (SpineCons ge_^ gu_33))))]
 
-;; #source file ./ott/lang_simple.ott  lines 1276 - 1279 
+;; #source file ./ott/lang_simple.ott  lines 1277 - 1280 
  [(GHsubR x gU gu ge gu_22 gU_22)
   ------------------------------------------------------------ "GHsubSpine"
   (GHsub x gU gu (CanonicalAtomic (AtomicSpine x ge)) gu_22)]
@@ -923,23 +915,23 @@
   #:mode (GHsubR I I I I O O)
   #:contract (GHsubR x gU gu ge gu_22 gU_22)
 
-;; #source file ./ott/lang_simple.ott  lines 1299 - 1301 
+;; #source file ./ott/lang_simple.ott  lines 1300 - 1302 
  [----------------------------------- "GHsubRHead"
   (GHsubR x gU gu SpineEmpty gu gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 1304 - 1308 
+;; #source file ./ott/lang_simple.ott  lines 1305 - 1309 
  [ (GHsubR x gU gu ge CanonicalDyn (CanonicalPi y gU_11 gU_22))   (GHsub y gU_11 gu_22 gU_22 gU_33) 
   ---------------------------------------------------------- "GHsubRDynSpine"
   (GHsubR x gU gu (SpineCons ge gu_22) CanonicalDyn gU_33)]
 
-;; #source file ./ott/lang_simple.ott  lines 1309 - 1314 
+;; #source file ./ott/lang_simple.ott  lines 1310 - 1315 
 
-;; #source file ./ott/lang_simple.ott  lines 1315 - 1320 
+;; #source file ./ott/lang_simple.ott  lines 1316 - 1321 
  [(GHsubR x gU gu_11 ge gu_22 CanonicalDyn)
   -------------------------------------------------------------------- "GHsubRDynType"
   (GHsubR x gU gu_11 (SpineCons ge gu_22) CanonicalDyn CanonicalDyn)]
 
-;; #source file ./ott/lang_simple.ott  lines 1323 - 1329 
+;; #source file ./ott/lang_simple.ott  lines 1324 - 1330 
  [(GHsubR x gU gu ge  (CanonicalLam y_11 gu_22)  (CanonicalPi y_22 gU_11 gU_22))
    (GHsub x gU gu gu_11 gu_33)   (GHsub y_11 gU_11 gu_33 gu_22 gu_44) 
    (GHsub y_22 gU_11 gu_33 gU_22 gU_33)   (GEtaExpandC gu_44 gu_55 gU_33) 
@@ -952,12 +944,12 @@
   #:mode (CodSub I I O)
   #:contract (CodSub gu gU gU_^)
 
-;; #source file ./ott/lang_simple.ott  lines 1340 - 1343 
+;; #source file ./ott/lang_simple.ott  lines 1341 - 1344 
  [(GHsub x gU_11 gu gU_22 gU_22^)
   ------------------------------------------------ "CodSubPi"
   (CodSub gu (CanonicalPi x gU_11 gU_22) gU_22^)]
 
-;; #source file ./ott/lang_simple.ott  lines 1344 - 1346 
+;; #source file ./ott/lang_simple.ott  lines 1345 - 1347 
  [--------------------------------------- "CodSubDyn"
   (CodSub gu CanonicalDyn CanonicalDyn)]
 
@@ -967,12 +959,12 @@
   #:mode (BodySub I I I O)
   #:contract (BodySub gU gu gu_22 gu_33)
 
-;; #source file ./ott/lang_simple.ott  lines 1372 - 1375 
+;; #source file ./ott/lang_simple.ott  lines 1373 - 1376 
  [(GHsub x gU gu gu_22 gu_22^)
   ------------------------------------------------- "BodySubPi"
   (BodySub gU gu  (CanonicalLam x gu_22)  gu_22^)]
 
-;; #source file ./ott/lang_simple.ott  lines 1376 - 1378 
+;; #source file ./ott/lang_simple.ott  lines 1377 - 1379 
  [------------------------------------------- "BodySubDyn"
   (BodySub gU gu CanonicalDyn CanonicalDyn)]
 )
@@ -984,19 +976,19 @@
   #:mode (GradualSet I I)
   #:contract (GradualSet Gamma gU)
 
-;; #source file ./ott/lang_simple.ott  lines 1389 - 1392 
+;; #source file ./ott/lang_simple.ott  lines 1390 - 1393 
  [
   (GCSynth Gamma grr CanonicalDyn)
   ------------------------------------------ "GradualSetDynTy"
   (GradualSet Gamma (CanonicalAtomic grr))]
 
-;; #source file ./ott/lang_simple.ott  lines 1393 - 1396 
+;; #source file ./ott/lang_simple.ott  lines 1394 - 1397 
  [
   (GCSynth Gamma grr (CanonicalAtomic (AtomicSet i)))
   ------------------------------------------ "GradualSetSet"
   (GradualSet Gamma (CanonicalAtomic grr))]
 
-;; #source file ./ott/lang_simple.ott  lines 1399 - 1404 
+;; #source file ./ott/lang_simple.ott  lines 1400 - 1405 
  [
   (GradualSet Gamma gU_11)
     
@@ -1004,7 +996,7 @@
   ------------------------------------------------ "GradualSetPi"
   (GradualSet Gamma (CanonicalPi x gU_11 gU_22))]
 
-;; #source file ./ott/lang_simple.ott  lines 1406 - 1408 
+;; #source file ./ott/lang_simple.ott  lines 1407 - 1409 
  [
   --------------------------------- "GradualSetDynVal"
   (GradualSet Gamma CanonicalDyn)]
@@ -1015,11 +1007,11 @@
   #:mode (WF I)
   #:contract (WF Gamma)
 
-;; #source file ./ott/lang_simple.ott  lines 1414 - 1416 
+;; #source file ./ott/lang_simple.ott  lines 1415 - 1417 
  [--------------- "WFEmpty"
   (WF EnvEmpty)]
 
-;; #source file ./ott/lang_simple.ott  lines 1417 - 1421 
+;; #source file ./ott/lang_simple.ott  lines 1418 - 1422 
  [
    (WF Gamma)   (GradualSet Gamma gU) 
   (GVarFree x Gamma)
@@ -1032,20 +1024,20 @@
   #:mode (GCSynth I I O)
   #:contract (GCSynth Gamma grr gU)
 
-;; #source file ./ott/lang_simple.ott  lines 1427 - 1430 
+;; #source file ./ott/lang_simple.ott  lines 1428 - 1431 
  [
    (side-condition ,(> (term  i ) 0)) 
   --------------------------------------------------------------------------- "GCSynthSet"
   (GCSynth Gamma (AtomicSet i) (CanonicalAtomic  (AtomicSet (succ  i ) ) ))]
 
-;; #source file ./ott/lang_simple.ott  lines 1432 - 1436 
+;; #source file ./ott/lang_simple.ott  lines 1433 - 1437 
  [
     
   (GVarLook x gU Gamma)
   --------------------------------------------------- "GCSynthVar"
   (GCSynth Gamma  (AtomicSpine  x  SpineEmpty)  gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 1440 - 1447 
+;; #source file ./ott/lang_simple.ott  lines 1441 - 1448 
  [
   (GCSynth Gamma (AtomicSpine x ge) gU)
   (Domain gU gU_22)
@@ -1060,23 +1052,23 @@
   #:mode (GCCheck I I I)
   #:contract (GCCheck Gamma gu gU)
 
-;; #source file ./ott/lang_simple.ott  lines 1454 - 1458 
+;; #source file ./ott/lang_simple.ott  lines 1455 - 1459 
  [
   (GCSynth Gamma grr gU)
   (Consistent gU gU_^)
   -------------------------------------------- "GCCheckSynth"
   (GCCheck Gamma (CanonicalAtomic grr) gU_^)]
 
-;; #source file ./ott/lang_simple.ott  lines 1459 - 1463 
+;; #source file ./ott/lang_simple.ott  lines 1460 - 1464 
  [
   (GCSynth Gamma gRR (CanonicalAtomic (AtomicSet i)))
    (side-condition ,(and (< 0 (term  i )) (< (term  i ) (term  j )))) 
   ----------------------------------------------------------------------- "GCCheckLevel"
   (GCCheck Gamma (CanonicalAtomic gRR) (CanonicalAtomic (AtomicSet j)))]
 
-;; #source file ./ott/lang_simple.ott  lines 1465 - 1469 
+;; #source file ./ott/lang_simple.ott  lines 1466 - 1470 
 
-;; #source file ./ott/lang_simple.ott  lines 1471 - 1476 
+;; #source file ./ott/lang_simple.ott  lines 1472 - 1477 
  [
    (where   z  ,(gensym)) 
     
@@ -1084,14 +1076,14 @@
   ------------------------------------------------------------------- "GCCheckLamPiRdxAlpha"
   (GCCheck Gamma  (CanonicalLam x gu)  (CanonicalPi y gU_11 gU_22))]
 
-;; #source file ./ott/lang_simple.ott  lines 1477 - 1481 
+;; #source file ./ott/lang_simple.ott  lines 1478 - 1482 
  [
     
   (GCCheck (EnvExt x CanonicalDyn Gamma) gu CanonicalDyn)
   ---------------------------------------------------- "GCCheckLamDyn"
   (GCCheck Gamma  (CanonicalLam x gu)  CanonicalDyn)]
 
-;; #source file ./ott/lang_simple.ott  lines 1482 - 1488 
+;; #source file ./ott/lang_simple.ott  lines 1483 - 1489 
  [
   (ConsistentSet gU_33)
   (GCCheck Gamma gU_11 gU_33)
@@ -1100,7 +1092,7 @@
   --------------------------------------------------- "GCCheckPi"
   (GCCheck Gamma (CanonicalPi x gU_11 gU_22) gU_33)]
 
-;; #source file ./ott/lang_simple.ott  lines 1490 - 1493 
+;; #source file ./ott/lang_simple.ott  lines 1491 - 1494 
  [
   (GradualSet Gamma gU)
   --------------------------------- "GCCheckDyn"
@@ -1112,11 +1104,11 @@
   #:mode (ConsistentSet I)
   #:contract (ConsistentSet gU)
 
-;; #source file ./ott/lang_simple.ott  lines 1501 - 1503 
+;; #source file ./ott/lang_simple.ott  lines 1502 - 1504 
  [------------------------------------------------- "ConsistentSetSet"
   (ConsistentSet (CanonicalAtomic (AtomicSet i)))]
 
-;; #source file ./ott/lang_simple.ott  lines 1504 - 1506 
+;; #source file ./ott/lang_simple.ott  lines 1505 - 1507 
  [------------------------------ "ConsistentSetDyn"
   (ConsistentSet CanonicalDyn)]
 
@@ -1126,38 +1118,38 @@
   #:mode (Consistent I I)
   #:contract (Consistent gU gU_^)
 
-;; #source file ./ott/lang_simple.ott  lines 1516 - 1518 
+;; #source file ./ott/lang_simple.ott  lines 1517 - 1519 
  [-------------------- "ConsistentEq"
   (Consistent gu gu)]
 
-;; #source file ./ott/lang_simple.ott  lines 1519 - 1523 
+;; #source file ./ott/lang_simple.ott  lines 1520 - 1524 
 
-;; #source file ./ott/lang_simple.ott  lines 1525 - 1530 
+;; #source file ./ott/lang_simple.ott  lines 1526 - 1531 
  [ (where   z  ,(gensym)) 
   (Consistent gU_11 gU_11^)
   (Consistent  (substitute  gU_22   x   z )   (substitute  gU_22^   y   z ) )
   ------------------------------------------------------------------------ "ConsistentPiRdxAlpha"
   (Consistent (CanonicalPi x gU_11 gU_22) (CanonicalPi y gU_11^ gU_22^))]
 
-;; #source file ./ott/lang_simple.ott  lines 1531 - 1534 
+;; #source file ./ott/lang_simple.ott  lines 1532 - 1535 
 
-;; #source file ./ott/lang_simple.ott  lines 1536 - 1540 
+;; #source file ./ott/lang_simple.ott  lines 1537 - 1541 
  [ (where   z  ,(gensym)) 
   (Consistent  (substitute  gu   x   z )   (substitute  gu_^   y   z ) )
   ------------------------------------------------------------ "ConsistentLamRdxAlpha"
   (Consistent  (CanonicalLam x gu)   (CanonicalLam y gu_^) )]
 
-;; #source file ./ott/lang_simple.ott  lines 1541 - 1545 
+;; #source file ./ott/lang_simple.ott  lines 1542 - 1546 
  [(Consistent (CanonicalAtomic (AtomicSpine x ge)) (CanonicalAtomic (AtomicSpine x ge_^)))
   (Consistent gu gu_^)
   -------------------------------------------------------------------------------------------------------------------------- "ConsistentApp"
   (Consistent (CanonicalAtomic (AtomicSpine x (SpineCons ge gu))) (CanonicalAtomic (AtomicSpine x (SpineCons ge_^ gu_^))))]
 
-;; #source file ./ott/lang_simple.ott  lines 1546 - 1548 
+;; #source file ./ott/lang_simple.ott  lines 1547 - 1549 
  [------------------------------ "ConsistentDynL"
   (Consistent CanonicalDyn gu)]
 
-;; #source file ./ott/lang_simple.ott  lines 1549 - 1551 
+;; #source file ./ott/lang_simple.ott  lines 1550 - 1552 
  [------------------------------ "ConsistentDynR"
   (Consistent gu CanonicalDyn)]
 )
@@ -1169,39 +1161,39 @@
   #:mode (Meet I I O)
   #:contract (Meet gU_11 gU_22 gU_33)
 
-;; #source file ./ott/lang_simple.ott  lines 1563 - 1567 
+;; #source file ./ott/lang_simple.ott  lines 1564 - 1568 
 
-;; #source file ./ott/lang_simple.ott  lines 1569 - 1574 
+;; #source file ./ott/lang_simple.ott  lines 1570 - 1575 
  [ (where   z  ,(gensym)) 
   (Meet gU_11 gU_11^ gU_11^^)
   (Meet  (substitute  gU_22   x   z )   (substitute  gU_22^   y   z )  gU_22^^)
   -------------------------------------------------------------------------------------------------- "MeetPiRdxAlpha"
   (Meet (CanonicalPi x gU_11 gU_22) (CanonicalPi y gU_11^ gU_22^) (CanonicalPi z gU_11^^ gU_22^^))]
 
-;; #source file ./ott/lang_simple.ott  lines 1575 - 1578 
+;; #source file ./ott/lang_simple.ott  lines 1576 - 1579 
 
-;; #source file ./ott/lang_simple.ott  lines 1580 - 1584 
+;; #source file ./ott/lang_simple.ott  lines 1581 - 1585 
  [ (where   z  ,(gensym)) 
   (Meet  (substitute  gu   x   z )   (substitute  gu_^   y   z )  gu_^^)
   ------------------------------------------------------------------------- "MeetLamRdxAlpha"
   (Meet (CanonicalLam x gu) (CanonicalLam y gu_^) (CanonicalLam z gu_^^))]
 
-;; #source file ./ott/lang_simple.ott  lines 1585 - 1589 
+;; #source file ./ott/lang_simple.ott  lines 1586 - 1590 
  [(Meet gu gu_^ gu_^^)
   (Meet (CanonicalAtomic (AtomicSpine x ge)) (CanonicalAtomic (AtomicSpine x ge_^)) (CanonicalAtomic (AtomicSpine x ge_^^)))
   ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ "MeetApp"
   (Meet (CanonicalAtomic (AtomicSpine x (SpineCons ge gu))) (CanonicalAtomic (AtomicSpine x (SpineCons ge_^ gu_^))) (CanonicalAtomic (AtomicSpine x (SpineCons ge_^^ gu_^^))))]
 
-;; #source file ./ott/lang_simple.ott  lines 1590 - 1592 
+;; #source file ./ott/lang_simple.ott  lines 1591 - 1593 
  [--------------------------- "MeetDynL"
   (Meet CanonicalDyn gU gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 1593 - 1596 
+;; #source file ./ott/lang_simple.ott  lines 1594 - 1597 
  [ (side-condition ,(not (alpha-equivalent? L (term  gU ) (term  CanonicalDyn )))) 
   --------------------------- "MeetDynR"
   (Meet gU CanonicalDyn gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 1597 - 1600 
+;; #source file ./ott/lang_simple.ott  lines 1598 - 1601 
  [ (side-condition ,(not (alpha-equivalent? L (term  gu ) (term  CanonicalDyn )))) 
   ----------------- "MeetRefl"
   (Meet gu gu gu)]
@@ -1212,34 +1204,34 @@
   #:mode (MorePrecise I I)
   #:contract (MorePrecise gU gU_^)
 
-;; #source file ./ott/lang_simple.ott  lines 1608 - 1612 
+;; #source file ./ott/lang_simple.ott  lines 1609 - 1613 
 
-;; #source file ./ott/lang_simple.ott  lines 1614 - 1619 
+;; #source file ./ott/lang_simple.ott  lines 1615 - 1620 
  [ (where   z  ,(gensym)) 
   (MorePrecise gU_11 gU_11^)
   (MorePrecise  (substitute  gU_22   x   z )   (substitute  gU_22^   y   z ) )
   ------------------------------------------------------------------------- "MorePrecisePiRdxAlpha"
   (MorePrecise (CanonicalPi x gU_11 gU_22) (CanonicalPi y gU_11^ gU_22^))]
 
-;; #source file ./ott/lang_simple.ott  lines 1620 - 1623 
+;; #source file ./ott/lang_simple.ott  lines 1621 - 1624 
 
-;; #source file ./ott/lang_simple.ott  lines 1625 - 1629 
+;; #source file ./ott/lang_simple.ott  lines 1626 - 1630 
  [ (where   z  ,(gensym)) 
   (MorePrecise  (substitute  gu   x   z )   (substitute  gu_^   y   z ) )
   --------------------------------------------------------- "MorePreciseLamRdxAlpha"
   (MorePrecise (CanonicalLam x gu) (CanonicalLam y gu_^))]
 
-;; #source file ./ott/lang_simple.ott  lines 1630 - 1634 
+;; #source file ./ott/lang_simple.ott  lines 1631 - 1635 
  [(MorePrecise gu gu_^)
   (MorePrecise (CanonicalAtomic (AtomicSpine x ge)) (CanonicalAtomic (AtomicSpine x ge_^)))
   --------------------------------------------------------------------------------------------------------------------------- "MorePreciseApp"
   (MorePrecise (CanonicalAtomic (AtomicSpine x (SpineCons ge gu))) (CanonicalAtomic (AtomicSpine x (SpineCons ge_^ gu_^))))]
 
-;; #source file ./ott/lang_simple.ott  lines 1636 - 1638 
+;; #source file ./ott/lang_simple.ott  lines 1637 - 1639 
  [------------------------------- "MorePreciseDyn"
   (MorePrecise gU CanonicalDyn)]
 
-;; #source file ./ott/lang_simple.ott  lines 1639 - 1642 
+;; #source file ./ott/lang_simple.ott  lines 1640 - 1643 
  [ (side-condition ,(not (alpha-equivalent? L (term  gU ) (term  CanonicalDyn )))) 
   --------------------- "MorePreciseRefl"
   (MorePrecise gU gU)]
@@ -1250,11 +1242,11 @@
   #:mode (TermPrecise I I)
   #:contract (TermPrecise gt gt_^)
 
-;; #source file ./ott/lang_simple.ott  lines 1650 - 1654 
+;; #source file ./ott/lang_simple.ott  lines 1651 - 1655 
 
-;; #source file ./ott/lang_simple.ott  lines 1658 - 1661 
+;; #source file ./ott/lang_simple.ott  lines 1659 - 1662 
 
-;; #source file ./ott/lang_simple.ott  lines 1664 - 1668 
+;; #source file ./ott/lang_simple.ott  lines 1665 - 1669 
  [
   
   (TermPrecise gt_11 gt_11^)
@@ -1262,7 +1254,7 @@
   ------------------------------------------------------------- "TermPreciseApp"
   (TermPrecise (TermApp gt_11 gt_22) (TermApp gt_11^ gt_22^))]
 
-;; #source file ./ott/lang_simple.ott  lines 1669 - 1673 
+;; #source file ./ott/lang_simple.ott  lines 1670 - 1674 
  [
   
   (TermPrecise gt_11 gt_22)
@@ -1270,12 +1262,12 @@
   ----------------------------------------------------------- "TermPreciseAscr"
   (TermPrecise (TermAnn gt_11 gT_11) (TermAnn gt_22 gT_22))]
 
-;; #source file ./ott/lang_simple.ott  lines 1674 - 1677 
+;; #source file ./ott/lang_simple.ott  lines 1675 - 1678 
  [
   -------------------------- "TermPreciseDyn"
   (TermPrecise gt TermDyn)]
 
-;; #source file ./ott/lang_simple.ott  lines 1678 - 1680 
+;; #source file ./ott/lang_simple.ott  lines 1679 - 1681 
  [--------------------- "TermPreciseRefl"
   (TermPrecise gT gT)]
 
@@ -1285,11 +1277,11 @@
   #:mode (EvPrecise I I)
   #:contract (EvPrecise et et_^)
 
-;; #source file ./ott/lang_simple.ott  lines 1687 - 1691 
+;; #source file ./ott/lang_simple.ott  lines 1688 - 1692 
 
-;; #source file ./ott/lang_simple.ott  lines 1694 - 1697 
+;; #source file ./ott/lang_simple.ott  lines 1695 - 1698 
 
-;; #source file ./ott/lang_simple.ott  lines 1699 - 1703 
+;; #source file ./ott/lang_simple.ott  lines 1700 - 1704 
  [
   
   (EvPrecise et_11 et_11^)
@@ -1297,7 +1289,7 @@
   ----------------------------------------------------------- "EvPreciseApp"
   (EvPrecise (TermApp et_11 et_22) (TermApp et_11^ et_22^))]
 
-;; #source file ./ott/lang_simple.ott  lines 1704 - 1708 
+;; #source file ./ott/lang_simple.ott  lines 1705 - 1709 
  [
   
   (EvPrecise et_11 et_22)
@@ -1305,15 +1297,15 @@
   ------------------------------------------------------- "EvPreciseAscr"
   (EvPrecise (TermEp ep_11 et_11) (TermEp ep_22 et_22))]
 
-;; #source file ./ott/lang_simple.ott  lines 1709 - 1711 
+;; #source file ./ott/lang_simple.ott  lines 1710 - 1712 
  [------------------------ "EvPreciseDyn"
   (EvPrecise eT TermDyn)]
 
-;; #source file ./ott/lang_simple.ott  lines 1712 - 1714 
+;; #source file ./ott/lang_simple.ott  lines 1713 - 1715 
  [-------------------------- "EvPreciseErr"
   (EvPrecise TermError eT)]
 
-;; #source file ./ott/lang_simple.ott  lines 1715 - 1717 
+;; #source file ./ott/lang_simple.ott  lines 1716 - 1718 
  [------------------- "EvPreciseRefl"
   (EvPrecise eT eT)]
 
@@ -1323,14 +1315,14 @@
   #:mode (EvConsistent I I I)
   #:contract (EvConsistent ep gU gU_^)
 
-;; #source file ./ott/lang_simple.ott  lines 1724 - 1728 
+;; #source file ./ott/lang_simple.ott  lines 1725 - 1729 
  [
   (Meet gU_11 gU_22 gU_33)
   (MorePrecise gU gU_33)
   -------------------------------------------------- "EvConsistentDef"
   (EvConsistent (EvidenceEv Gamma gU) gU_11 gU_22)]
 )
-;; #source file ./ott/lang_simple.ott  lines 1729 - 1729 
+;; #source file ./ott/lang_simple.ott  lines 1730 - 1730 
 #| 
 
 ;;; definitions 
@@ -1353,7 +1345,7 @@
   #:contract (EtaGammaPrecise Gamma Gamma_^)
 
 )
-;; #source file ./ott/lang_simple.ott  lines 1746 - 1746 
+;; #source file ./ott/lang_simple.ott  lines 1747 - 1747 
 |# 
 
 ;;; definitions 
@@ -1363,7 +1355,7 @@
   #:mode (GSynth I I O)
   #:contract (GSynth Gamma gtSynth gU)
 
-;; #source file ./ott/lang_simple.ott  lines 1764 - 1768 
+;; #source file ./ott/lang_simple.ott  lines 1765 - 1769 
  [
   
   (GradualSetNorm Gamma gU gT)
@@ -1371,20 +1363,20 @@
   ------------------------------------- "GSynthAnn"
   (GSynth Gamma  (TermAnn gt gT)  gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 1769 - 1772 
+;; #source file ./ott/lang_simple.ott  lines 1770 - 1773 
  [
    (side-condition ,(> (term  i ) 0)) 
   ------------------------------------------------------------------------ "GSynthSet"
   (GSynth Gamma (TermSet i) (CanonicalAtomic  (AtomicSet (succ  i ) ) ))]
 
-;; #source file ./ott/lang_simple.ott  lines 1774 - 1778 
+;; #source file ./ott/lang_simple.ott  lines 1775 - 1779 
  [
   (GVarLook x gU Gamma)
     
   ------------------------------- "GSynthVar"
   (GSynth Gamma x gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 1783 - 1788 
+;; #source file ./ott/lang_simple.ott  lines 1784 - 1789 
  [
   
    (GSynth Gamma gtSynth_11 gU)      
@@ -1393,7 +1385,7 @@
   ------------------------------------------------- "GSynthApp"
   (GSynth Gamma (TermApp gtSynth_11 gt_22) gU_22)]
 
-;; #source file ./ott/lang_simple.ott  lines 1789 - 1792 
+;; #source file ./ott/lang_simple.ott  lines 1790 - 1793 
  [
   ------------------------------------- "GSynthDyn"
   (GSynth Gamma TermDyn CanonicalDyn)]
@@ -1404,7 +1396,7 @@
   #:mode (GCheck I I I)
   #:contract (GCheck Gamma gt gU)
 
-;; #source file ./ott/lang_simple.ott  lines 1807 - 1812 
+;; #source file ./ott/lang_simple.ott  lines 1808 - 1813 
  [
   
   (GSynth Gamma gtSynth gU_^)
@@ -1412,14 +1404,14 @@
   --------------------------- "GCheckSynth"
   (GCheck Gamma gtSynth gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 1813 - 1818 
+;; #source file ./ott/lang_simple.ott  lines 1814 - 1819 
  [
   (GSynth Gamma gTSynth (CanonicalAtomic (AtomicSet i)))
    (side-condition ,(and (< 0 (term  i )) (< (term  i ) (term  j )))) 
   -------------------------------------------------------- "GCheckLevel"
   (GCheck Gamma gTSynth (CanonicalAtomic (AtomicSet j)))]
 
-;; #source file ./ott/lang_simple.ott  lines 1827 - 1831 
+;; #source file ./ott/lang_simple.ott  lines 1828 - 1832 
  [
   
    (GNCheck Gamma gU_^ gT_11 gU)   (ConsistentSet gU) 
@@ -1427,9 +1419,9 @@
   ------------------------------------------ "GCheckPi"
   (GCheck Gamma (TermPi x gT_11 gT_22) gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 1833 - 1837 
+;; #source file ./ott/lang_simple.ott  lines 1834 - 1838 
 
-;; #source file ./ott/lang_simple.ott  lines 1839 - 1844 
+;; #source file ./ott/lang_simple.ott  lines 1840 - 1845 
  [
   
    (where   z  ,(gensym)) 
@@ -1438,7 +1430,7 @@
   ------------------------------------------------------------- "GCheckLamPiRdxAlpha"
   (GCheck Gamma  (TermLam x gt)  (CanonicalPi y gU_11 gU_22))]
 
-;; #source file ./ott/lang_simple.ott  lines 1846 - 1850 
+;; #source file ./ott/lang_simple.ott  lines 1847 - 1851 
  [
   
     
@@ -1452,21 +1444,21 @@
   #:mode (GradualSetNorm I O I)
   #:contract (GradualSetNorm Gamma gU TT)
 
-;; #source file ./ott/lang_simple.ott  lines 1868 - 1871 
+;; #source file ./ott/lang_simple.ott  lines 1869 - 1872 
  [
   
   (GNSynth Gamma TTSynth gU (CanonicalAtomic (AtomicSet i)))
   ----------------------------------- "GradualSetNormSynth"
   (GradualSetNorm Gamma gU TTSynth)]
 
-;; #source file ./ott/lang_simple.ott  lines 1873 - 1877 
+;; #source file ./ott/lang_simple.ott  lines 1874 - 1878 
  [
   (GradualSetNorm Gamma gU_11 TT_1_1)
   (GradualSetNorm (EnvExt x gU_11 Gamma) gU_22 TT_2_2)
   ----------------------------------------------------------------------------- "GradualSetNormPi"
   (GradualSetNorm Gamma (CanonicalPi x gU_11 gU_22) (TermPi x TT_1_1 TT_2_2))]
 
-;; #source file ./ott/lang_simple.ott  lines 1879 - 1881 
+;; #source file ./ott/lang_simple.ott  lines 1880 - 1882 
  [
   --------------------------------------------- "GradualSetNormDyn"
   (GradualSetNorm Gamma CanonicalDyn TermDyn)]
@@ -1477,27 +1469,27 @@
   #:mode (GEtaLong I I)
   #:contract (GEtaLong gu gU)
 
-;; #source file ./ott/lang_simple.ott  lines 1887 - 1889 
+;; #source file ./ott/lang_simple.ott  lines 1888 - 1890 
  [-------------------------------------------------------- "GEtaLongAtomic"
   (GEtaLong (CanonicalAtomic grr) (CanonicalAtomic gRR))]
 
-;; #source file ./ott/lang_simple.ott  lines 1890 - 1892 
+;; #source file ./ott/lang_simple.ott  lines 1891 - 1893 
  [----------------------------------------------- "GEtaLongAtomicDyn"
   (GEtaLong (CanonicalAtomic grr) CanonicalDyn)]
 
-;; #source file ./ott/lang_simple.ott  lines 1894 - 1897 
+;; #source file ./ott/lang_simple.ott  lines 1895 - 1898 
 
-;; #source file ./ott/lang_simple.ott  lines 1898 - 1902 
+;; #source file ./ott/lang_simple.ott  lines 1899 - 1903 
  [ (where   z  ,(gensym)) 
   (GEtaLong  (substitute  gu   x   z )   (substitute  gU   y   z ) )
   ---------------------------------------------------------- "GEtaLongLamRdxAlpha"
   (GEtaLong  (CanonicalLam x gu)  (CanonicalPi y gU_^ gU))]
 
-;; #source file ./ott/lang_simple.ott  lines 1903 - 1905 
+;; #source file ./ott/lang_simple.ott  lines 1904 - 1906 
  [---------------------------- "GEtaLongDyn"
   (GEtaLong CanonicalDyn gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 1906 - 1908 
+;; #source file ./ott/lang_simple.ott  lines 1907 - 1909 
  [------------------------------------------ "GEtaLongPi"
   (GEtaLong (CanonicalPi x gU gU_^) gU_^^)]
 
@@ -1507,15 +1499,15 @@
   #:mode (GEtaExpand I O I)
   #:contract (GEtaExpand grr gu gU)
 
-;; #source file ./ott/lang_simple.ott  lines 1914 - 1916 
+;; #source file ./ott/lang_simple.ott  lines 1915 - 1917 
  [-------------------------------------------------------------- "GEtaExpandAtomic"
   (GEtaExpand grr (CanonicalAtomic grr) (CanonicalAtomic gRR))]
 
-;; #source file ./ott/lang_simple.ott  lines 1917 - 1919 
+;; #source file ./ott/lang_simple.ott  lines 1918 - 1920 
  [----------------------------------------------------- "GEtaExpandDyn"
   (GEtaExpand grr (CanonicalAtomic grr) CanonicalDyn)]
 
-;; #source file ./ott/lang_simple.ott  lines 1921 - 1925 
+;; #source file ./ott/lang_simple.ott  lines 1922 - 1926 
  [(GEtaExpand  (AtomicSpine  y  SpineEmpty)  gu gU_11)
   (GEtaExpand (AtomicSpine x (SpineCons ge gu)) gu_22 gU_22)
   -------------------------------------------------------------------------------------- "GEtaExpandPi"
@@ -1527,30 +1519,30 @@
   #:mode (GEtaExpandC I O I)
   #:contract (GEtaExpandC gu gu_^ gU)
 
-;; #source file ./ott/lang_simple.ott  lines 1932 - 1935 
+;; #source file ./ott/lang_simple.ott  lines 1933 - 1936 
  [(GEtaExpand grr gu gU)
   ------------------------------------------- "GEtaExpandCAtomic"
   (GEtaExpandC (CanonicalAtomic grr) gu gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 1936 - 1939 
+;; #source file ./ott/lang_simple.ott  lines 1937 - 1940 
 
-;; #source file ./ott/lang_simple.ott  lines 1940 - 1944 
+;; #source file ./ott/lang_simple.ott  lines 1941 - 1945 
  [ (where   z  ,(gensym)) 
   (GEtaExpandC  (substitute  gu   x   z )  gu_^  (substitute  gU_22   x   z ) )
   ----------------------------------------------------------------------------------------- "GEtaExpandCLamRdxAlpha"
   (GEtaExpandC  (CanonicalLam x gu)   (CanonicalLam z gu_^)  (CanonicalPi y gU_11 gU_22))]
 
-;; #source file ./ott/lang_simple.ott  lines 1945 - 1949 
+;; #source file ./ott/lang_simple.ott  lines 1946 - 1950 
  [(GEtaExpandC gU_11 gU_11^ gU_^^)
   (GEtaExpandC gU_22 gU_22^ gU_^^)
   ------------------------------------------------------------------------------- "GEtaExpandCPi"
   (GEtaExpandC (CanonicalPi x gU_11 gU_22) (CanonicalPi x gU_11^ gU_22^) gU_^^)]
 
-;; #source file ./ott/lang_simple.ott  lines 1951 - 1953 
+;; #source file ./ott/lang_simple.ott  lines 1952 - 1954 
  [-------------------------------------------- "GEtaExpandCDyn"
   (GEtaExpandC CanonicalDyn CanonicalDyn gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 1954 - 1956 
+;; #source file ./ott/lang_simple.ott  lines 1955 - 1957 
  [---------------------------------- "GEtaExpandCDynType"
   (GEtaExpandC gu gu CanonicalDyn)]
 
@@ -1560,20 +1552,20 @@
   #:mode (GNSynth I I O O)
   #:contract (GNSynth Gamma tt gu gU)
 
-;; #source file ./ott/lang_simple.ott  lines 1977 - 1981 
+;; #source file ./ott/lang_simple.ott  lines 1978 - 1982 
  [
   (GradualSetNorm Gamma gU TT)
   (GNCheck Gamma gu tt gU)
   ----------------------------------------- "GNSynthAnn"
   (GNSynth Gamma  (TermAnn tt TT)  gu gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 1982 - 1985 
+;; #source file ./ott/lang_simple.ott  lines 1983 - 1986 
  [
    (side-condition ,(> (term  i ) 0)) 
   --------------------------------------------------------------------------------------------------------- "GNSynthSet"
   (GNSynth Gamma (TermSet i) (CanonicalAtomic (AtomicSet i)) (CanonicalAtomic  (AtomicSet (succ  i ) ) ))]
 
-;; #source file ./ott/lang_simple.ott  lines 1987 - 1993 
+;; #source file ./ott/lang_simple.ott  lines 1988 - 1994 
  [
    (side-condition ,(not (hash-has-key? currently-defined-vars (term  x )) )) 
     
@@ -1582,14 +1574,14 @@
   ----------------------------------- "GNSynthVar"
   (GNSynth Gamma x gu gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 1994 - 1997 
+;; #source file ./ott/lang_simple.ott  lines 1995 - 1998 
  [
   
    (where (ENTTriple  et   gu   gU ) ,(and (hash-has-key? currently-defined-vars (term  x ) ) (hash-ref currently-defined-vars (term  x )) )) 
   ----------------------------------- "GNSynthVarLook"
   (GNSynth Gamma x gu gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 2002 - 2009 
+;; #source file ./ott/lang_simple.ott  lines 2003 - 2010 
  [
       (where   x  ,(gensym))    (GNSynth Gamma tt_11 gu_11 gU)    (GEtaExpandC gu_11 gu_11^ (CanonicalPi x CanonicalDyn CanonicalDyn))  
     
@@ -1599,7 +1591,7 @@
   ---------------------------------------------------- "GNSynthApp"
   (GNSynth Gamma (TermApp tt_11 tt_22) gu_33^ gU_22)]
 
-;; #source file ./ott/lang_simple.ott  lines 2011 - 2014 
+;; #source file ./ott/lang_simple.ott  lines 2012 - 2015 
  [
   --------------------------------------------------- "GNSynthDyn"
   (GNSynth Gamma TermDyn CanonicalDyn CanonicalDyn)]
@@ -1610,13 +1602,13 @@
   #:mode (GNSynthCheck I O I I I I)
   #:contract (GNSynthCheck Gamma gu ttSynth gu_^ gU_^ gU)
 
-;; #source file ./ott/lang_simple.ott  lines 2021 - 2024 
+;; #source file ./ott/lang_simple.ott  lines 2022 - 2025 
  [
    (side-condition ,(and (< 0 (term  i )) (< (term  i ) (term  j )))) 
   ---------------------------------------------------------------------------------------------------- "GNSynthCheckLevel"
   (GNSynthCheck Gamma gU TTSynth gU (CanonicalAtomic (AtomicSet i)) (CanonicalAtomic (AtomicSet j)))]
 
-;; #source file ./ott/lang_simple.ott  lines 2025 - 2029 
+;; #source file ./ott/lang_simple.ott  lines 2026 - 2030 
  [
   
   (Meet gU gU_^ gU_^^)
@@ -1630,7 +1622,7 @@
   #:mode (GNCheck I O I I)
   #:contract (GNCheck Gamma gu tt gU)
 
-;; #source file ./ott/lang_simple.ott  lines 2037 - 2041 
+;; #source file ./ott/lang_simple.ott  lines 2038 - 2042 
  [
   
   (GNSynth Gamma ttSynth gu_^ gU_^)
@@ -1638,13 +1630,13 @@
   ------------------------------- "GNCheckSynthRdx"
   (GNCheck Gamma gu ttSynth gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 2042 - 2048 
+;; #source file ./ott/lang_simple.ott  lines 2043 - 2049 
 
-;; #source file ./ott/lang_simple.ott  lines 2050 - 2056 
+;; #source file ./ott/lang_simple.ott  lines 2051 - 2057 
 
-;; #source file ./ott/lang_simple.ott  lines 2057 - 2062 
+;; #source file ./ott/lang_simple.ott  lines 2058 - 2063 
 
-;; #source file ./ott/lang_simple.ott  lines 2064 - 2072 
+;; #source file ./ott/lang_simple.ott  lines 2065 - 2073 
  [
   (ConsistentSet gU_33)
   (GNCheck Gamma gU_11 TT_11 gU_33)
@@ -1653,9 +1645,9 @@
   -------------------------------------------------------------------------- "GNCheckPi"
   (GNCheck Gamma (CanonicalPi x gU_11 gU_22) (TermPi x TT_11 TT_22) gU_33)]
 
-;; #source file ./ott/lang_simple.ott  lines 2073 - 2077 
+;; #source file ./ott/lang_simple.ott  lines 2074 - 2078 
 
-;; #source file ./ott/lang_simple.ott  lines 2078 - 2083 
+;; #source file ./ott/lang_simple.ott  lines 2079 - 2084 
  [
    (where   z  ,(gensym)) 
     
@@ -1663,14 +1655,14 @@
   ------------------------------------------------------------------------------------ "GNCheckLamPiRdxAlpha"
   (GNCheck Gamma  (CanonicalLam z gu)   (TermLam x tt)  (CanonicalPi y gU_11 gU_22))]
 
-;; #source file ./ott/lang_simple.ott  lines 2084 - 2088 
+;; #source file ./ott/lang_simple.ott  lines 2085 - 2089 
  [
     
   (GNCheck (EnvExt x CanonicalDyn Gamma) gu tt CanonicalDyn)
   --------------------------------------------------------------------- "GNCheckLamDyn"
   (GNCheck Gamma  (CanonicalLam x gu)   (TermLam x tt)  CanonicalDyn)]
 
-;; #source file ./ott/lang_simple.ott  lines 2092 - 2097 
+;; #source file ./ott/lang_simple.ott  lines 2093 - 2098 
  [
   (GNSynth Gamma ett gu gU_^)
   (Consistent gU gU_^)
@@ -1678,7 +1670,7 @@
   --------------------------------------- "GNCheckEvUp"
   (GNCheck Gamma gu (TermEp ep ett) gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 2098 - 2103 
+;; #source file ./ott/lang_simple.ott  lines 2099 - 2104 
  [
   (GNSynth Gamma ett gu gU_^)
    (side-condition ,(not (judgment-holds (MorePrecise  gU_^   gU )))) 
@@ -1691,7 +1683,7 @@
   #:mode (GElabSynth I I O O)
   #:contract (GElabSynth Gamma gtSynth et gU)
 
-;; #source file ./ott/lang_simple.ott  lines 2116 - 2120 
+;; #source file ./ott/lang_simple.ott  lines 2117 - 2121 
  [
   
   (GradualSetNorm Gamma gU gT)
@@ -1699,13 +1691,13 @@
   -------------------------------------------- "GElabSynthAnn"
   (GElabSynth Gamma  (TermAnn gt gT)  et gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 2121 - 2124 
+;; #source file ./ott/lang_simple.ott  lines 2122 - 2125 
  [
    (side-condition ,(> (term  i ) 0)) 
   ---------------------------------------------------------------------------------------- "GElabSynthSet"
   (GElabSynth Gamma (TermSet i) (TermSet i) (CanonicalAtomic  (AtomicSet (succ  i ) ) ))]
 
-;; #source file ./ott/lang_simple.ott  lines 2126 - 2131 
+;; #source file ./ott/lang_simple.ott  lines 2127 - 2132 
  [
    (side-condition ,(not (hash-has-key? currently-defined-vars (term  x )) )) 
     
@@ -1713,14 +1705,14 @@
   ----------------------------------------------- "GElabSynthVar"
   (GElabSynth Gamma x x gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 2132 - 2135 
+;; #source file ./ott/lang_simple.ott  lines 2133 - 2136 
  [
   
    (where (ENTTriple  et   gu   gU ) ,(and (hash-has-key? currently-defined-vars (term  x ) ) (hash-ref currently-defined-vars (term  x )) )) 
   ----------------------------------------------- "GElabSynthVarLook"
   (GElabSynth Gamma x x gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 2139 - 2145 
+;; #source file ./ott/lang_simple.ott  lines 2140 - 2146 
  [
   
   (GElabSynth Gamma gtSynth_11 et_11 gU)
@@ -1730,7 +1722,7 @@
   --------------------------------------------------------------------------- "GElabSynthApp"
   (GElabSynth Gamma (TermApp gtSynth_11 gt_22) (TermApp et_11 et_22) gU_22)]
 
-;; #source file ./ott/lang_simple.ott  lines 2146 - 2149 
+;; #source file ./ott/lang_simple.ott  lines 2147 - 2150 
  [
   ------------------------------------------------------------------------------------------ "GElabSynthDyn"
   (GElabSynth Gamma TermDyn (TermEp (EvidenceEv Gamma CanonicalDyn) TermDyn) CanonicalDyn)]
@@ -1741,13 +1733,13 @@
   #:mode (GElabSynthCheck I O I I I I)
   #:contract (GElabSynthCheck Gamma et_^ gtSynth et gU_^ gU)
 
-;; #source file ./ott/lang_simple.ott  lines 2157 - 2160 
+;; #source file ./ott/lang_simple.ott  lines 2158 - 2161 
  [
    (side-condition ,(and (< 0 (term  i )) (< (term  i ) (term  j )))) 
   ------------------------------------------------------------------------------------------------------- "GElabSynthCheckLevel"
   (GElabSynthCheck Gamma eT gTSynth eT (CanonicalAtomic (AtomicSet i)) (CanonicalAtomic (AtomicSet j)))]
 
-;; #source file ./ott/lang_simple.ott  lines 2164 - 2168 
+;; #source file ./ott/lang_simple.ott  lines 2165 - 2169 
  [
   
   (Meet gU_^^ gU gU_^)
@@ -1760,7 +1752,7 @@
   #:mode (GElabCheck I O I I)
   #:contract (GElabCheck Gamma et gt gU)
 
-;; #source file ./ott/lang_simple.ott  lines 2182 - 2187 
+;; #source file ./ott/lang_simple.ott  lines 2183 - 2188 
  [
   
   (GElabSynth Gamma gtSynth et_^ gU_^)
@@ -1768,11 +1760,11 @@
   ---------------------------------- "GElabCheckSynthRdx"
   (GElabCheck Gamma et gtSynth gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 2188 - 2194 
+;; #source file ./ott/lang_simple.ott  lines 2189 - 2195 
 
-;; #source file ./ott/lang_simple.ott  lines 2195 - 2200 
+;; #source file ./ott/lang_simple.ott  lines 2196 - 2201 
 
-;; #source file ./ott/lang_simple.ott  lines 2210 - 2218 
+;; #source file ./ott/lang_simple.ott  lines 2211 - 2219 
  [
   (ConsistentSet gU)
   (GradualNECheck Gamma gU_11 eT_11 gT_11 gU)
@@ -1781,9 +1773,9 @@
   --------------------------------------------------------------------- "GElabCheckPi"
   (GElabCheck Gamma (TermPi x eT_11 eT_22) (TermPi x gT_11 gT_22) gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 2219 - 2223 
+;; #source file ./ott/lang_simple.ott  lines 2220 - 2224 
 
-;; #source file ./ott/lang_simple.ott  lines 2224 - 2229 
+;; #source file ./ott/lang_simple.ott  lines 2225 - 2230 
  [
   
    (where   z  ,(gensym)) 
@@ -1792,7 +1784,7 @@
   ---------------------------------------------------------------------------------- "GElabCheckLamPiRdxAlpha"
   (GElabCheck Gamma  (TermLam z et)   (TermLam x gt)  (CanonicalPi y gU_11 gU_22))]
 
-;; #source file ./ott/lang_simple.ott  lines 2230 - 2234 
+;; #source file ./ott/lang_simple.ott  lines 2231 - 2235 
  [
   
     
@@ -1806,7 +1798,7 @@
   #:mode (GradualNESynth I I O O O)
   #:contract (GradualNESynth Gamma gtSynth et gu gU)
 
-;; #source file ./ott/lang_simple.ott  lines 2250 - 2254 
+;; #source file ./ott/lang_simple.ott  lines 2251 - 2255 
  [
   
   (GradualSetNorm Gamma gU gT)
@@ -1814,13 +1806,13 @@
   --------------------------------------------------- "GradualNESynthAnn"
   (GradualNESynth Gamma  (TermAnn gt gT)  et gu gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 2255 - 2258 
+;; #source file ./ott/lang_simple.ott  lines 2256 - 2259 
  [
    (side-condition ,(> (term  i ) 0)) 
   ---------------------------------------------------------------------------------------------------------------------------- "GradualNESynthSet"
   (GradualNESynth Gamma (TermSet i) (TermSet i) (CanonicalAtomic (AtomicSet i)) (CanonicalAtomic  (AtomicSet (succ  i ) ) ))]
 
-;; #source file ./ott/lang_simple.ott  lines 2260 - 2266 
+;; #source file ./ott/lang_simple.ott  lines 2261 - 2267 
  [
    (side-condition ,(not (hash-has-key? currently-defined-vars (term  x )) )) 
     
@@ -1829,14 +1821,14 @@
   ------------------------------------------------------ "GradualNESynthVar"
   (GradualNESynth Gamma x x gu gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 2267 - 2270 
+;; #source file ./ott/lang_simple.ott  lines 2268 - 2271 
  [
   
    (where (ENTTriple  et   gu   gU ) ,(and (hash-has-key? currently-defined-vars (term  x ) ) (hash-ref currently-defined-vars (term  x )) )) 
   ------------------------------------------------------ "GradualNESynthVarLook"
   (GradualNESynth Gamma x x gu gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 2274 - 2284 
+;; #source file ./ott/lang_simple.ott  lines 2275 - 2285 
  [
   
   (GradualNESynth Gamma gtSynth_11 et_11 gu gU)
@@ -1850,7 +1842,7 @@
   -------------------------------------------------------------------------------------- "GradualNESynthApp"
   (GradualNESynth Gamma (TermApp gtSynth_11 gt_22) (TermApp et_11 et_22) gu_^^^ gU_22)]
 
-;; #source file ./ott/lang_simple.ott  lines 2287 - 2291 
+;; #source file ./ott/lang_simple.ott  lines 2288 - 2292 
  [
    (side-condition ,(error 'typechecking "Cannot synthesize type for ~a, try adding an annotation?" (pt (term  (TermVar gs) )))) 
   ----------------------------------------------------------------------------------------------------------------------------------------- "GradualNESynthSynthRdxError"
@@ -1862,13 +1854,13 @@
   #:mode (GradualNESynthCheck I O O I I I I I)
   #:contract (GradualNESynthCheck Gamma gu et_11 gtSynth gu_^ et gU_^ gU)
 
-;; #source file ./ott/lang_simple.ott  lines 2299 - 2302 
+;; #source file ./ott/lang_simple.ott  lines 2300 - 2303 
  [
    (side-condition ,(and (< 0 (term  i )) (< (term  i ) (term  j )))) 
   ----------------------------------------------------------------------------------------------------------------- "GradualNESynthCheckLevel"
   (GradualNESynthCheck Gamma gU eT gTSynth gU eT (CanonicalAtomic (AtomicSet i)) (CanonicalAtomic (AtomicSet j)))]
 
-;; #source file ./ott/lang_simple.ott  lines 2308 - 2312 
+;; #source file ./ott/lang_simple.ott  lines 2309 - 2313 
  [
   
   (Meet gU gU_^ gU_^^)
@@ -1882,7 +1874,7 @@
   #:mode (GradualNECheck I O O I I)
   #:contract (GradualNECheck Gamma gu et gt gU)
 
-;; #source file ./ott/lang_simple.ott  lines 2329 - 2333 
+;; #source file ./ott/lang_simple.ott  lines 2330 - 2334 
  [
   
   (GradualNESynth Gamma gtSynth et_^ gu_^ gU_^)
@@ -1890,11 +1882,11 @@
   ----------------------------------------------- "GradualNECheckSynthRdx"
   (GradualNECheck Gamma gu_^^ et_^^ gtSynth gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 2335 - 2342 
+;; #source file ./ott/lang_simple.ott  lines 2336 - 2343 
 
-;; #source file ./ott/lang_simple.ott  lines 2343 - 2348 
+;; #source file ./ott/lang_simple.ott  lines 2344 - 2349 
 
-;; #source file ./ott/lang_simple.ott  lines 2358 - 2366 
+;; #source file ./ott/lang_simple.ott  lines 2359 - 2367 
  [
   (ConsistentSet gU_^^)
   (GradualNECheck Gamma gU_11 eT_11 gT_11 gU_^^)
@@ -1903,9 +1895,9 @@
   -------------------------------------------------------------------------------------------------------- "GradualNECheckPi"
   (GradualNECheck Gamma (CanonicalPi x gU_11 gU_22) (TermPi x eT_11 eT_22) (TermPi x gT_11 gT_22) gU_^^)]
 
-;; #source file ./ott/lang_simple.ott  lines 2367 - 2371 
+;; #source file ./ott/lang_simple.ott  lines 2368 - 2372 
 
-;; #source file ./ott/lang_simple.ott  lines 2372 - 2377 
+;; #source file ./ott/lang_simple.ott  lines 2373 - 2378 
  [
   
    (where   z  ,(gensym)) 
@@ -1914,7 +1906,7 @@
   ------------------------------------------------------------------------------------------------------------ "GradualNECheckLamPiRdxAlpha"
   (GradualNECheck Gamma  (CanonicalLam z gu)   (TermLam z et)   (TermLam x gt)  (CanonicalPi y gU_11 gU_22))]
 
-;; #source file ./ott/lang_simple.ott  lines 2378 - 2382 
+;; #source file ./ott/lang_simple.ott  lines 2379 - 2383 
  [
   
     
@@ -1922,13 +1914,13 @@
   --------------------------------------------------------------------------------------------- "GradualNECheckLamDyn"
   (GradualNECheck Gamma  (CanonicalLam x gu)   (TermLam x et)   (TermLam x gt)  CanonicalDyn)]
 
-;; #source file ./ott/lang_simple.ott  lines 2383 - 2386 
+;; #source file ./ott/lang_simple.ott  lines 2384 - 2387 
  [
   (GradualSet Gamma gU)
   --------------------------------------------------------------------------------------- "GradualNECheckDyn"
   (GradualNECheck Gamma CanonicalDyn (TermEp (EvidenceEv Gamma gU) TermDyn) TermDyn gU)]
 )
-;; #source file ./ott/lang_simple.ott  lines 2394 - 2394 
+;; #source file ./ott/lang_simple.ott  lines 2395 - 2395 
 #| 
 
 ;;; definitions 
@@ -1938,14 +1930,14 @@
   #:mode (EvType I I I)
   #:contract (EvType Gamma et gU)
 
-;; #source file ./ott/lang_simple.ott  lines 2407 - 2411 
+;; #source file ./ott/lang_simple.ott  lines 2408 - 2412 
  [
     
   (GVarLook x gU Gamma)
   ------------------------------- "EvTypeVar"
   (EvType Gamma x gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 2415 - 2420 
+;; #source file ./ott/lang_simple.ott  lines 2416 - 2421 
  [
   
   (EvType Gamma et_11 gU)
@@ -1954,7 +1946,7 @@
   -------------------------------------------- "EvTypeApp"
   (EvType Gamma (TermApp et_11 et_22) gU_22)]
 
-;; #source file ./ott/lang_simple.ott  lines 2426 - 2432 
+;; #source file ./ott/lang_simple.ott  lines 2427 - 2433 
  [
   
   (ConsistentSet gU)
@@ -1964,13 +1956,13 @@
   ------------------------------------------ "EvTypePi"
   (EvType Gamma (TermPi x eT_11 eT_22) gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 2433 - 2436 
+;; #source file ./ott/lang_simple.ott  lines 2434 - 2437 
  [
    (side-condition ,(> (term  i ) 0)) 
   ------------------------------------------------------------------------ "EvTypeSet"
   (EvType Gamma (TermSet i) (CanonicalAtomic  (AtomicSet (succ  i ) ) ))]
 
-;; #source file ./ott/lang_simple.ott  lines 2438 - 2442 
+;; #source file ./ott/lang_simple.ott  lines 2439 - 2443 
  [
   
   (EvType Gamma et gU_^)
@@ -1978,14 +1970,14 @@
   ---------------------------------- "EvTypeEv"
   (EvType Gamma (TermEp ep et) gU)]
 
-;; #source file ./ott/lang_simple.ott  lines 2443 - 2447 
+;; #source file ./ott/lang_simple.ott  lines 2444 - 2448 
  [
   (EvType Gamma eT (CanonicalAtomic (AtomicSet i)))
    (side-condition ,(and (< 0 (term  i )) (< (term  i ) (term  j )))) 
   --------------------------------------------------- "EvTypeLevel"
   (EvType Gamma eT (CanonicalAtomic (AtomicSet j)))]
 
-;; #source file ./ott/lang_simple.ott  lines 2452 - 2456 
+;; #source file ./ott/lang_simple.ott  lines 2453 - 2457 
  [
   
     
@@ -1993,7 +1985,7 @@
   ------------------------------------------------------------- "EvTypeLamPi"
   (EvType Gamma  (TermLam x et)  (CanonicalPi x gU_11 gU_22))]
 
-;; #source file ./ott/lang_simple.ott  lines 2458 - 2462 
+;; #source file ./ott/lang_simple.ott  lines 2459 - 2463 
  [
   
     
@@ -2001,14 +1993,14 @@
   ---------------------------------------------- "EvTypeLamDyn"
   (EvType Gamma  (TermLam x et)  CanonicalDyn)]
 
-;; #source file ./ott/lang_simple.ott  lines 2463 - 2467 
+;; #source file ./ott/lang_simple.ott  lines 2464 - 2468 
  [
   (GradualSet Gamma gU)
   (EvConsistent ep gU gU)
   --------------------------------------- "EvTypeDyn"
   (EvType Gamma (TermEp ep TermDyn) gU)]
 )
-;; #source file ./ott/lang_simple.ott  lines 2470 - 2470 
+;; #source file ./ott/lang_simple.ott  lines 2471 - 2471 
 |# 
 
 ;;; definitions 
@@ -2018,18 +2010,18 @@
   #:mode (SimpleStep I O)
   #:contract (SimpleStep t_11 t_22)
 
-;; #source file ./ott/lang_simple.ott  lines 2484 - 2486 
+;; #source file ./ott/lang_simple.ott  lines 2485 - 2487 
  [
   ---------------------------------- "SimpleStepAnn"
   (SimpleStep  (TermAnn sv T)  sv)]
 
-;; #source file ./ott/lang_simple.ott  lines 2487 - 2489 
+;; #source file ./ott/lang_simple.ott  lines 2488 - 2490 
  [
   
   ------------------------------------------------------------------- "SimpleStepApp"
   (SimpleStep (TermApp  (TermLam x t)  sv)  (esubst  t   x   sv ) )]
 
-;; #source file ./ott/lang_simple.ott  lines 2491 - 2494 
+;; #source file ./ott/lang_simple.ott  lines 2492 - 2495 
  [
   
   (SimpleStep t_11 t_22)
@@ -2042,20 +2034,20 @@
   #:mode (Step I O)
   #:contract (Step et_11 et_22)
 
-;; #source file ./ott/lang_simple.ott  lines 2502 - 2505 
+;; #source file ./ott/lang_simple.ott  lines 2503 - 2506 
  [
   (Meet  (type-in-ev  ep_11 )   (type-in-ev  ep_22 )   (type-in-ev  ep_33 ) )
   ------------------------------------------------------------- "StepAscr"
   (Step (TermEp ep_11  (TermEp ep_22 rv) ) (TermEp ep_33 rv))]
 
-;; #source file ./ott/lang_simple.ott  lines 2508 - 2512 
+;; #source file ./ott/lang_simple.ott  lines 2509 - 2513 
  [
    (side-condition ,(empty? (judgment-holds (Meet   (type-in-ev  ep_11 )     (type-in-ev  ep_22 )   ep_9999) ep_9999))) 
    (side-condition ,(error 'RuntimeError "Can't cast:\n    ~a\nto\n   ~a\nin term ~a" (printEvType (term  ep_11 )) (printEvType (term  ep_22 )) (pt (term  rv )) )) 
   ----------------------------------------------------- "StepAscrFail"
   (Step (TermEp ep_11  (TermEp ep_22 rv) ) TermError)]
 
-;; #source file ./ott/lang_simple.ott  lines 2524 - 2529 
+;; #source file ./ott/lang_simple.ott  lines 2525 - 2530 
  [
   
     
@@ -2064,7 +2056,7 @@
   --------------------------------------------------------------------------------------------------------------------------------- "StepAppEv"
   (Step (TermApp  (TermEp ep_11  (TermLam x et) )   (TermEp ep_22 rv) ) (TermEp ep_44   (esubst  et   x   (TermEp ep_33 rv) )  ))]
 
-;; #source file ./ott/lang_simple.ott  lines 2532 - 2537 
+;; #source file ./ott/lang_simple.ott  lines 2533 - 2538 
  [
   
   (Domain  (type-in-ev  ep_11 )   (type-in-ev  ep_22 ) )
@@ -2072,19 +2064,19 @@
   ---------------------------------------------------------------------------------------------------------------- "StepAppEvRaw"
   (Step (TermApp  (TermEp ep_11  (TermLam x et) )  rv) (TermEp ep_33   (esubst  et   x   (TermEp ep_22 rv) )  ))]
 
-;; #source file ./ott/lang_simple.ott  lines 2538 - 2540 
+;; #source file ./ott/lang_simple.ott  lines 2539 - 2541 
  [
   
   --------------------------------------------------------------- "StepApp"
   (Step (TermApp  (TermLam x et)  ev)  (esubst  et   x   ev ) )]
 
-;; #source file ./ott/lang_simple.ott  lines 2541 - 2544 
+;; #source file ./ott/lang_simple.ott  lines 2542 - 2545 
  [
   (EvCod ev  (type-in-ev  ep_11 )   (type-in-ev  ep_22 ) )
   --------------------------------------------------------------------- "StepAppDyn"
   (Step (TermApp  (TermEp ep_11 TermDyn)  ev) (TermEp ep_22 TermDyn))]
 
-;; #source file ./ott/lang_simple.ott  lines 2546 - 2551 
+;; #source file ./ott/lang_simple.ott  lines 2547 - 2552 
  [
   
   (Domain  (type-in-ev  ep_11 )   (type-in-ev  ep_33 ) )
@@ -2093,7 +2085,7 @@
   -------------------------------------------------------------------------- "StepAppFailTrans"
   (Step (TermApp  (TermEp ep_11 rv_11)   (TermEp ep_22 rv_22) ) TermError)]
 
-;; #source file ./ott/lang_simple.ott  lines 2557 - 2561 
+;; #source file ./ott/lang_simple.ott  lines 2558 - 2562 
  [
   
    (side-condition ,(empty? (judgment-holds (Domain   (type-in-ev  ep_11 )   gU_9999) gU_9999))) 
@@ -2101,9 +2093,9 @@
   --------------------------------------------------- "StepAppFailDom"
   (Step (TermApp  (TermEp ep_11 rv)  ev) TermError)]
 
-;; #source file ./ott/lang_simple.ott  lines 2574 - 2578 
+;; #source file ./ott/lang_simple.ott  lines 2575 - 2579 
 
-;; #source file ./ott/lang_simple.ott  lines 2579 - 2582 
+;; #source file ./ott/lang_simple.ott  lines 2580 - 2583 
 
 )
 (define-judgment-form L 
@@ -2111,7 +2103,7 @@
   #:mode (EvCod I I O)
   #:contract (EvCod et gU_11 gU_22)
 
-;; #source file ./ott/lang_simple.ott  lines 2624 - 2629 
+;; #source file ./ott/lang_simple.ott  lines 2625 - 2630 
  [
     
     (Domain gU gU_^)   (GNCheck EnvEmpty gu et gU_^)  
@@ -2119,7 +2111,7 @@
   --------------------- "EvCodSub"
   (EvCod et gU gU_22)]
 )
-;; #source file ./ott/lang_simple.ott  lines 2645 - 2661 
+;; #source file ./ott/lang_simple.ott  lines 2646 - 2662 
 (define-judgment-form
   L
   #:mode (ElabNormType I I O)
