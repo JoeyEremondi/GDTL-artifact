@@ -6,6 +6,8 @@ define
    loop : {(A : Set(10)) (B : Set(10)) {{A -> B} -> {A -> B} } ? -> {A -> B} }
    loop A B f x = (f (lambda (y) (x x y)))
 
+;(trace-on)
+
 define
    Z : {(A : Set(10)) (B : Set(10)) {{A -> B} -> {A -> B} } -> {A -> B} }
    Z A B f = ((loop A B f) (loop A B f))
