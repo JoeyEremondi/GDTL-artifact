@@ -28,6 +28,7 @@
 (require redex)
 (require  (rename-in "lang_simple.rkt" (currently-defined-vars defined-vars )) )
 
+(default-language LContext)
 
 ;(check-redundancy #t)
 (caching-enabled? #t)
@@ -99,6 +100,8 @@
 
 (define MultiStep (context-closure Red LContext redexContext))
 
+
+
 (define (elab-and-typecheck e)
   (let ([elabList (judgment-holds (GElabSynth EnvEmpty (unquote e) et gU) et)])
            (cond
@@ -142,7 +145,7 @@
      #'(reductions body)]
     [_
     #`(apply values
-                (map pt (apply-reduction-relation* MultiStep (elab-and-typecheck #,e))))
+                (map pt (apply-reduction-relation* MultiStep (perform-elab-substs (elab-and-typecheck #,e)))))
     ]
   )
 )
@@ -171,7 +174,7 @@
   (syntax-parse stx
     #:datum-literals (:=)
     [(_ x:id body)
-      #`(match-let*
+      #`(let*
               ([key '#,(syntax->datum #'x)]
                [ent (typecheck body)])
                     (printf  "defined ~a\n" (quote x))  (hash-set! defined-vars key ent))
