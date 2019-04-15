@@ -84,7 +84,7 @@ define
   unsafeNil : vec(Set(2) ?)
   unsafeNil = { (nil Set(2)) :: vec(Set(2) ?)}
 
-trace-on()
+;trace-on()
 (head Set(2) zero unsafeNil)
 
 define
