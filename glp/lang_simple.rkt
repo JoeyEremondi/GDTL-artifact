@@ -326,11 +326,11 @@
     (TermLam z (esubst (substitute et x z) x_old et_new ))
     (where   z  ,(gensym)) ]
   [(esubst (TermApp et_1 et_2) x_old et_new) (TermApp (esubst et_1 x_old et_new) (esubst et_2 x_old et_new))]
-  [(esubst (TermEp (EvidenceEv Gamma gU_1 ) et) x_old et_new) (TermEp (EvidenceEv Gamma_1 gU_2) (esubst et x_old et_new))
+  [(esubst (TermEp (EvidenceEv Gamma gU_1 ) et) x_old et_new) (TermEp (EvidenceEv Gamma_new gU_new) (esubst et x_old et_new))
     (judgment-holds (GVarLook x_old gU_V Gamma))
-    (judgment-holds (GNCheck Gamma gu_esnorm et gU_V))
-    (judgment-holds (GradualEnvSub Gamma x_old gU_V gu_esnorm Gamma_1))
-    (judgment-holds (GHsub  x_old gU_V gu_esnorm gU_1 gU_2))]
+    (judgment-holds (GNCheck Gamma gu_esnorm et_new gU_V))
+    (judgment-holds (GradualEnvSub x_old gU_V gu_esnorm Gamma Gamma_new))
+    (judgment-holds (GHsub  x_old gU_V gu_esnorm gU_1 gU_new))]
   ;; TODO get rid of types on ? or add Gamma
   [(esubst et x_old et_new) et] 
 )
