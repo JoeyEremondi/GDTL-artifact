@@ -207,20 +207,20 @@
 (define-syntax (GDTL-traces stx)
   (syntax-parse stx
     [(_ body)
-      #`(traces SmallStep (elab-and-typecheck body) #:pp pt
+      #`(traces MultiStep (perform-elab-substs (elab-and-typecheck body)) #:pp pt
       )]))
 
 (define-syntax (reductions stx)
   (syntax-parse stx
     [(_ body)
-      #`(apply-reduction-relation/tag-with-names SmallStep (elab-and-typecheck body)
+      #`(apply-reduction-relation/tag-with-names MultiStep (perform-elab-substs (elab-and-typecheck body))
       )]))
 
 
 (define-syntax (GDTL-stepper stx)
   (syntax-parse stx
     [(_ body)
-      #`(stepper SmallStep (elab-and-typecheck body) pt
+      #`(stepper MultiStep (perform-elab-substs (elab-and-typecheck body)) pt
       )]))
 
 (define-syntax (GDTL-type stx)

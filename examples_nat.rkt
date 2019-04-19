@@ -11,3 +11,5 @@
   (plus : (-> Nat Nat Nat))
   ( plus m n = (NatElim m ConstNat n m-1 rec (Succ rec))
          ))
+
+(define foo (plus ? 3))
