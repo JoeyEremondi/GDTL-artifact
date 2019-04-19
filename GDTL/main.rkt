@@ -8,7 +8,8 @@
                      [GDTL-traces traces]
                      [GDTL-stepper stepper]
                      [GDTL-type type]
-                     [GDTL-normalize normalize])
+                     [GDTL-normalize normalize]
+                     [GDTL-datum #%datum])
          Set
          ->
          ::
@@ -252,5 +253,13 @@
   [(nfx dom:arrow-dom ...+ -> cod:expr) #'(-> dom ... cod)]
   ))
 
+(define-for-syntax (number->term n)
+  (if (= n 0)
+      #`TermZero
+      #`(TermSucc #,(number->term (- n 1))) ))
 
+(define-syntax (GDTL-datum stx)
+  (syntax-parse stx
+    [(_ . v:exact-nonnegative-integer) #`(term #,(number->term (syntax->datum #`v)))]
+    [(_ . other) (raise-syntax-error #f "not allowed" #'other)]))
 
