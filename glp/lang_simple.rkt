@@ -1470,27 +1470,25 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 2585 - 2588 
  [
-  
-  (GNCheck Gamma gu gt (CanonicalAtomic AtomicNat))
+  (GNCheck Gamma gu tt (CanonicalAtomic AtomicNat))
   --------------------------------------------------------------------------------------------- "GNSynthSucc"
-  (GNSynth Gamma (TermSucc gt) (CanonicalAtomic (AtomicSucc gu)) (CanonicalAtomic AtomicNat))]
+  (GNSynth Gamma (TermSucc tt) (CanonicalAtomic (AtomicSucc gu)) (CanonicalAtomic AtomicNat))]
 
 ;; #source file ./ott/lang_simple.ott  lines 2589 - 2602 
  [
-  
    (where   y  ,(gensym)) 
-  (GNCheck Gamma gu_11 gt_11 (CanonicalAtomic AtomicNat))
-  (GNCheck Gamma gU gT (CanonicalPi y (CanonicalAtomic AtomicNat) (CanonicalAtomic (AtomicSet  1 ))))
+  (GNCheck Gamma gu_11 tt_11 (CanonicalAtomic AtomicNat))
+  (GNCheck Gamma gU TT (CanonicalPi y (CanonicalAtomic AtomicNat) (CanonicalAtomic (AtomicSet  1 ))))
   (BodySub (CanonicalAtomic AtomicNat) (CanonicalAtomic AtomicZero) gU gU_22)
-  (GNCheck Gamma gu_22 gt_22 gU_22)
+  (GNCheck Gamma gu_22 tt_22 gU_22)
   (BodySub (CanonicalAtomic AtomicNat) (CanonicalAtomic  (AtomicSpine  x_11  SpineEmpty) ) gU gU_33^)
   (BodySub (CanonicalAtomic AtomicNat) (CanonicalAtomic (AtomicSucc (CanonicalAtomic  (AtomicSpine  x_11  SpineEmpty) ))) gU gU_33)
-  (GNCheck (EnvExt x_22 gU_33^ (EnvExt x_11 (CanonicalAtomic AtomicNat) Gamma)) gu_33 gt_33 gU_33)
+  (GNCheck (EnvExt x_22 gU_33^ (EnvExt x_11 (CanonicalAtomic AtomicNat) Gamma)) gu_33 tt_33 gU_33)
   (BodySub (CanonicalAtomic AtomicNat) gu_11 gU gU_44)
    (where   z  ,(gensym)) 
   (GHsub z (CanonicalAtomic AtomicNat) gu_11 (CanonicalAtomic (AtomicSpine z (SpineNatElim SpineEmpty gU gu_22 x_11 x_22 gu_33))) gu_44)
   -------------------------------------------------------------------------- "GNSynthNatElim"
-  (GNSynth Gamma (TermNatElim gt_11 gT gt_22 x_11 x_22 gt_33) gu_44 gU_44)]
+  (GNSynth Gamma (TermNatElim tt_11 TT tt_22 x_11 x_22 tt_33) gu_44 gU_44)]
 
 )
 (define-judgment-form L 
