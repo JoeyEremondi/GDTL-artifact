@@ -16,7 +16,11 @@
          nfx
          trace-on
          trace-off
-         reductions)
+         reductions
+         Nat
+         Zero
+         Succ
+         NatElim)
 
 
 (require (for-syntax syntax/parse))
@@ -79,6 +83,13 @@
      #`(term (TermSet i))]))
 
 (define ? (term TermDyn))
+
+(define Nat (term TermNat))
+(define Zero (term TermZero))
+(define Succ (let ([x_succvar (gensym)])
+                 (term (TermAnn (TermLam ,x_succvar (TermSucc ,x_succvar)) (TermPi ,x_succvar TermNat TermNat)))))
+(define (NatElim gu gU gu_Z x_n x_rec gu_S)
+  (term (NatElim ,gu ,gU ,gu_Z ,x_n ,x_rec ,gu_S)))
 
 (define-syntax (:: stx)
   (syntax-parse stx
