@@ -21,7 +21,11 @@
          Nat
          Zero
          Succ
-         NatElim)
+         NatElim
+         Vec
+         Nil
+         Cons
+         VecElim)
 
 
 (require (for-syntax syntax/parse))
@@ -95,6 +99,24 @@
   (syntax-case so ()
       ((_ gu gU gu_Z x_n x_rec gu_S) #'(term (TermNatElim ,gu ,gU ,gu_Z ,x_n ,x_rec ,gu_S))
        )))
+
+(define-syntax (Vec so)
+  (syntax-case so ()
+      ((_ gU gu ) #'(term (TermVec ,gU ,gu))
+       )))
+(define-syntax (Nil so)
+  (syntax-case so ()
+      ((_ gu ) #'(term (TermNil ,gu))
+       )))
+(define-syntax (Cons so)
+  (syntax-case so ()
+      ((_ tp len hd tail ) #'(term (TermCons ,tp ,len ,hd ,tail))
+       )))
+(define-syntax (VecElim so)
+  (syntax-case so ()
+      ((_ vec tp len motive n x1 x2 x3 x4 c) #'(term (TermVecElim ,vec ,tp ,len ,motive ,n ,x1 ,x2 ,x3 ,x4 ,c))
+       )))
+
 
 (define-syntax (:: stx)
   (syntax-parse stx
