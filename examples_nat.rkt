@@ -12,4 +12,19 @@
   ( plus m n = (NatElim m ConstNat n m-1 rec (Succ rec))
          ))
 
-(define foo (plus ? 3))
+;(trace-on)
+
+(define
+  (fold : {(A : Set(1)) (B : Set(1)) ( n : Nat) {A B -> B} B (Vec A n) -> B})
+  (fold A B n f z v = (VecElim
+                       v
+                       A
+                       n
+                       (lambda (x y) B)
+                       z
+                       x1
+                       a
+                       x3
+                       b
+                       (f a b)
+                       )))
