@@ -1,14 +1,14 @@
 #lang racket
-(provide (rename-out [glp-topi #%top-interaction]
-                     [glp-module #%module-begin]
-                     [glp-lambda lambda]
-                     [glp-app #%app]
-                     [glp-top #%top]
-                     [glp-define define]
-                     [glp-traces traces]
-                     [glp-stepper stepper]
-                     [glp-type type]
-                     [glp-normalize normalize])
+(provide (rename-out [GDTL-topi #%top-interaction]
+                     [GDTL-module #%module-begin]
+                     [GDTL-lambda lambda]
+                     [GDTL-app #%app]
+                     [GDTL-top #%top]
+                     [GDTL-define define]
+                     [GDTL-traces traces]
+                     [GDTL-stepper stepper]
+                     [GDTL-type type]
+                     [GDTL-normalize normalize])
          Set
          ->
          ::
@@ -51,12 +51,12 @@
 ;(define defined-vars (make-hasheq))
 
 
-(define-syntax (glp-top stx)
+(define-syntax (GDTL-top stx)
   (syntax-parse stx
     [(_ . x)
      #`(term x)]))
 
-(define-syntax (glp-lambda stx)
+(define-syntax (GDTL-lambda stx)
   (syntax-parse stx
     [(_ x:id body:expr)
      #`(term (TermLam x (unquote body)))]
@@ -67,7 +67,7 @@
             (syntax->list #'(x ...) ))]
     ))
 
-(define-syntax (glp-app stx)
+(define-syntax (GDTL-app stx)
   (syntax-parse stx
     [(_ s:expr t:expr ...)
      (foldl
@@ -143,19 +143,19 @@
 
 (define-for-syntax (eval-rdx e)
   (syntax-parse e
-    #:literals (glp-define trace-on trace-off trace-list glp-traces glp-stepper)
-    [(glp-define x body)
-     #'(glp-define x body)]
+    #:literals (GDTL-define trace-on trace-off trace-list GDTL-traces GDTL-stepper)
+    [(GDTL-define x body)
+     #'(GDTL-define x body)]
     [(trace-on)
      #'(trace-on)]
     [(trace-off)
      #'(trace-off)]
     [(trace-list l)
      #'(trace-list l)]
-    [(glp-traces body)
-     #'(glp-traces body)]
-    [(glp-stepper body)
-     #'(glp-stepper body)]
+    [(GDTL-traces body)
+     #'(GDTL-traces body)]
+    [(GDTL-stepper body)
+     #'(GDTL-stepper body)]
     [(reductions body)
      #'(reductions body)]
     [_
@@ -166,7 +166,7 @@
 )
 
 
-(define-syntax (glp-topi stx)
+(define-syntax (GDTL-topi stx)
   (syntax-parse stx
     [(_ . e)
      (eval-rdx #'e)
@@ -175,7 +175,7 @@
 
 
 
-(define-syntax (glp-module stx)
+(define-syntax (GDTL-module stx)
   (syntax-parse stx
     [(_ e ...)
      #:do [
@@ -185,7 +185,7 @@
       #`(#%module-begin  #,@explist
       )]))
 
-(define-syntax (glp-define stx)
+(define-syntax (GDTL-define stx)
   (syntax-parse stx
     #:datum-literals (:=)
     [(_ x:id body)
@@ -195,15 +195,15 @@
                     (printf  "defined ~a\n" (quote x))  (hash-set! defined-vars key ent))
       ]
     ;[(_ (f:id arg:id ...) body)
-    ;  #`(define f (glp-lambda (arg ...) body)
+    ;  #`(define f (GDTL-lambda (arg ...) body)
     ;  )]
     [(_ (f1:id : tp:expr) (f2:id arg:id ... = body))
      #:fail-unless (equal? (syntax-e #'f1) (syntax-e #'f2)) "Must give definition to match type declaration"
-      #`(glp-define f1 (:: (glp-lambda (arg ...) body) tp)
+      #`(GDTL-define f1 (:: (GDTL-lambda (arg ...) body) tp)
       )]
     ))
 
-(define-syntax (glp-traces stx)
+(define-syntax (GDTL-traces stx)
   (syntax-parse stx
     [(_ body)
       #`(traces SmallStep (elab-and-typecheck body) #:pp pt
@@ -216,19 +216,19 @@
       )]))
 
 
-(define-syntax (glp-stepper stx)
+(define-syntax (GDTL-stepper stx)
   (syntax-parse stx
     [(_ body)
       #`(stepper SmallStep (elab-and-typecheck body) pt
       )]))
 
-(define-syntax (glp-type stx)
+(define-syntax (GDTL-type stx)
   (syntax-parse stx
     [(_ body)
       #`(show-derivations (build-derivations (GradualElabSynth EnvEmpty (unquote body) es gU))
       )]))
 
-(define-syntax (glp-normalize stx)
+(define-syntax (GDTL-normalize stx)
   (syntax-parse stx
     [(_ body)
       #`(norm-and-typecheck body

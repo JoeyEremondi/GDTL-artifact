@@ -1,6 +1,6 @@
 #lang scribble/manual
 
-@require[(for-label glp/main)]
+@require[(for-label GDTL/main)]
 @require[(for-label (rename-in redex
                                [stepper redex/stepper]
                                [traces redex/traces]
@@ -15,11 +15,11 @@ This is a thin set of macros provided on top of the redex-model for the Gradual 
 Right now, this is only intended for playing around with examples from the paper. Notably, it's very slow.
 Compile-time and runtime error messages are okay, but might be ininformative in some cases.
 
-@defmodule[glp/main]
+@defmodule[GDTL/main]
 
 @section{Getting Started}
 
-Import as @racketblock{#lang s-exp glp} or @racketblock{#lang sweet-exp glp}
+Import as @racketblock{#lang s-exp GDTL} or @racketblock{#lang sweet-exp GDTL}
 
 @section{Overview of the language}
 
@@ -119,7 +119,7 @@ Display the compile-time normalization of @racket{term}.
 Wtih s-expressions:
 
 @codeblock{
-#lang s-exp glp
+#lang s-exp GDTL
 (define
   (loop : (->
            (A : (Set 10))
@@ -144,7 +144,7 @@ Wtih s-expressions:
 Using sweet-expressions:
 
 @codeblock{
-#lang sweet-exp glp
+#lang sweet-exp GDTL
 
 define
    loop : {(A : Set(10)) (B : Set(10)) {{A -> B} -> {A -> B} } ? -> {A -> B} }
@@ -159,7 +159,7 @@ We can build up booleans, natural numbers, and vectors using Church encodings.
 
 
 @codeblock{
-#lang sweet-exp glp
+#lang sweet-exp GDTL
 
 define
   bool : Set(5)
