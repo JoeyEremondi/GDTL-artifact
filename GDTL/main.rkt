@@ -146,28 +146,31 @@
 
 
 (define (elab-and-typecheck e)
-  (let ([elabList (judgment-holds (GElabSynth EnvEmpty (unquote e) et gU) et)])
+  (with-handlers ([(const #t) (lambda (exn) (error 'StaticTypeError "~a" exn))])
+      (let ([elabList (judgment-holds (GElabSynth EnvEmpty (unquote e) et gU) et)])
            (cond
                   [(null? elabList) (error "Can't infer type for expression (try adding an annotation?)" e )]
                   [(< 1 (length elabList)) (error "Too many elaborations for expression" e elabList) ]
                   [else (first elabList)]
-                  )))
+                  ))))
 
 (define (typecheck e)
-  (let ([tlist (judgment-holds (ElabNormType EnvEmpty (unquote e) ent) ent)])
+  (with-handlers ([(const #t) (lambda (exn) (error 'StaticTypeError "~a" exn))])
+   (let ([tlist (judgment-holds (ElabNormType EnvEmpty (unquote e) ent) ent)])
            (cond
                   [(null? tlist) (error "Can't infer type for definition (try adding an annotation?)" e )]
                   [(< 1 (length tlist)) (error "Too many types for expression" e tlist) ]
                   [else (first tlist)]
-                  )))
+                  ))))
 
 (define (norm-and-typecheck e)
-  (let ([normList (judgment-holds (GNSynth EnvEmpty (unquote e) gu gU) gu)])
+  (with-handlers ([(const #t) (lambda (exn) (error 'StaticTypeError "~a" exn))])
+   (let ([normList (judgment-holds (GNSynth EnvEmpty (unquote e) gu gU) gu)])
            (cond
                   [(null? normList) (error "Can't infer type to normalize expression (try adding an annotation?)" e )]
                   [(< 1 (length normList)) (error "Too many normalizations for expression" e normList) ]
                   [else (first normList)]
-                  )))
+                  ))))
 
 (define-for-syntax (eval-rdx e)
   (syntax-parse e
@@ -187,8 +190,9 @@
  ;   [(reductions body)
   ;   #'(reductions body)]
     [_
-    #`(apply values
-                (map pt (apply-reduction-relation* MultiStep (perform-elab-substs (elab-and-typecheck #,e)))))
+    #`(let ([elabbed (perform-elab-substs (elab-and-typecheck #,e))])
+       (with-handlers ([(const #t) (lambda (exn) (error 'RuntimeTypeError "~a" exn))])(apply values
+                (map pt (apply-reduction-relation* MultiStep elabbed)))))
     ]
   )
 )
