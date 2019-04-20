@@ -99,7 +99,7 @@
   (syntax-case so ()
       ((_ gu gU gu_Z x_n x_rec gu_S) #'(term (TermNatElim 1 ,gu ,gU ,gu_Z ,x_n ,x_rec ,gu_S))
        )
-    ((_ i gu gU gu_Z x_n x_rec gu_S) #'(term (TermNatElim ,i ,gu ,gU ,gu_Z ,x_n ,x_rec ,gu_S))
+    ((_ i gu gU gu_Z x_n x_rec gu_S) #'(term (TermNatElim i ,gu ,gU ,gu_Z ,x_n ,x_rec ,gu_S))
        )
     ))
 
@@ -119,7 +119,7 @@
   (syntax-case so ()
       ((_ vec tp len motive n x1 x2 x3 x4 c) #'(term (TermVecElim 1 ,vec ,tp ,len ,motive ,n ,x1 ,x2 ,x3 ,x4 ,c))
        )
-    ((_ i vec tp len motive n x1 x2 x3 x4 c) #'(term (TermVecElim ,i ,vec ,tp ,len ,motive ,n ,x1 ,x2 ,x3 ,x4 ,c))
+    ((_ i vec tp len motive n x1 x2 x3 x4 c) #'(term (TermVecElim i ,vec ,tp ,len ,motive ,n ,x1 ,x2 ,x3 ,x4 ,c))
        )))
 
 
@@ -184,8 +184,8 @@
      #'(GDTL-traces body)]
     [(GDTL-stepper body)
      #'(GDTL-stepper body)]
-    [(reductions body)
-     #'(reductions body)]
+ ;   [(reductions body)
+  ;   #'(reductions body)]
     [_
     #`(apply values
                 (map pt (apply-reduction-relation* MultiStep (perform-elab-substs (elab-and-typecheck #,e)))))
@@ -225,7 +225,11 @@
     ;[(_ (f:id arg:id ...) body)
     ;  #`(define f (GDTL-lambda (arg ...) body)
     ;  )]
-    [(_ (f1:id : tp:expr) (f2:id arg:id ... = body))
+    [(_ (f1:id : tp:expr) (f2:id  = body))
+     #:fail-unless (equal? (syntax-e #'f1) (syntax-e #'f2)) "Must give definition to match type declaration"
+      #`(GDTL-define f1 (:: body tp)
+      )]
+    [(_ (f1:id : tp:expr) (f2:id arg:id ...+ = body))
      #:fail-unless (equal? (syntax-e #'f1) (syntax-e #'f2)) "Must give definition to match type declaration"
       #`(GDTL-define f1 (:: (GDTL-lambda (arg ...) body) tp)
       )]
