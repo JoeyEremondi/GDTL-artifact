@@ -19,7 +19,7 @@ Compile-time and runtime error messages are okay, but might be informative in so
 
 @section{Getting Started}
 
-Import as @racketblock{#lang s-exp GDTL} or @racketblock{#lang sweet-exp GDTL}
+Import as @racketblock{#lang s-exp GDTL} 
 
 @section{Overview of the language}
 
@@ -74,8 +74,6 @@ First form: the dependent function type taking an argument named @racket[id] of 
 
 
    Third form: Sugar for @racket[(-> argtype1 (-> argtype2 ... -(> argtype_n cod) ... ) )].
-   If using sweet-expressions, this can be written as
-   @racket[{argtype ... -> cod}]
 }
 
 
@@ -211,19 +209,6 @@ Wtih s-expressions:
   )
  }
 
-Using sweet-expressions:
-
-@codeblock{
-#lang sweet-exp GDTL
-
-define
-   loop : {(A : Set(10)) (B : Set(10)) {{A -> B} -> {A -> B} } ? -> {A -> B} }
-   loop A B f x = (f (lambda (y) (x x y)))
-
-define
-   Z : {(A : Set(10)) (B : Set(10)) {{A -> B} -> {A -> B} } -> {A -> B} }
-   Z A B f = ((loop A B f) (loop A B f))
- }
 
 We can use gradual inductive types. For example,
 here we use the unknown term @racket[?] as a vector length,
@@ -232,11 +217,8 @@ with unknown length. At runtime, dynamic checks ensure that
 we throw an exception if the vector is empty.
 
 @codeblock{
-#lang sweet-exp GDTL
+#lang s-exp GDTL
 
-;;Syntax is using Racket's "sweet expressions",
-;;an extension of s-expressions
-;;https://docs.racket-lang.org/sweet/index.html
 
 ;;We can eliminate over natural numbers to define iteration or perform induction
 ;;e.g. addition can be defined as follows:
@@ -248,43 +230,49 @@ we throw an exception if the vector is empty.
 ;;We can even do large elimination, to choose a type from a number
 ;;This lets us define the safe head function
 (define
-  (ifzero1 : { Nat Set(1) Set(1) -> Set(1) } )
-  (ifzero1 n S1 S2 = (NatElim 2 n (lambda (x) Set(1)) S1 x1 x2 S2)
-                            ))
+  (ifzero1 : { -> Nat (Set 1) (Set 1) (Set 1) } )
+  (ifzero1 n S1 S2 = (NatElim 2 n (lambda (x) (Set 1)) S1 x1 x2 S2)
+           ))
 ;;We eliminate a vector, producing 0:Nat if it is empty,
 ;; and producing its first element otherwise
 ;; This is type-safe because the motive of our elimination is dependent on the length of the vector
 (define
-  (head : {(A : Set(1)) (n : Nat) (Vec A (Succ n)) -> A })
+  (head : {-> (A : (Set 1)) (n : Nat) (Vec A (Succ n))  A })
   (head A n v = (VecElim v A (Succ n) (lambda (n2 v) (ifzero1 n2 Nat A)) 0 x1 x_head x3 x4 x_head )))
 
 ;; An empty vector with  length
-(define safeNil { (Nil Nat) :: (Vec Nat 0)})
+(define safeNil {:: (Nil Nat)  (Vec Nat 0)})
 
 ;; A non-empty vector with known length
-(define safeCons {(Cons Nat 0 2 (Nil Nat)) :: (Vec Nat 1)})
+(define safeCons {:: (Cons Nat 0 2 (Nil Nat))  (Vec Nat 1)})
 
 ;; A vector with unknown length
-(define unsafeNil { (Nil Nat) :: (Vec Nat ?)})
+(define unsafeNil {:: (Nil Nat)  (Vec Nat ?)})
 
 ;; Another vector with unknown length
-(define unsafeCons {(Cons Nat ? 2 (Nil Nat)) :: (Vec Nat ?)})
+(define unsafeCons {:: (Cons Nat ? 2 (Nil Nat))  (Vec Nat ?)})
 
 ;;Type-checks and runs successfully
 (head Nat 0 safeCons)
 
 ;;Does not typecheck
-;(head Nat ? safeNil)
+(head Nat ? safeNil)
 
 ;;Type-checks and runs successfully
 (head Nat ? unsafeCons)
 
+
 ;;Type-checks but throws runtime exception
 (head Nat ? unsafeNil)
+
+
+
 
            }
 
 Or we can build up booleans, natural numbers, and vectors using Church encodings.
+This file also gives a flavour of what the language looks like with Sweet Expressions
+instead of S-expressions.
 
 
 @codeblock{

@@ -146,7 +146,7 @@
 
 
 (define (elab-and-typecheck e)
-  (with-handlers ([(const #t) (lambda (exn) (error 'StaticTypeError "~a" exn))])
+  (with-handlers ([(const #t) (lambda (exn) (error (format "Static Type Error checking ~s:\n~a\n" (pt e) exn) (current-error-port)) )])
       (let ([elabList (judgment-holds (GElabSynth EnvEmpty (unquote e) et gU) et)])
            (cond
                   [(null? elabList) (error "Can't infer type for expression (try adding an annotation?)" e )]
@@ -155,7 +155,7 @@
                   ))))
 
 (define (typecheck e)
-  (with-handlers ([(const #t) (lambda (exn) (error 'StaticTypeError "~a" exn))])
+  (with-handlers ([(const #t) (lambda (exn) (error (format "Static Type Error checking ~s:\n~a\n" (pt e) exn) (current-error-port)) )])
    (let ([tlist (judgment-holds (ElabNormType EnvEmpty (unquote e) ent) ent)])
            (cond
                   [(null? tlist) (error "Can't infer type for definition (try adding an annotation?)" e )]
@@ -164,7 +164,7 @@
                   ))))
 
 (define (norm-and-typecheck e)
-  (with-handlers ([(const #t) (lambda (exn) (error 'StaticTypeError "~a" exn))])
+  (with-handlers ([(const #t) (lambda (exn) (error (format "Static Type Error checking ~s:\n~a\n" (pt e) exn) (current-error-port)) )])
    (let ([normList (judgment-holds (GNSynth EnvEmpty (unquote e) gu gU) gu)])
            (cond
                   [(null? normList) (error "Can't infer type to normalize expression (try adding an annotation?)" e )]
@@ -190,9 +190,10 @@
  ;   [(reductions body)
   ;   #'(reductions body)]
     [_
-    #`(let ([elabbed (perform-elab-substs (elab-and-typecheck #,e))])
-       (with-handlers ([(const #t) (lambda (exn) (error 'RuntimeTypeError "~a" exn))])(apply values
-                (map pt (apply-reduction-relation* MultiStep elabbed)))))
+    #`(with-handlers ([(const #t) (lambda (exn) (displayln (format "Static Type Error checking ~s:\n~a\n" (pt #,e) exn) (current-error-port)) )])(let ([elabbed (perform-elab-substs (elab-and-typecheck #,e))])
+       (with-handlers ([(const #t) (lambda (exn) (displayln (format "Dynamic Type Error running ~s:\n~a\n" (pt #,e) exn) (current-error-port)) )])
+         (apply values
+                (map pt (apply-reduction-relation* MultiStep elabbed))))))
     ]
   )
 )
