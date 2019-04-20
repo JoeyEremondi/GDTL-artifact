@@ -252,13 +252,13 @@ we throw an exception if the vector is empty.
 ;; Another vector with unknown length
 (define unsafeCons {:: (Cons Nat ? 2 (Nil Nat))  (Vec Nat ?)})
 
-;;Type-checks and runs successfully
+;;Type-checks and evaluates to 2
 (head Nat 0 safeCons)
 
 ;;Does not typecheck
 (head Nat ? safeNil)
 
-;;Type-checks and runs successfully
+;;Type-checks and evaluates to 2
 (head Nat ? unsafeCons)
 
 
