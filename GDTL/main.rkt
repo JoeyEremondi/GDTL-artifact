@@ -97,8 +97,11 @@
        )))
 (define-syntax (NatElim so)
   (syntax-case so ()
-      ((_ gu gU gu_Z x_n x_rec gu_S) #'(term (TermNatElim ,gu ,gU ,gu_Z ,x_n ,x_rec ,gu_S))
-       )))
+      ((_ gu gU gu_Z x_n x_rec gu_S) #'(term (TermNatElim 1 ,gu ,gU ,gu_Z ,x_n ,x_rec ,gu_S))
+       )
+    ((_ i gu gU gu_Z x_n x_rec gu_S) #'(term (TermNatElim ,i ,gu ,gU ,gu_Z ,x_n ,x_rec ,gu_S))
+       )
+    ))
 
 (define-syntax (Vec so)
   (syntax-case so ()
@@ -114,7 +117,9 @@
        )))
 (define-syntax (VecElim so)
   (syntax-case so ()
-      ((_ vec tp len motive n x1 x2 x3 x4 c) #'(term (TermVecElim ,vec ,tp ,len ,motive ,n ,x1 ,x2 ,x3 ,x4 ,c))
+      ((_ vec tp len motive n x1 x2 x3 x4 c) #'(term (TermVecElim 1 ,vec ,tp ,len ,motive ,n ,x1 ,x2 ,x3 ,x4 ,c))
+       )
+    ((_ i vec tp len motive n x1 x2 x3 x4 c) #'(term (TermVecElim ,i ,vec ,tp ,len ,motive ,n ,x1 ,x2 ,x3 ,x4 ,c))
        )))
 
 

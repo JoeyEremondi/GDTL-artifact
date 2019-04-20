@@ -14,6 +14,7 @@
   ( plus m n = (NatElim m ConstNat n m-1 rec (Succ rec))
          ))
 
+(trace-on)
 
 (define
   (fold : {(A : Set(1)) (B : Set(1)) ( n : Nat) {A B -> B} B (Vec A n) -> B})
