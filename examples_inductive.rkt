@@ -25,33 +25,18 @@
                             ))
 
 (define
-  (fold : {(A : Set(1)) (B : Set(1)) ( n : Nat) {A B -> B} B (Vec A n) -> B})
-  (fold A B n f z v = (VecElim
-                       v
-                       A
-                       n
-                       (lambda (x y) B)
-                       z
-                       x1
-                       a
-                       x3
-                       b
-                       (f a b)
-                       )))
-
-
-(define
   (head : {(A : Set(1)) (n : Nat) (Vec A (Succ n)) -> A })
   (head A n v = (VecElim v A (Succ n) (lambda (n2 v) (ifzero1 n2 Nat A)) 0 x1 x_head x3 x4 x_head )))
 
 (define unsafeNil { (Nil Nat) :: (Vec Nat ?)})
 
-(define unsafeCons {(Cons Nat 0 99 (Nil Nat)) :: (Vec Nat ?)})
+(define unsafeCons {(Cons Nat 0 2 (Nil Nat)) :: (Vec Nat ?)})
 
-(trace-on)
 
 ;;Type-checks and runs successfully
-(head unsafeCons)
+(head Nat ? unsafeCons)
 
 ;;Type-checks but throws runtime exception
-(head unsafeNil)
+(head Nat ? unsafeNil)
+
+
