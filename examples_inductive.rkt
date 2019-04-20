@@ -1,6 +1,8 @@
 #lang sweet-exp GDTL
 
-
+;;Syntax is using Racket's "sweet expressions",
+;;an extension of s-expressions
+;;https://docs.racket-lang.org/sweet/index.html
 
 ;;We can eliminate over natural numbers to define iteration or perform induction
 ;;e.g. addition can be defined as follows:

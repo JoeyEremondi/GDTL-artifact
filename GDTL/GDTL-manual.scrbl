@@ -8,12 +8,12 @@
 
 @(require scribble/eval)
 
-@title{Gradual types with Lambda and Pi}
+@title{A Gradual Dependently Typed Language}
 
 This is a thin set of macros provided on top of the redex-model for the Gradual Dependently-typed language.
 
 Right now, this is only intended for playing around with examples from the paper. Notably, it's very slow.
-Compile-time and runtime error messages are okay, but might be ininformative in some cases.
+Compile-time and runtime error messages are okay, but might be informative in some cases.
 
 @defmodule[GDTL/main]
 
@@ -24,12 +24,20 @@ Import as @racketblock{#lang s-exp GDTL} or @racketblock{#lang sweet-exp GDTL}
 @section{Overview of the language}
 
 @(racketgrammar*
-   #:literals (: ?)
+   #:literals (: ? ::)
    [term (lambda (id) term) 
          (term term)
          (-> (id : term) term)
          (:: term term )
          (Set natural)
+         Nat
+         Zero
+         (Succ term)
+         (NatElim natural term term term id term)
+         (Vec type term)
+         (Nil term)
+         (Cons type term term term)
+         (VecElim natural term term term term id id id id term)
          ?]
    [type term])
 
@@ -75,6 +83,68 @@ First form: the dependent function type taking an argument named @racket[id] of 
 @defform[(:: type term)
          ]{
   Behaves as @racket[term], but informs the compiler that it has type @racket[type].
+}
+
+@defidform[Nat
+         ]{
+  The type of natural numbers. Digits are automatically converted into chains of @racket[(Succ (Succ ... (Succ Zero)))]
+}
+
+@defidform[Zero
+         ]{
+  The constant 0.
+}
+
+@defform[ (Succ term)
+         ]{
+  One greater than the given term.
+}
+
+@defform*[
+ ((NatElim discriminee motive zero-case id-less id-recursive succ-case )
+          (NatElim level discriminee motive zero-case id-less id-recursive succ-case ))
+         ]{
+  Case analysis/induction for natural numbers. @racket[discriminee] should be a @racket[Nat].
+ The @racket[level] argument is optional, and defaults to 1.
+  The @racket[motive] should have type @racket[(-> Nat (Set level))]. If the discriminee is @racket[0],
+  then @racket[zero-case] is returned. If the discriminee is @racket[(Succ n)], then @racket[n]
+  is bound to @racket[id-less : Nat], and the result of @racket[(NatElim n motive zero-case id-less id-recursive succ-case )]
+  is bound to @racket[id-recursive : (motive id-less)] in @racket[succ-case : (motive (Succ id-less))], which is then returned.
+
+  Produces a result of type @racket[(motive discriminee)].
+  
+}
+
+@defform[(Vec element-type length)
+         ]{
+  The type of vectors containing @racket[length] elements with type @racket[element-type], where 
+                                 @racket[element-type : (Set 1)] and @racket[length : Nat]. 
+}
+
+@defform[(Nil element-type)
+         ]{
+  The 0-length vector for @racket[element-type].
+}
+
+@defform[ (Cons element-type length head tail)
+         ]{
+  Extends @racket[tail : (Vec element-type length)] with element @racket[head : element-type]. 
+}
+
+@defform*[
+ ((VecElim discriminee element-type length motive nil-case id-length id-head id-tail id-rec cons-case )
+          (VecElim level discriminee element-type length motive nil-case id-length id-head id-tail id-recursive cons-case ))
+         ]{
+  Case analysis/induction for natural numbers. @racket[discriminee] should be a @racket[(Vec element-type length)].
+ The @racket[level] argument is optional, and defaults to 1.
+  The @racket[motive] should have type @racket[(-> (n : Nat) (Vec element-type n ) (Set level))]. If the discriminee is @racket[(Nil element-type)],
+  then @racket[nil-case] is returned. If the discriminee is @racket[(Cons element-type n head tail)], then @racket[n]
+  is bound to @racket[id-length : Nat], @racket[head] to @racket[id-head : element-type], @racket[tail] to @racket[id-tail : (Vec element-type id-length )],
+   and the result of @racket[(VecElim tail element-type length motive nil-case id-length id-head id-tail id-rec cons-case )]
+  is bound to @racket[id-recursive : (motive id-length id-tail)] in @racket[succ-case : (motive (Succ id-length) (Cons element-type id-length id-head id-tail))], which is then returned.
+
+  Produces a result of type @racket[(motive length discriminee)].
+  
 }
 
 @section{Top level commands}
@@ -155,7 +225,66 @@ define
    Z A B f = ((loop A B f) (loop A B f))
  }
 
-We can build up booleans, natural numbers, and vectors using Church encodings.
+We can use gradual inductive types. For example,
+here we use the unknown term @racket[?] as a vector length,
+to apply the vector @racket[head] function to a vector
+with unknown length. At runtime, dynamic checks ensure that
+we throw an exception if the vector is empty.
+
+@codeblock{
+#lang sweet-exp GDTL
+
+;;Syntax is using Racket's "sweet expressions",
+;;an extension of s-expressions
+;;https://docs.racket-lang.org/sweet/index.html
+
+;;We can eliminate over natural numbers to define iteration or perform induction
+;;e.g. addition can be defined as follows:
+(define
+  (plus : (-> Nat Nat Nat))
+  ( plus m n = (NatElim m (lambda (x) Nat) n m-1 rec (Succ rec))
+         ))
+
+;;We can even do large elimination, to choose a type from a number
+;;This lets us define the safe head function
+(define
+  (ifzero1 : { Nat Set(1) Set(1) -> Set(1) } )
+  (ifzero1 n S1 S2 = (NatElim 2 n (lambda (x) Set(1)) S1 x1 x2 S2)
+                            ))
+;;We eliminate a vector, producing 0:Nat if it is empty,
+;; and producing its first element otherwise
+;; This is type-safe because the motive of our elimination is dependent on the length of the vector
+(define
+  (head : {(A : Set(1)) (n : Nat) (Vec A (Succ n)) -> A })
+  (head A n v = (VecElim v A (Succ n) (lambda (n2 v) (ifzero1 n2 Nat A)) 0 x1 x_head x3 x4 x_head )))
+
+;; An empty vector with  length
+(define safeNil { (Nil Nat) :: (Vec Nat 0)})
+
+;; A non-empty vector with known length
+(define safeCons {(Cons Nat 0 2 (Nil Nat)) :: (Vec Nat 1)})
+
+;; A vector with unknown length
+(define unsafeNil { (Nil Nat) :: (Vec Nat ?)})
+
+;; Another vector with unknown length
+(define unsafeCons {(Cons Nat ? 2 (Nil Nat)) :: (Vec Nat ?)})
+
+;;Type-checks and runs successfully
+(head Nat 0 safeCons)
+
+;;Does not typecheck
+;(head Nat ? safeNil)
+
+;;Type-checks and runs successfully
+(head Nat ? unsafeCons)
+
+;;Type-checks but throws runtime exception
+(head Nat ? unsafeNil)
+
+           }
+
+Or we can build up booleans, natural numbers, and vectors using Church encodings.
 
 
 @codeblock{
