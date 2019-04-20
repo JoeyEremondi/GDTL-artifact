@@ -442,17 +442,17 @@
 (define hsub-spine
   (term-match/single L
                      [SpineEmpty (lambda (x gu_new gU) (term (TermPair ,gu_new ,gU)))]
-                     [(SpineCons ge gu) (lambda (x gu_new gU) (hsub-spine-withsub (term (TermPair ,(hsub x gu_new gU (term gu)) ,( (hsub-spine (term ge)) x gu_new gU) )) )) ]
-                     [(SpineVecElim ge gU_type gu_len gU_motive gu_N x_len x_head x_tail x_rec gu_C) (lambda (x gu_new gU)
-                                                                       (let ([subbed (hsub x gu_new gU (term (CanonicalAtomic (AtomicSpine x ge))))])
+                     [(SpineCons ge gu) (lambda (x_old gu_new gU) (hsub-spine-withsub (term (TermPair ,(hsub x_old gu_new gU (term gu)) ,( (hsub-spine (term ge)) x_old gu_new gU) )) )) ]
+                     [(SpineVecElim ge gU_type gu_len gU_motive gu_N x_len x_head x_tail x_rec gu_C) (lambda (x_old gu_new gU)
+                                                                       (let ([subbed (hsub x_old gu_new gU (term (CanonicalAtomic (AtomicSpine ,x_old ge))))])
                                                                         (term (TermPair
                                                                          ,(hsub-vecElim (term (VecElim ,subbed gU_type gu_len gU_motive gu_N x_len x_head x_tail x_rec gu_C)) )
                                                                          ,(bodysub (term (CanonicalAtomic (AtomicVec gU_type gu_len))) subbed (bodysub (term CNat) (term gu_len) (term gU_motive)))
                                                                          )))
                                                                         
                                                                         ) ]
-                     [(SpineNatElim ge gU_motive gu_Z x_n x_rec gu_S) (lambda (x gu_new gU)
-                                                                       (let ([subbed (hsub x gu_new gU (term (CanonicalAtomic (AtomicSpine x ge))))])
+                     [(SpineNatElim ge gU_motive gu_Z x_n x_rec gu_S) (lambda (x_old gu_new gU)
+                                                                       (let ([subbed (hsub x_old gu_new gU (term (CanonicalAtomic (AtomicSpine ,x_old ge))))])
                                                                         (term (TermPair
                                                                          ,(hsub-natElim (term (NatElim ,subbed gU_motive gu_Z x_n x_rec gu_S )) )
                                                                          ,(bodysub (term CNat) subbed (term gU_motive))
@@ -477,10 +477,10 @@
   (term-match/single L
                      [(NatElim (CanonicalAtomic (AtomicSpine x ge)) gU_motive gu_Z x_n x_rec gu_S )
                       (term (CanonicalAtomic (AtomicSpine x (SpineNatElim ge gU_motive gu_Z x_n x_rec gu_S))))]
-                     [(NatElim (CanonicalAtomic (AtomicZero)) gU_motive gu_Z x_n x_rec gu_S  )
+                     [(NatElim (CanonicalAtomic AtomicZero) gU_motive gu_Z x_n x_rec gu_S  )
                       (term gu_Z)]
                      [(NatElim (CanonicalAtomic (AtomicSucc gu)) gU_motive gu_Z x_n x_rec gu_S )
-                      (hsub (term x_rec) (bodysub (term CNat) (term gu) (term gU_motive)) (hsub-natElim (term (NatElim gu gU_motive gu_Z x_n x_rec gu_S) )) (hsub (term x_n) (term CNat) (term gu) (term gu_S))   )]
+                      (hsub (term x_rec)  (hsub-natElim (term (NatElim gu gU_motive gu_Z x_n x_rec gu_S) )) (bodysub (term CNat) (term gu) (term gU_motive)) (hsub (term x_n) (term gu) (term CNat)  (term gu_S))   )]
                      [(NatElim CanonicalDyn gU_motive gu_Z x_n x_rec gu_S )
                       (term CanonicalDyn)]))
 
@@ -492,27 +492,27 @@
                       (term gu_N)]
                      [(VecElim (CanonicalAtomic (AtomicCons gU_type gu_sublen gu_head gu_tail)) gU_type gu_len gU_motive gu_N x_len x_head x_tail x_rec gu_C)
                       (hsub (term x_rec)
-                             (bodysub (term (CanonicalAtomic (AtomicVec gU_type gu_sublen))) (term gu_tail) (bodysub (term CNat) (term gu_sublen) (term gU_motive)))
                              (hsub-vecElim (term (VecElim gu_tail gU_type gu_len gU_motive gu_N x_len x_head x_tail x_rec gu_C)))
+                             (bodysub (term (CanonicalAtomic (AtomicVec gU_type gu_sublen))) (term gu_tail) (bodysub (term CNat) (term gu_sublen) (term gU_motive)))
                              (hsub
                               (term x_tail)
-                              (term (CanonicalAtomic (AtomicVec gU_type gu_sublen)))
                               (term gu_tail)
+                              (term (CanonicalAtomic (AtomicVec gU_type gu_sublen)))
                               (hsub
                                (term x_head)
-                               (term gU_type)
                                (term gu_head)
+                               (term gU_type)
                                (hsub
                                 (term x_len)
-                                (term CNat)
                                 (term gu_sublen)
+                                (term CNat)
                                 (term gu_C)))))]
                      [(VecElim CanonicalDyn gU_type gu_len gU_motive gu_N x_len x_head x_tail x_rec gu_C)
                       (term CanonicalDyn)]))
 
 (define bodysub_
   (term-match/single L
-   [(CanonicalLam x gu) (lambda (gU gu_arg) (hsub (term x) gU gu_arg (term gu) ))]
+   [(CanonicalLam x gu) (lambda (gU gu_arg) (hsub (term x) gu_arg gU (term gu) ))]
    [CanonicalDyn (term CanonicalDyn)]
    ))
 

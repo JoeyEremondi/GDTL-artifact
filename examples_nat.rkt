@@ -5,6 +5,8 @@
   (ConstNat : (-> Nat (Set 1)))
   (ConstNat x = Nat))
 
+
+
 ;;We can eliminate over natural numbers to define iteration or perform induction
 ;;e.g. addition can be defined as follows:
 (define
@@ -12,7 +14,6 @@
   ( plus m n = (NatElim m ConstNat n m-1 rec (Succ rec))
          ))
 
-;(trace-on)
 
 (define
   (fold : {(A : Set(1)) (B : Set(1)) ( n : Nat) {A B -> B} B (Vec A n) -> B})
@@ -28,3 +29,4 @@
                        b
                        (f a b)
                        )))
+
