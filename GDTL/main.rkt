@@ -121,6 +121,21 @@
        )
     ((_ i vec tp len motive n x1 x2 x3 x4 c) #'(term (TermVecElim i ,vec ,tp ,len ,motive ,n ,x1 ,x2 ,x3 ,x4 ,c))
        )))
+(define-syntax (Eq so)
+  (syntax-case so ()
+      ((_ tp x y ) #'(term (TermEq ,tp ,x ,y))
+       )))
+
+(define-syntax (Refl so)
+  (syntax-case so ()
+      ((_ tp x ) #'(term (TermRefl ,tp ,x))
+       )))
+
+(define-syntax (EqElim so)
+  (syntax-case so ()
+      ((_ tp motive z reflCase x y pf ) #'(term (TermRefl ,tp ,motive ,z ,reflCase ,x ,y ,pf))
+       )))
+
 
 
 (define-syntax (:: stx)
