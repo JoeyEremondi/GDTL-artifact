@@ -1970,42 +1970,39 @@
 
 ;; #source file ./ott/lang_simple.ott  lines 3021 - 3026 
  [
-  
-  (GNCheck Gamma gU gT (CanonicalAtomic (AtomicSet  1 )))
-  (GNCheck Gamma gu_11 gt_11 gU)
-  (GNCheck Gamma gu_22 gt_22 gU)
+  (GNCheck Gamma gU TT (CanonicalAtomic (AtomicSet  1 )))
+  (GNCheck Gamma gu_11 tt_11 gU)
+  (GNCheck Gamma gu_22 tt_22 gU)
   ----------------------------------------------------------------------------------------------------------------------- "GNSynthEq"
-  (GNSynth Gamma (TermEq gT gt_11 gt_22) (CanonicalAtomic (AtomicEq gU gu_11 gu_22)) (CanonicalAtomic (AtomicSet  1 )))]
+  (GNSynth Gamma (TermEq TT tt_11 tt_22) (CanonicalAtomic (AtomicEq gU gu_11 gu_22)) (CanonicalAtomic (AtomicSet  1 )))]
 
 ;; #source file ./ott/lang_simple.ott  lines 3027 - 3031 
  [
-  
-  (GNCheck Gamma gU gT (CanonicalAtomic (AtomicSet  1 )))
-  (GNCheck Gamma gu gt gU)
+  (GNCheck Gamma gU TT (CanonicalAtomic (AtomicSet  1 )))
+  (GNCheck Gamma gu tt gU)
   ------------------------------------------------------------------------------------------------------------- "GNSynthRefl"
-  (GNSynth Gamma (TermRefl gT gt) (CanonicalAtomic (AtomicRefl gU gu)) (CanonicalAtomic (AtomicEq gU gu gu)))]
+  (GNSynth Gamma (TermRefl TT tt) (CanonicalAtomic (AtomicRefl gU gu)) (CanonicalAtomic (AtomicEq gU gu gu)))]
 
 ;; #source file ./ott/lang_simple.ott  lines 3032 - 3050 
  [
-  
    (where   z_11  ,(gensym)) 
    (where   z_22  ,(gensym)) 
    (where   z_33  ,(gensym)) 
-  (GNCheck Gamma gU_11 gT_11 (CanonicalAtomic (AtomicSet  1 )))
-  (GNCheck Gamma gU_22 gT_22 (CanonicalPi z_11 gU_11 (CanonicalPi z_22 gU_11 (CanonicalPi z_33 (CanonicalAtomic (AtomicEq gU_11 (CanonicalAtomic  (AtomicSpine  z_11  SpineEmpty) ) (CanonicalAtomic  (AtomicSpine  z_22  SpineEmpty) ))) (CanonicalAtomic (AtomicSet i))))))
+  (GNCheck Gamma gU_11 TT_11 (CanonicalAtomic (AtomicSet  1 )))
+  (GNCheck Gamma gU_22 TT_22 (CanonicalPi z_11 gU_11 (CanonicalPi z_22 gU_11 (CanonicalPi z_33 (CanonicalAtomic (AtomicEq gU_11 (CanonicalAtomic  (AtomicSpine  z_11  SpineEmpty) ) (CanonicalAtomic  (AtomicSpine  z_22  SpineEmpty) ))) (CanonicalAtomic (AtomicSet i))))))
   (BodySub gU_11 (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) gU_22 gU_33^)
   (BodySub gU_11 (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ) gU_33^ gU_33^^)
   (BodySub gU_11 (CanonicalAtomic (AtomicRefl gU_11 (CanonicalAtomic  (AtomicSpine  y  SpineEmpty) ))) gU_33^^ gU_33)
-  (GNCheck (EnvExt y gU_11 Gamma) gu_22 gt_22 gU_33)
-  (GNCheck Gamma gu_33 gt_33 gU_11)
-  (GNCheck Gamma gu_44 gt_44 gU_11)
-  (GNCheck Gamma gu_11 gt_11 (CanonicalAtomic (AtomicEq gU_11 gu_33 gu_44)))
+  (GNCheck (EnvExt y gU_11 Gamma) gu_22 tt_22 gU_33)
+  (GNCheck Gamma gu_33 tt_33 gU_11)
+  (GNCheck Gamma gu_44 tt_44 gU_11)
+  (GNCheck Gamma gu_11 tt_11 (CanonicalAtomic (AtomicEq gU_11 gu_33 gu_44)))
   (BodySub gU_11 gu_33 gU_22 gU_44^)
   (BodySub gU_11 gu_44 gU_44^ gU_44^^)
   (BodySub gU_11 gu_11 gU_44^^ gU_44)
   (GHsub y (CanonicalAtomic (AtomicEq gU_11 gu_33 gu_44)) gu_11 gu_22 gu_55)
   ---------------------------------------------------------------------------------- "GNSynthEqElim"
-  (GNSynth Gamma (TermEqElim i gt_11 gT_11 gT_22 y gt_22 gt_33 gt_44) gu_55 gU_44)]
+  (GNSynth Gamma (TermEqElim i tt_11 TT_11 TT_22 y tt_22 tt_33 tt_44) gu_55 gU_44)]
 
 )
 (define-judgment-form L 
