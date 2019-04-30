@@ -73,20 +73,22 @@
 ;                  (Eq Nat 1 (plus 1 1))})
 
 
-;;But we can use gradual types to type absurd equalities
+;;But we can use gradual types to type untrue equalities
 (define 0=1 {:: (Refl Nat ?)
                   (Eq Nat 0 1)})
 
-
-
-;; If we try to use an equality that doesn't dynamically hold, we get a runtime error
-(::
- (subst
+;;And define functions that are statically impossible
+(define (magic : (-> (A : (Set 1)) (Vec A 0) (Vec A 1)))
+  (magic A v = (subst
   Nat
-  (lambda (n) (Vec Nat n))
+  (lambda (n) (Vec A n))
   0
   1
   0=1
-  (Nil Nat)
- )
- (Vec Nat 1))
+  v
+ )))
+
+
+;;But since our language is safe, calling these impossible functions
+;; will result in a runtime error runtime error
+(magic Nat (Nil Nat))
