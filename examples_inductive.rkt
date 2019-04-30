@@ -69,6 +69,7 @@
                        )))
 
 ;; And statically they fail if the two terms aren't equal
+;;i.e. this does not compile
 ;(define 1+1=1bad {:: (Refl Nat 1)
 ;                  (Eq Nat 1 (plus 1 1))})
 

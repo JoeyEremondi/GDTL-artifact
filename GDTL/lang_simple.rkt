@@ -581,9 +581,9 @@
                      [(EqElim i (CanonicalAtomic (AtomicSpine x ge))  gU_tipe gU_motive z gu_Refl gu_x gu_y )
                       (term (CanonicalAtomic (AtomicSpine x (SpineEqElim ge i gU_tipe gU_motive z gu_Refl gu_x gu_y ))))]
                      [(EqElim i (CanonicalAtomic (AtomicRefl gU_tipe1 gu_val))  gU_tipe gU_motive z gu_Refl gu_x gu_y  )
-                      (hsub (term z) (term gU_tipe) (term gu_Refl))]
+                      (hsub (term z) (term gu_val) (term gU_tipe) (term gu_Refl))]
                      [(EqElim i CanonicalDyn  gU_tipe gU_motive z gu_Refl gu_x gu_y )
-                      (term CanonicalDyn)]))
+                      (hsub (term z) (term CanonicalDyn) (term gU_tipe) (term gu_Refl))]))
 
 (define hsub-vecElim
   (term-match/single L
