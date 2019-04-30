@@ -1,5 +1,5 @@
 #lang scribble/manual
-
+@require[racket/date]
 @require[(for-label GDTL/main)]
 @require[(for-label (rename-in redex
                                [stepper redex/stepper]
@@ -7,6 +7,8 @@
                                [current-traced-metafunctions redex/current-traced-metafunctions]))]
 
 @(require scribble/eval)
+
+Last Updated @(date->string (seconds->date (current-seconds))).
 
 @title{A Gradual Dependently Typed Language}
 
@@ -38,6 +40,9 @@ Import as @racketblock{#lang s-exp GDTL}
          (Nil term)
          (Cons type term term term)
          (VecElim natural term term term term id id id id term)
+         (Eq type term term)
+         (Refl type term)
+         (EqElim natural term type term id term term term)
          ?]
    [type term])
 
@@ -133,7 +138,7 @@ First form: the dependent function type taking an argument named @racket[id] of 
  ((VecElim discriminee element-type length motive nil-case id-length id-head id-tail id-rec cons-case )
           (VecElim level discriminee element-type length motive nil-case id-length id-head id-tail id-recursive cons-case ))
          ]{
-  Case analysis/induction for natural numbers. @racket[discriminee] should be a @racket[(Vec element-type length)].
+  Case analysis/induction for vectors. @racket[discriminee] should be a @racket[(Vec element-type length)].
  The @racket[level] argument is optional, and defaults to 1.
   The @racket[motive] should have type @racket[(-> (n : Nat) (Vec element-type n ) (Set level))]. If the discriminee is @racket[(Nil element-type)],
   then @racket[nil-case] is returned. If the discriminee is @racket[(Cons element-type n head tail)], then @racket[n]
@@ -142,6 +147,33 @@ First form: the dependent function type taking an argument named @racket[id] of 
   is bound to @racket[id-recursive : (motive id-length id-tail)] in @racket[succ-case : (motive (Succ id-length) (Cons element-type id-length id-head id-tail))], which is then returned.
 
   Produces a result of type @racket[(motive length discriminee)].
+  
+}
+
+@defform[(Eq A term1 term2)
+         ]{
+  The type of proofs that @racket[term1] and @racket[term2] are propositionally equal,
+                          where @racket[term1 : A] and @racket[term2 : A].
+}
+
+@defform[(Refl A term)
+         ]{
+  The reflexive proof that @racket[term] is equal to itself.
+                           Has type @racket[Eq A term term].
+}
+
+@defform*[
+ ((EqElim proof A motive id refl-case term1 term2 )
+          (EqElim level proof A motive id refl-case term1 term2 ))
+         ]{
+  The J axiom for equality. @racket[proof] should have type @racket[Eq A term1 term2].
+ The @racket[level] argument is optional, and defaults to 1.
+ @racket[A] should be a type. 
+  The @racket[motive] should have type @racket[(-> (x : A) (y : A) (Eq A x y) (Set i))].
+  The identifier  @racket[z] is bound in @racket[refl-case], which should have type @racket[(motive z z (Refl A z z))]. 
+  The terms @racket[term1] and @racket[term2] that are equated by @racket[proof] must be given explicitly as well.
+
+  Produces a result of type @racket[(motive term1 term2 pf)].
   
 }
 
