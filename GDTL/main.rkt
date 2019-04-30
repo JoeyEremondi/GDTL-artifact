@@ -25,7 +25,10 @@
          Vec
          Nil
          Cons
-         VecElim)
+         VecElim
+         Eq
+         Refl
+         EqElim)
 
 
 (require (for-syntax syntax/parse))
@@ -133,7 +136,9 @@
 
 (define-syntax (EqElim so)
   (syntax-case so ()
-      ((_ tp motive z reflCase x y pf ) #'(term (TermRefl ,tp ,motive ,z ,reflCase ,x ,y ,pf))
+      ((_ pf tp motive z reflCase x y ) #'(term (TermVecElim 1 ,pf ,tp ,motive ,z ,reflCase ,x ,y ))
+       )
+    ((_ i pf tp motive z reflCase x y ) #'(term (TermVecElim i ,pf ,tp ,motive ,z ,reflCase ,x ,y ))
        )))
 
 

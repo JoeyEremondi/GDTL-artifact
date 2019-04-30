@@ -49,3 +49,9 @@
 ;;Type-checks but throws runtime exception
 (head Nat ? unsafeNil)
 
+(trace-on)
+
+(define 1+1=2 {:: (Refl Nat 2)
+                  (Eq Nat 2 (plus 1 1))})
+
+
