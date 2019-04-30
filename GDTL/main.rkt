@@ -136,9 +136,9 @@
 
 (define-syntax (EqElim so)
   (syntax-case so ()
-      ((_ pf tp motive z reflCase x y ) #'(term (TermVecElim 1 ,pf ,tp ,motive ,z ,reflCase ,x ,y ))
+      ((_ pf tp motive z reflCase x y ) #'(term (TermEqElim 1 ,pf ,tp ,motive ,z ,reflCase ,x ,y ))
        )
-    ((_ i pf tp motive z reflCase x y ) #'(term (TermVecElim i ,pf ,tp ,motive ,z ,reflCase ,x ,y ))
+    ((_ i pf tp motive z reflCase x y ) #'(term (TermEqElim i ,pf ,tp ,motive ,z ,reflCase ,x ,y ))
        )))
 
 

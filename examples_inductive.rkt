@@ -49,9 +49,44 @@
 ;;Type-checks but throws runtime exception
 (head Nat ? unsafeNil)
 
-(trace-on)
 
+;; We can write normal static equalities
 (define 1+1=2 {:: (Refl Nat 2)
                   (Eq Nat 2 (plus 1 1))})
 
 
+
+;;And a generic substitution principle
+(define
+  (subst : (-> (A : (Set 1)) (P : (-> A  (Set 1))) (x : A) (y : A) (Eq A x y) (P x) (P y) ))
+  (subst A P x y pf = (EqElim
+                       pf
+                       A
+                       (lambda (x1 y1 pf1) (-> (P x1) (P y1)))
+                       z (lambda (Pz) Pz)
+                       x
+                       y
+                       )))
+
+;; And statically they fail if the two terms aren't equal
+;(define 1+1=1bad {:: (Refl Nat 1)
+;                  (Eq Nat 1 (plus 1 1))})
+
+
+;;But we can use gradual types to type absurd equalities
+(define 0=1 {:: (Refl Nat ?)
+                  (Eq Nat 0 1)})
+
+
+
+;; If we try to use an equality that doesn't dynamically hold, we get a runtime error
+(::
+ (subst
+  Nat
+  (lambda (n) (Vec Nat n))
+  0
+  1
+  0=1
+  (Nil Nat)
+ )
+ (Vec Nat 1))

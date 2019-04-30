@@ -455,6 +455,19 @@
                                                                         ,(hsub x_old gu_new gU (term gu_h))
                                                                         ,(hsub x_old gu_new gU (term gu_t))
                                                                         ))))]
+                     [(CanonicalAtomic (AtomicEq gU_tipe gu_1 gu_2))
+                      (lambda (x_old gu_new gU)
+                        (term (CanonicalAtomic (AtomicEq
+                                                ,(hsub x_old gu_new gU (term gU_tipe))
+                                                ,(hsub x_old gu_new gU (term gu_1))
+                                                ,(hsub x_old gu_new gU (term gu_2))
+                                                ))))]
+                     [(CanonicalAtomic (AtomicRefl gU_tipe gu_1))
+                      (lambda (x_old gu_new gU)
+                        (term (CanonicalAtomic (AtomicRefl
+                                                ,(hsub x_old gu_new gU (term gU_tipe))
+                                                ,(hsub x_old gu_new gU (term gu_1))
+                                                ))))]
                      [(CanonicalAtomic (AtomicSpine x ge))
                       (lambda (x_old gu_new gU) (if (equal? (term x) x_old)
                                                     (term-let ([(TermPair gu_ret1 gU_ret2) ((hsub-spine (term ge)) x_old gu_new gU)])
@@ -627,17 +640,17 @@
                      [(TermNil et) (term (TermNil ,(perform-elab-substs (term et))))]
                      [(TermCons eT et_1 et_2 et_3) (term (TermCons ,(perform-elab-substs (term eT)) ,(perform-elab-substs (term et_1)) ,(perform-elab-substs (term et_2)) ,(perform-elab-substs (term et_3))))]
                      [(TermVecElim i et eT_T et_len eT_motive et_N x_1 x_2 x_3 x_4 et_C) (term (TermVecElim i ,(perform-elab-substs (term et)) ,(perform-elab-substs (term eT_T)) ,(perform-elab-substs (term et_len)) ,(perform-elab-substs (term eT_motive)) ,(perform-elab-substs (term et_N)) x_1 x_2 x_3 x_4 ,(perform-elab-substs (term et_C))))]
-                     [(TermEq gU gu_1 gu_2) (term (TermEq ,(perform-elab-substs (term gU)) ,(perform-elab-substs (term gu_1)) ,(perform-elab-substs (term gu_2))))]
-                     [(TermRefl gU gu_1) (term (TermRefl ,(perform-elab-substs (term gU)) ,(perform-elab-substs (term gu_1)) ))]
-                     [(TermEqElim i gt_1 gT_1 gT_2 z gt_2 gt_3 gt_4) 
+                     [(TermEq eT et_1 et_2) (term (TermEq ,(perform-elab-substs (term eT)) ,(perform-elab-substs (term et_1)) ,(perform-elab-substs (term et_2))))]
+                     [(TermRefl eT et_1) (term (TermRefl ,(perform-elab-substs (term eT)) ,(perform-elab-substs (term et_1)) ))]
+                     [(TermEqElim i et_1 eT_1 eT_2 z et_2 et_3 et_4) 
                       (term (TermEqElim i
-                      ,(perform-elab-substs (term gt_1)) 
-                      ,(perform-elab-substs (term gT_1))
-                      ,(perform-elab-substs (term gT_2))
+                      ,(perform-elab-substs (term et_1)) 
+                      ,(perform-elab-substs (term eT_1))
+                      ,(perform-elab-substs (term eT_2))
                       z
-                      ,(perform-elab-substs (term gt_2))
-                      ,(perform-elab-substs (term gt_3))
-                      ,(perform-elab-substs (term gt_4))))]
+                      ,(perform-elab-substs (term et_2))
+                      ,(perform-elab-substs (term et_3))
+                      ,(perform-elab-substs (term et_4))))]
                      
                      ))
 
@@ -1180,7 +1193,7 @@
   (GCCheck Gamma gu_44 gU_11)
   (GCCheck Gamma (CanonicalAtomic (AtomicSpine x ge)) (CanonicalAtomic (AtomicEq gU_11 gu_33 gu_44)))
   (BodySub gU_11 gu_33 gU_22 gU_44^)
-  (BodySub gU_11 gu_44 gU_33^ gU_44^^)
+  (BodySub gU_11 gu_44 gU_44^ gU_44^^)
   (BodySub gU_11 (CanonicalAtomic (AtomicSpine x ge)) gU_44^^ gU_44)
   ------------------------------------------------------------------------------------------ "GCSynthEqElim"
   (GCSynth Gamma (AtomicSpine x (SpineEqElim ge i gU_11 gU_22 y gu_22 gu_33 gu_44)) gU_44)]
@@ -1636,7 +1649,7 @@
   (GNCheck Gamma gu_44 gt_44 gU_11)
   (GNCheck Gamma gu_11 gt_11 (CanonicalAtomic (AtomicEq gU_11 gu_33 gu_44)))
   (BodySub gU_11 gu_33 gU_22 gU_44^)
-  (BodySub gU_11 gu_44 gU_33^ gU_44^^)
+  (BodySub gU_11 gu_44 gU_44^ gU_44^^)
   (BodySub gU_11 gu_11 gU_44^^ gU_44)
   --------------------------------------------------------------------------- "GSynthEqElim"
   (GSynth Gamma (TermEqElim i gt_11 gT_11 gT_22 y gt_22 gt_33 gt_44) gU_44)]
@@ -1964,7 +1977,7 @@
   (GNCheck Gamma gu_44 gt_44 gU_11)
   (GNCheck Gamma gu_11 gt_11 (CanonicalAtomic (AtomicEq gU_11 gu_33 gu_44)))
   (BodySub gU_11 gu_33 gU_22 gU_44^)
-  (BodySub gU_11 gu_44 gU_33^ gU_44^^)
+  (BodySub gU_11 gu_44 gU_44^ gU_44^^)
   (BodySub gU_11 gu_11 gU_44^^ gU_44)
   (GHsub y (CanonicalAtomic (AtomicEq gU_11 gu_33 gu_44)) gu_11 gu_22 gu_55)
   ---------------------------------------------------------------------------------- "GNSynthEqElim"
@@ -2198,7 +2211,7 @@
   (GradualNECheck Gamma gu_44 et_44 gt_44 gU_11)
   (GradualNECheck Gamma gu_11 et_11 gt_11 (CanonicalAtomic (AtomicEq gU_11 gu_33 gu_44)))
   (BodySub gU_11 gu_33 gU_22 gU_44^)
-  (BodySub gU_11 gu_44 gU_33^ gU_44^^)
+  (BodySub gU_11 gu_44 gU_44^ gU_44^^)
   (BodySub gU_11 gu_11 gU_44^^ gU_44)
   ------------------------------------------------------------------------------------------------------------------------------------ "GElabSynthEqElim"
   (GElabSynth Gamma (TermEqElim i gt_11 gT_11 gT_22 y gt_22 gt_33 gt_44) (TermEqElim i et_11 eT_11 eT_22 y et_22 et_33 et_44) gU_44)]
@@ -2434,7 +2447,7 @@
   (GradualNECheck Gamma gu_44 et_44 gt_44 gU_11)
   (GradualNECheck Gamma gu_11 et_11 gt_11 (CanonicalAtomic (AtomicEq gU_11 gu_33 gu_44)))
   (BodySub gU_11 gu_33 gU_22 gU_44^)
-  (BodySub gU_11 gu_44 gU_33^ gU_44^^)
+  (BodySub gU_11 gu_44 gU_44^ gU_44^^)
   (BodySub gU_11 gu_11 gU_44^^ gU_44)
   (GHsub y (CanonicalAtomic (AtomicEq gU_11 gu_33 gu_44)) gu_11 gu_22 gu_55)
   ---------------------------------------------------------------------------------------------------------------------------------------------- "GradualNESynthEqElim"
