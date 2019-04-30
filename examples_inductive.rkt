@@ -77,7 +77,7 @@
 (define 0=1 {:: (Refl Nat ?)
                   (Eq Nat 0 1)})
 
-
+(trace-on)
 
 ;; If we try to use an equality that doesn't dynamically hold, we get a runtime error
 (::
