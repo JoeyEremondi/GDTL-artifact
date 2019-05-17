@@ -2,15 +2,20 @@
 
 ;(trace-on)
 
+;;Gradual types let us encode the Z combinator:
+;;Giving functions the type ? allows for self application
 define
    loop : {(A : Set(10)) (B : Set(10)) {{A -> B} -> {A -> B} } ? -> {A -> B} }
    loop A B f x = (f (lambda (y) (x x y)))
 
-;(trace-on)
 
 define
    Z : {(A : Set(10)) (B : Set(10)) {{A -> B} -> {A -> B} } -> {A -> B} }
    Z A B f = ((loop A B f) (loop A B f))
+
+;;We define Church-encodings of booleans,
+;; natural numbers, and Size-indexed vectors 
+;;Along with some helper functions
 
 define
   bool : Set(5)
@@ -29,15 +34,13 @@ define
   if A b x y =
     b A x y
 
-;define 
-;  iff : {(A : bool -> Set) b:bool A(true) A(false) -> A(b)}
-;  iff A b x y = ...
+
      
 
 define
   nat : Set(6)
   nat = {(A : Set(5)) {A -> A} A -> A}
-;
+
 define
   zero : nat
   zero A f z = z
@@ -56,7 +59,8 @@ define
   vec : {Set(6) nat -> Set(6)}
   vec A n = { (M : {nat -> Set(4)}) {(m : nat) A M(m) -> M(succ(m))} M(zero) -> M(n) }
 
-;trace-on()
+;;Given our definition of vectors, we can define a "safe" head function
+;;that only accepts non-empty lists and returns an element from the list
 
 define
   head : { (A : Set(3)) (n : nat) (vec(A succ(n))) -> A}
@@ -68,7 +72,6 @@ define
                 Set(1)
                 )      
         
-trace-off()
 
 define
   nil : {(A : Set(6)) -> vec(A zero)}
@@ -79,19 +82,21 @@ define
   cons : {(A : Set(6)) (n : nat) (hd : A) (tl : vec(A n)) -> vec(A succ(n) )}
   cons A n hd tl M f mz = (f n hd (tl M f mz))
 
-
+;;We can use gradual types to give an empty list the type of a non-empty list
 define
   unsafeNil : vec(Set(2) ?)
   unsafeNil = { (nil Set(2)) :: vec(Set(2) ?)}
 
-;trace-on()
-;(head Set(2) zero unsafeNil)
+;; Gradual typing allows us to write the code that takes the head of the non-empty list
+;; provided that we use ? as its length.
+;; But, this mismatch is detected at runtime, and causes a runtime type error.
+(head Set(2) zero unsafeNil)
 
+;;If we try applying head to a non-empty list, even with length ?
+;;then the operation succeeds
 define
   safeCons : vec(Set(2) ?)
   safeCons = { (cons(Set(2) zero Set(1) (nil Set(2)) )) :: vec(Set(2) ?)}
 
-;trace-on()
 
-; ET: this takes for ever
 (head Set(2) zero safeCons) 
