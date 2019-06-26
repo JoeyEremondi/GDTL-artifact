@@ -18,3 +18,4 @@ Relevant files:
 * `examples.rkt`: similar examples, but using Church-encodings. This file is pretty slow to compile and run.
 * `GDTL/main.rkt`: The Racket macros implementing the main syntax of the language
 * `GDTL/lang_simple.rkt`: The Redex model containing the bulk of the implementation of the language. This closely matches the definitions from the paper, though some parts have been hand-implemented for efficiency.
+* `lang_simple.ott`: The Ott source used to generate the Redex model. Requires a [custom fork of Ott](https://github.com/JoeyEremondi/ott/tree/redexFixes).
