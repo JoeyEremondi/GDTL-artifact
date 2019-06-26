@@ -1,0 +1,3143 @@
+% !Ott debug
+% !Ott output ../coq/lang_simple.v
+% !Ott binary /home/joey/GitHub/ott/bin/ott
+embed  {{coq 
+  Require Import Coq.Arith.Max.
+}}
+
+embed {{rdx
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Redex model for GDTL
+;; Accompanying "Approximate Normalization for Gradual Dependnently Typed Languages"
+;; (mostly) auto-generated from an Ott definition
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(provide (all-defined-out))
+
+(define currently-defined-vars 
+  (make-hasheq))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Syntax Definition
+;; gt gT : gradual terms, the source language
+;; gu gU : gradual canonical forms
+;; et eT : evidence terms, used to define dynamic semantics, are result of elaboration
+;; ep : the evidence ascribed to terms. Is a wrapper around a canonical type
+;; ev eV : evidence values: well-formed evidence terms that cannot be reduced
+;; rv rV : raw values: evidence values forbidding ascription with evidence at the top level
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+}}
+
+embed {{ tex-preamble 
+% !TeX root = main.tex
+%!TeX spellcheck = en-US 
+\usepackage{stmaryrd}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage{etoolbox}
+\newcommand\leadsfrom{\reflectbox{$\leadsto$ } }
+
+
+\newbool{ShowEmptyDot}
+\setbool{ShowEmptyDot}{false}
+
+\newbool{ShowArrowIndex}
+\setbool{ShowArrowIndex}{true}
+
+
+\newcommand\myepsilon\varepsilon
+
+\newcommand\qm{\textbf{?} }
+
+\newcommand{\gobble}[1]{}
+
+%\newcommand{\metaboth}[1]{ {#1^{\mathcal{G}\myepsilon } } }
+\newcommand{\metaraw}[1]{ {#1^\mathcal{R} } }
+\newcommand{\emptyspine}{\ifboolexpr{bool{ShowEmptyDot} }{\cdot}{} }
+
+\newcommand{\metastyle}[4]{ { { {#2}_{#3}#4 }^{\mathcal{#1} } } }
+\newcommand{\gradualstyle}[3]{\color{RoyalBlue}\mathrm{ {#1}_{#2}#3 } }
+\newcommand{\staticstyle}[3]{\color{BrickRed}\mathsf{ {#1}_{#2}#3 } }
+\newcommand{\staticgreek}[3]{\color{BrickRed} {#1}_{#2}#3  }
+\newcommand{\evstyle}[3]{\color{RoyalBlue}\mathrm{ {#1}_{#2}#3 } }
+%\newcommand{\metastyle}[4]{ #2 }
+
+\newNTclass{gradual}
+\newNTclass{evterm}
+\newNTclass{static}
+
+\newgradual[\NTCAPTURELOW{\gradualstyle }]{u}{u}
+\newgradual[\NTCAPTURELOW{\gradualstyle }]{v}{v}
+\newgradual[\NTCAPTURELOW{\gradualstyle }]{U}{U}
+\newgradual[\NTCAPTURELOW{\gradualstyle }]{V}{V}
+\newgradual[\NTCAPTURELOW{\gradualstyle }]{s}{s}
+\newgradual[\NTCAPTURELOW{\gradualstyle }]{t}{t}
+\newgradual[\NTCAPTURELOW{\gradualstyle }]{S}{S}
+\newgradual[\NTCAPTURELOW{\gradualstyle }]{T}{T}
+\newgradual[\NTCAPTURELOW{\gradualstyle }]{rr}{r}
+\newgradual[\NTCAPTURELOW{\gradualstyle }]{RR}{R}
+\newgradual[\NTCAPTURELOW{\gradualstyle }]{e}{\overline{s} }
+\newgradual[\NTCAPTURELOW{\gradualstyle }]{Gamma}{\Gamma}
+\newevterm[\NTCAPTURELOW{\evstyle }]{s}{s}
+\newevterm[\NTCAPTURELOW{\evstyle }]{t}{e}
+\newevterm[\NTCAPTURELOW{\evstyle }]{S}{S}
+\newevterm[\NTCAPTURELOW{\evstyle }]{T}{E}
+\newevterm[\NTCAPTURELOW{\evstyle }]{u}{u}
+\newevterm[\NTCAPTURELOW{\evstyle }]{v}{v}
+\newevterm[\NTCAPTURELOW{\evstyle }]{U}{U}
+\newevterm[\NTCAPTURELOW{\evstyle }]{V}{V}
+% \newevterm[\NTCAPTURELOW{\evstyle }]{e}{e}
+\newevterm[\NTCAPTURELOW{\evstyle }]{rv}{w}
+\newevterm[\NTCAPTURELOW{\evstyle }]{rV}{W}
+\newevterm[\NTCAPTURELOW{\evstyle }]{C}{\mathcal{C} }
+\newstatic[\NTCAPTURELOW{\staticstyle }]{e}{\overline{s} }
+\newstatic[\NTCAPTURELOW{ \UNDEFINED }]{s}{s}
+\newstatic[\NTCAPTURELOW{\staticstyle }]{t}{t}
+\newstatic[\NTCAPTURELOW{\UNDEFINED }]{S}{S}
+\newstatic[\NTCAPTURELOW{\staticstyle }]{T}{T}
+\newstatic[\NTCAPTURELOW{\staticstyle }]{u}{u}
+\newstatic[\NTCAPTURELOW{\staticstyle }]{v}{v}
+\newstatic[\NTCAPTURELOW{\staticstyle }]{U}{U}
+\newstatic[\NTCAPTURELOW{\staticstyle }]{V}{V}
+\newstatic[\NTCAPTURELOW{\staticstyle }]{rr}{r}
+\newstatic[\NTCAPTURELOW{\staticstyle }]{RR}{R}
+\newstatic[\NTCAPTURELOW{\staticstyle }]{C}{\mathcal{C} }
+\newstatic[\NTCAPTURELOW{\staticgreek }]{Gamma}{\Gamma}
+
+\newcommand{\TypeType}{\rev{\ottkw{Type} } }
+
+}}
+
+
+
+
+metavar var, x, y, z, X, Y  ::= {{com Program Variables}}
+    {{coq nat }} {{ coq-equality }} 
+  {{ tex \mathit{[[var]]} }} {{ com  term variable  }} {{ lex alphanum }} {{ texvar \mathtt{[[var]]} }}
+
+
+indexvar index ::=   {{coq nat }} {{com Numerical Indices}}
+
+
+
+grammar
+
+level {{tex \gobble}}, i, j :: Level ::=  {{coq nat}} {{rdx natural}}
+  | LEVEL ( index ) :: :: Rdx  
+  | i + 1 :: M :: PlusOne {{rdx (succ [[i]]) }} {{coq ([[i]] + 1) }}
+  | i - 1 :: M :: MinusOne {{rdx (pred [[i]]) }} {{coq ([[i]] - 1) }}
+  | 0 :: M :: Zero {{rdx 0 }} {{coq 0}}
+  | 1 :: M :: One {{rdx 1 }} {{coq 1}} 
+  | 2 :: M :: Two {{rdx 2 }} {{coq 2}} 
+  | 3 :: M :: Three {{rdx 3 }} {{coq 3}} 
+  | max i j :: M :: Max {{rdx (max [[i]] [[j]]) }} {{coq (PeanoNat.Nat.max [[i]] [[j]]) }} {{tex \ottkw{max}([[i]],[[j]]) }}
+  | omega :: M :: Omega {{rdx TODO}} {{coq TODO}} {{tex \omega }}
+
+
+% grammar
+
+ttSynth {{tex \gradual{t} }}  {{coq ttt}}, ettSynth {{tex \evterm{t} }},  TTSynth {{tex \gradual{T} }} :: TermSynth ::= {{com Gradual or Evidence Terms}} 
+  | tt1 tt2 :: :: App {{ tex [[tt1]]\ [[tt2]]}}
+  | x :: :: Var
+  | Set i :: :: Type {{tex \TypeType_{[[i]]} }}
+  | gt : gT :: :: Ann {{tex [[gt]]\dblcolon[[gT]]}}
+  % | ep tt :: :: Ep 
+  | ( ttSynth ) :: M :: Parens {{rdx [[ttSynth]] }} {{coq ([[ttSynth]])}}
+  | ? :: :: Dyn
+  | ep et :: :: Ev
+  % | ? _ ( Gamma , gU ) :: :: DynAnn {{ tex \qm_{[[gU]]} }}
+  % | error :: :: Error
+
+term{{tex \gobble}}, tt {{tex \gradual{t} }}  {{coq ttt}}, ett {{tex \evterm{t} }},  TT {{tex \gradual{T} }} :: Term ::= {{com Gradual or Evidence Terms}} 
+  | \ x . tt :: :: Lam (+ bind x in tt +)
+  | tt1 tt2 :: :: App {{ tex [[tt1]]\ [[tt2]]}}
+  | x :: :: Var
+  | Set i :: :: Type {{tex \TypeType_{[[i]]} }}
+  | ( x : TT1 ) -> TT2 :: :: Pi (+ bind x in TT2 +)
+  | tt : TT :: :: Ann {{tex [[tt]]\dblcolon[[TT]]}}
+  | ep tt :: :: Ep 
+  | ( tt ) :: M :: Parens {{rdx [[tt]] }} {{coq ([[tt]])}}
+  | ? :: :: Dyn
+  % | ? _ ( Gamma , gU ) :: :: DynAnn {{ tex \qm_{[[gU]]} }}
+  | error :: :: Error
+  | [ tt1 / x ] tt2 :: M :: Subst {{rdx (substitute [[tt2]] [[x]] [[tt1]]) }} {{coq (tsubst_term [[tt1]] [[x]] [[tt2]]) }} {{tex [ [[x]] \Mapsto [[tt1]] ] [[tt2]] }}
+  | [ tt1 ~ gu / x @ gU ] tt2 :: M :: ESubst {{rdx (esubst [[tt2]] [[x]] [[tt1]] [[gu]] [[gU]]) }} {{coq (tsubst_term [[tt1]] [[x]] [[tt2]]) }} {{tex {[ [[x]] \Mapsto [[tt1]] ]}^{[[gu]] : [[gU]]} [[tt2]] }}
+  | SC [ tt ] :: M :: SC {{rdx (in-hole [[SC]] [[tt]]) }} {{coq (appctx_simpleContext_term [[SC]] [[tt]] ) }} {{tex \static{C}[ [[tt]] ] }}
+  | EC [ tt ] :: M :: EC {{rdx (in-hole [[EC]] [[tt]]) }} {{coq (appctx_evalContext_term [[EC]] [[tt]] ) }} {{tex \evterm{C}[ [[tt]] ] }}
+  | GTERM ( gt ) :: M :: Tag {{rdx [[gt]] }} {{coq UNUSED}} {{tex [[gt]] }}
+  | ( _ : gT1 ) -> gT2 :: M :: SimplePi {{rdx (error "SIMPLEPI") }} {{coq UNUSED }} {{tex [[gT1]]\to[[gT2]]}}
+  | Vec :: M :: Vec {{rdx (error "TODO") }} {{coq UNUSED }} {{tex \ottkw{Vec} }}
+  | Eq :: M :: Eq {{rdx (error "TODO") }} {{coq UNUSED }} {{tex \ottkw{Eq} }}
+  | Refl :: M :: Refl {{rdx (error "TODO") }} {{coq UNUSED }} {{tex \ottkw{Refl} }}
+  | List :: M :: List {{rdx (error "TODO") }} {{coq UNUSED }} {{tex \ottkw{List} }}
+  | Nat :: M :: Nat {{rdx (error "TODO") }} {{coq UNUSED }} {{tex \ottkw{Nat} }}
+  | nil :: M :: Nil {{rdx (error "TODO") }} {{coq UNUSED }} {{tex \ottkw{Nil} }}
+  | cons :: M :: Cons {{rdx (error "TODO") }} {{coq UNUSED }} {{tex \ottkw{Cons} }}
+  | Nil :: M :: NilCap {{rdx (error "TODO") }} {{coq UNUSED }} {{tex \ottkw{Nil} }}
+  | Cons :: M :: ConsCap {{rdx (error "TODO") }} {{coq UNUSED }} {{tex \ottkw{Cons} }}
+  | succ tt :: M :: Succ {{rdx (error "TODO") }} {{coq UNUSED }} {{tex [[tt]] + 1 }}
+  | Succ tt :: M :: SuccCap {{rdx (error "TODO") }} {{coq UNUSED }} {{tex [[tt]] + 1 }}
+  | zero :: M :: zero {{rdx (error "TODO") }} {{coq UNUSED }} {{tex 0 }}
+  | one :: M :: one {{rdx (error "TODO") }} {{coq UNUSED }} {{tex 1 }} 
+  | two :: M :: two {{rdx (error "TODO") }} {{coq UNUSED }} {{tex 2 }} 
+    | Zero :: M :: zeroCap {{rdx (error "TODO") }} {{coq UNUSED }} {{tex 0 }}
+  | One :: M :: oneCap {{rdx (error "TODO") }} {{coq UNUSED }} {{tex 1 }}
+  | [ x |=> y ] tt :: M :: VarSub {{rdx (substitute [[tt]] [[x]] [[y]])}} {{coq TODO_varsub}}
+  | exists x : TT1 . TT2 :: M :: Exists {{coq TODO}} {{rdx TODO}} {{tex \exists ([[x]] : [[TT1]]) \ldotp [[TT2]]}}
+
+
+
+
+t {{ tex \static{t} }}, T {{ tex \static{T} }} :: StaticTerm ::= {{com Static Terms}}
+  | \ x . t :: :: Lam (+ bind x in t +)
+  | t1 t2 :: :: App
+  | x :: :: Var
+  | ( x : T1 ) -> T2 :: :: Pi (+ bind x in T +)
+  | Set i :: :: Type {{tex \TypeType_{[[i]]} }}
+  | t : T :: :: Ann {{tex [[t]]\dblcolon[[T]]}}
+  | ( t ) :: M :: Parens {{rdx [[t]] }} {{coq ([[t]])}}
+  | [ t1 / x ] t2 :: M :: Subst {{rdx (substitute [[t2]] [[x]] [[t1]]) }} {{coq (tsubst_term [[t1]] [[x]] [[t2]]) }} {{tex [ [[x]] \Mapsto [[t1]] ] [[t2]] }}
+  | SC [ t ] :: M :: SC {{rdx (in-hole [[SC]] [[t]]) }} {{coq (appctx_simpleContext_term [[SC]] [[t]] ) }} {{tex \static{C}[ [[t]] ] }}
+
+% sa {{ tex s }}, ta {{ tex t }}, Sa {{ tex S }}, Ta {{ tex T }} :: StaticTermNoAnn ::= {{com Static Terms}}
+%   | \ x . ta :: :: Lam (+ bind x in ta +)
+%   | sa ta :: :: App
+%   | x :: :: Var
+%   | ( x : Sa ) -> Ta :: :: Pi (+ bind x in Ta +)
+%   | Set i :: :: Type {{tex \TypeType_{[[i]]} }}
+
+u {{tex \static{u} }}, U {{tex \static{U} }} :: SCanonical ::=                           {{ com Static Canonical Forms }}
+    % | u : U :: :: Ann {{com Type-annotated term}}
+    | \ x . u :: :: Lam (+ bind x in u +) 
+    | rr :: :: AtSpineomic  
+    | ( u ) :: M :: Parens {{rdx [[u]] }} {{coq ([[u]])}}
+    | ( x : U1 ) -> i  U2 :: :: Pii (+ bind x in U2 +) {{coq TODO}} {{rdx TODO}} {{tex ([[x]] : [[U1]]) \to [[U2]] }}
+    | ( x : U1 ) ->  U2 :: M :: Pi (+ bind x in U2 +) {{coq TODO}} {{rdx TODO}} 
+    % | xt :$: t1 .. tn :$$: t :: :: SpineCons {{rdx (error "TODO") }} {{coq (TermSpine [[xt]] (cons [[t]] [[t1 .. tn]]))}}
+
+rr {{tex \static{rr} }}, RR {{tex \static{RR} }} :: StaticAtomic ::= {{com Static Atomic Forms}}
+    | x e :: :: Spine {{tex [[x]][[e]]}}
+    | Set i :: :: Type {{tex \TypeType_{[[i]]} }}
+    | Set ( i + 1 ) :: M :: TypePlus {{rdx (succ [[i]]) }} {{coq (AtomicSet ([[i]] + 1)) }}
+    | ( rr ) :: M :: Parens {{rdx [[rr]] }} {{coq ([[rr]])}}
+    | x  :: M :: EmptySpine {{rdx (AtomicSpine [[x]] SpineEmpty) }} {{coq (AtomicSpine [[x]] SpineEmpty ) }} {{ tex [[x]]}}
+
+e {{tex \static{e} }} :: SSpine ::= {{com Static Canonical Spines }}
+  | empty :: :: Empty {{ tex \emptyspine}}
+  | e u :: :: Cons {{tex [[e]]\ [[u]]}}
+
+
+gtSynth {{ tex \gradual{t} }}, gTSynth {{ tex \gradual{T} }} :: GradualTermSynth ::= {{com Gradual Terms (Synthesizing)}}
+  | gt1 gt2 :: :: App {{ tex [[gt1]]\ [[gt2]]}}
+  | x :: :: Var
+  | Set i :: :: Type {{tex \TypeType_{[[i]]} }}
+  | gt : gT :: :: Ann {{tex [[gt]]\dblcolon [[gT]]}}
+  | ? :: :: Dyn
+  | ( gtSynth ) :: M :: Parens {{rdx [[gtSynth]] }} {{coq ([[gtSynth]])}}
+
+
+gtCheckOnly {{ tex \gradual{t} }}, gTCheckOnly {{ tex \gradual{T} }} :: GradualTermCheckOnly ::= {{com Gradual Terms}}
+  | \ x . gt :: :: Lam (+ bind x in gt +)
+  | ( x : gT1 ) -> gT2 :: :: Pi (+ bind x in gT2 +)
+
+gt {{ tex \gradual{t} }}, gT {{ tex \gradual{T} }} :: GradualTerm ::= {{com Gradual Terms}}
+  | \ x . gt :: :: Lam (+ bind x in gt +)
+  | gt1 gt2 :: :: App {{ tex [[gt1]]\ [[gt2]]}}
+  | x :: :: Var
+  | Set i :: :: Type {{tex \TypeType_{[[i]]} }}
+  | ( x : gT1 ) -> gT2 :: :: Pi (+ bind x in gT2 +)
+  | gt : gT :: :: Ann {{tex [[gt]]\dblcolon [[gT]]}}
+  | ? :: :: Dyn
+  | ( gt ) :: M :: Parens {{rdx [[gt]] }} {{coq ([[gt]])}}
+  | [ gt1 / x ] gt :: M :: Subst {{rdx (substitute [[gt]] [[x]] [[gt1]]) }} {{coq subst_superTerm [[x]] [[gt1]] [[gt]] }} {{tex [ [[x]] \Mapsto [[gt1]] ] [[gt]] }}
+  | SC [ gt ] :: M :: SC {{rdx (substitute [[SC]] [[gt]]) }} {{coq (appctx_simpleContext_term [[SC]] [[gt]] ) }} {{tex \static{C}[ [[gt]] ] }}
+  | GTERM ( gt ) :: M :: Tag {{rdx [[gt]] }} {{coq UNUSED}} {{tex [[gt]] }}
+  | ( _ : gT1 ) -> gT2 :: M :: SimplePi {{rdx (error "TODO SIMPLEPI") }} {{coq UNUSED }} {{tex [[gT1]]\to[[gT2]]}}
+  | Vec :: M :: Vec {{rdx (error "TODO") }} {{coq UNUSED }} {{tex \ottkw{Vec} }}
+  | Eq :: M :: Eq {{rdx (error "TODO") }} {{coq UNUSED }} {{tex \ottkw{Eq} }}
+  | Refl :: M :: Refl {{rdx (error "TODO") }} {{coq UNUSED }} {{tex \ottkw{Refl} }}
+  | List :: M :: List {{rdx (error "TODO") }} {{coq UNUSED }} {{tex \ottkw{List} }}
+  | Nat :: M :: Nat {{rdx (error "TODO") }} {{coq UNUSED }} {{tex \ottkw{Nat} }}
+  | nil :: M :: Nil {{rdx (error "TODO") }} {{coq UNUSED }} {{tex \ottkw{Nil} }}
+  | cons :: M :: Cons {{rdx (error "TODO") }} {{coq UNUSED }} {{tex \ottkw{Cons} }}
+  | Nil :: M :: NilCap {{rdx (error "TODO") }} {{coq UNUSED }} {{tex \ottkw{Nil} }}
+  | Cons :: M :: ConsCap {{rdx (error "TODO") }} {{coq UNUSED }} {{tex \ottkw{Cons} }}
+  | succ gt :: M :: Succ {{rdx (error "TODO") }} {{coq UNUSED }} {{tex [[gt]] + 1 }}
+  | Succ tt :: M :: SuccCap {{rdx (error "TODO") }} {{coq UNUSED }} {{tex [[tt]] + 1 }}
+  | zero :: M :: zero {{rdx (error "TODO") }} {{coq UNUSED }} {{tex 0 }}
+  | one :: M :: one {{rdx (error "TODO") }} {{coq UNUSED }} {{tex 1 }}
+  | Zero :: M :: zeroCap {{rdx (error "TODO") }} {{coq UNUSED }} {{tex 0 }}
+  | One :: M :: oneCap {{rdx (error "TODO") }} {{coq UNUSED }} {{tex 1 }}
+  % | nine :: M :: nine {{rdx (error "TODO") }} {{coq UNUSED }} {{tex  }}
+  | [ x |=> y ] gt :: M :: VarSub {{rdx (substitute [[gt]] [[x]] [[y]])}} {{coq TODO_varsub}}
+  | exists x : gT1 . gT2 :: M :: Exists {{coq TODO}} {{rdx TODO}} {{tex \exists ([[x]] : [[gT1]]) \ldotp [[gT2]]}}
+
+
+% {{tex \static{C} }[ [[t]] ] }} 
+
+canonical {{tex \gobble}}, gu {{ tex \gradual{u} }},  gU {{ tex \gradual{U} }} :: Canonical ::=                           {{ com Gradual Canonical Forms }}
+%gv {{ tex \gradual{v} }}, , gV {{ tex \gradual{V} }}
+    % | gu : gU :: :: Ann
+    | \ x . gu :: :: Lam (+ bind x in gu +)
+    | grr :: :: Atomic
+    | ?  :: :: Dyn
+    | ( gu ) :: M :: Parens {{rdx [[gu]] }} {{coq ([[gu]])}}
+    | ( x : gU1 ) -> i  gU2 :: :: Pii (+ bind x in gU2 +) {{coq TODO}} {{rdx TODO}} {{tex ([[x]] : [[gU1]]) \ifboolexpr{bool{ShowArrowIndex} }{\xrightarrow{[[i]]} }{\to} [[gU2]] }}
+    | ( x : gU1 ) ->  gU2 :: M :: Pi  {{coq TODO}} {{rdx TODO}} 
+    | ( _ : gU ) -> gU2 :: M :: SimplePi {{rdx (CanonicalPi ,(gensym) [[gU]] [[gU2]]) }} {{coq UNUSED }} {{tex [[gU]]\to[[gU2]]}}
+    | texdom gU :: M :: TexDom {{rdx (error "TODO") }} {{coq UNUSED}} {{tex \ottkw{dom}\ [[gU]] }}
+    | texcod gU :: M :: TexCodSingle {{rdx (error "TODO") }} {{coq UNUSED}} {{tex \ottkw{cod}\ [[gU]] }}
+    | [ _ / tt ] texcod gU :: M :: TexCod {{rdx (error "TODO") }} {{coq UNUSED}} {{ tex {[ [[tt]] / {\_} ]} \ottkw{cod}\ [[gU]] }}
+    | ( gU /\ gU' ) :: M :: Meet {{rdx (error "TODO") }} {{coq UNUSED}} {{tex [[gU]] \sqcap [[gU']] }}
+    | [ x |=> y ] gU :: M :: Varsub {{rdx (substitute [[gU]] [[x]] [[y]])}} {{coq TODO_varsub}}
+    | exists x : gU . gU' :: M :: Exists {{coq TODO}} {{rdx TODO}} {{tex \exists ([[x]] : [[gU]]) \ldotp [[gU]]}}
+    % | ep :: M :: Ev {{coq TODO}} {{rdx (type-in-ev [[ep]])}}
+    
+
+atomic {{tex \gobble}}, grr {{tex \gradual{rr} }},  gRR {{tex \gradual{RR} }} :: Atomic ::= {{com Gradual Atomic Forms}}
+    | x ge :: :: Spine {{tex [[x]][[ge]]}}
+    | Set i :: :: Type {{tex \TypeType_{[[i]]} }}
+    | Set ( i + 1 ) :: M :: TypePlus {{rdx (AtomicSet (succ [[i]]) ) }} {{coq (AtomicSet ([[i]] + 1)) }} {{tex \TypeType_{[[i]] + 1} }}
+    | ( grr ) :: M :: Parens {{rdx [[grr]] }} {{coq ([[grr]])}}
+    | x  :: M :: EmptySpine {{rdx (AtomicSpine [[x]] SpineEmpty) }} {{coq (AtomicSpine [[x]] SpineEmpty ) }} {{ tex [[x]]}}
+
+spine {{tex \gobble}}, ge {{ tex \gradual{e} }} :: Spine ::= {{com Gradual Canonical Spines }}
+  | empty :: :: Empty {{ tex \emptyspine}}
+  | ge gu :: :: Cons {{ tex [[ge]]\ [[gu]]}}
+  | SPINE ( ge ) :: M :: Parens {{ tex ([[ge]]) }} {{rdx [[ge]] }} {{coq [[ge]]}}
+
+    
+
+
+% grammar
+
+
+epsilon {{tex \gobble}}, ep {{tex \myepsilon}} ::  Evidence ::= {{com Runtime Evidence}}
+  % | << gU >> :: :: Ev
+  | << gU >> :: :: Ev
+  % | texdom ep :: M :: Texdom {{coq TODO}} {{rdx (error "TODO")}}
+
+% mep {{tex \myepsilon}} :: MaybeEp ::= {{rdx (error "TODO") }} {{coq option epsilon}}
+%   | ep :: :: Yes {{rdx (error "TODO") }} {{coq Some([[ep]])}}
+%   | undefined :: :: No {{rdx (error "TODO") }} {{coq None}}
+%   | undefined otherwise :: :: Otherwise {{rdx (error "TODO") }} {{coq None}}
+%   | mep where x1 := mep1 :: M :: WhereMep {{rdx (error "TODO") }} {{coq None}}
+
+et {{tex \evterm{t} }}, eT {{tex \evterm{T} }} :: EvidenceTerm ::= {{com Evidence Terms}}
+    | \ x . et :: :: Lam (+ bind x in et +)
+    | et1 et2 :: :: App
+    | x :: :: Var
+    | ( x : eT1 ) -> eT2 :: :: Pi (+ bind x in eT2 +)
+    | Set i :: :: Type {{tex \TypeType_{[[i]]} }}
+    | ?  :: :: Dyn {{ tex \qm }}
+    | ep et :: :: Ep 
+    | ( et ) :: M :: Parens {{rdx [[et]] }} {{coq ([[et]]) }}
+    | [ et1 ~ gu / x @ gU ] et :: M :: ESubst {{rdx (esubst [[et]] [[x]] [[et1]] [[gu]] [[gU]]) }} {{coq (tsubst_term [[et1 ]] [[x]] [[et]] )}} {{tex {[ [[x]] \Mapsto [[et1]] ]}^{[[gu]] : [[gU]]} [[et]] }}
+    | EC [ et ] :: M :: EC {{rdx (in-hole [[EC]] [[et]]) }} {{coq (appctx_evalContext_term [[EC]] [[et]] ) }}  {{tex \evterm{C}[ [[et]] ] }}
+    | error :: :: Error {{tex \ottkw{err} }}
+
+
+
+ rv {{tex \evterm{rv} }}, rV {{tex \evterm{rV} }} :: RawValue ::= {{com Raw Values}}
+    | \ x . et :: :: Lam (+ bind x in et +)
+    | ( x : eV ) -> eT :: :: Pi 
+    % | x :: :: Var
+    % | ve ev :: :: Spine
+    | Set i :: :: Type {{tex \TypeType_{[[i]]} }}
+    | ?   :: :: Dyn {{ tex \qm }}
+
+
+simpleValue {{tex \gobble}}, sv {{tex \static{v} }}, sV {{tex \static{V} }} :: SimpleValue ::= {{com Simple Values}}
+  | \ x . t :: :: Lam (+ bind x in t +)
+  | ( x : sV ) -> T :: :: Pi (+ bind x in T +)
+  % | x :: :: Var
+  % | se sv :: :: Spine
+  | Set i :: :: Type {{tex \TypeType_{[[i]]} }} 
+
+ ev {{tex \evterm{v} }}, eV {{tex \evterm{V} }} :: EvidenceValue ::= {{com Evidence Values}}
+  | ep rv :: :: Ev
+  | ( x : eV ) -> eT :: :: Pi  (+ bind x in eT +)
+  | \ x . et :: :: Lam (+ bind x in et +)
+  % | x :: :: Var
+  % | ve ev :: :: SPine
+  | Set i :: :: Type {{tex \TypeType_{[[i]]} }}
+  | ( ev ) :: M :: Parens {{rdx [[ev]] }} {{coq ([[ev]]) }}
+  | ?  :: :: Dyn {{ tex \qm }}
+
+
+
+ dummyev {{tex \evterm{v} }}, dummyeV {{tex \evterm{V} }} :: DummyEvidenceValue ::= {{com Evidence Values}}
+  | ep rv :: :: Ev
+  | rv :: :: Raw 
+
+% evidenceSpine {{tex \gobble}}, ve {{tex \evterm{e} }} :: ValueSpine ::= {{com Spines for Evidence Values}}
+%   | x :: :: Var
+%   | ve ev :: :: App
+
+% simpleSpine {{tex \gobble}}, se {{tex \static{e} }} :: SimpleValueSpine ::= {{com Spines for Simple Values}}
+%   | x :: :: Var
+%   | se sv :: :: App
+
+
+simpleContext {{tex \gobble}}, SC {{tex \static{C} }} :: SimpleContext ::= {{com Simple Contexts}}
+    % | __ :: :: Hole
+    | __ t :: :: App1
+    | sv __ :: :: App2
+    | ( x : __ ) -> T :: :: Pi1 
+    | __ : T :: :: Ann {{ tex \square \dblcolon[[T]]}}
+
+evalContext {{tex \gobble}}, EC {{tex \evterm{C} }} :: EvalContext ::= {{com Evidence Contexts}}
+    % | __ :: :: Hole
+    % | ( x : eV ) -> __ :: :: Pi2
+    | __ et :: :: App1
+    | ev __ :: :: App2
+    | ( x : __ ) -> eT :: :: Pi
+    | ep __ :: :: Ep 
+
+
+
+  
+% embed {{ coq
+% Fixpoint vtsubst_term (x : var) (y : var) (t : term) : term :=
+%   match t with
+%     | TermAnn u U => TermAnn (vtsubst_term x y u) (vtsubst_term x y U)
+%     | TermPi z U V =>
+%       if (beq_nat x z) then (TermPi z (vtsubst_term x y U) V) else (TermPi z (vtsubst_term x y U) (vtsubst_term x y V)) 
+%     | TermLam z u => 
+%       if (beq_nat x z) then t else TermLam z (vtsubst_term x y u) 
+%     | TermSpine z e =>
+%         TermSpine (if (beq_nat x z) then y else z) (vsubst_spine x y e)
+%     | _ => t
+%   end
+%   with vsubst_spine (x : var) (y : var) (e : spine) : spine := 
+%     match e with
+%         | SpineEmpty => SpineEmpty
+%         | SpineCons ge gu => SpineCons (vsubst_spine x y ge) (vtsubst_term x y gu)
+%     end.
+
+% Fixpoint vars_term  (t : term) : list var :=
+%    match t with
+%      | TermAnn u U => (vars_term u) ++ (vars_term U)
+%      | TermPi z U V => cons z  ((vars_term U) ++ (vars_term V))
+%      | TermLam z u => cons z (vars_term u)
+%      | TermSpine z e => cons z (vars_spine e)
+%      | _ => nil
+%    end 
+%    with vars_spine (e : spine) : list var :=
+%     match e with
+%       | SpineEmpty => nil
+%       | SpineCons e u => (vars_spine e) ++ (vars_term u)
+%     end.
+% }}
+
+
+
+
+% grammar 
+
+
+
+
+SGamma {{ tex \static{Gamma} }} :: SGamma ::= {{com Static Environments}} 
+  | empty :: :: Empty 
+  | ( x : U ) SGamma :: :: Ext
+  | SGamma1  SGamma2 ::  :: concat 
+
+Gamma {{ tex \gradual{Gamma} }} :: GGamma ::=  {{com Gradual Environments }}
+  | empty :: ::  Empty 
+  | ( x : gU ) Gamma ::  ::  Ext % (+ bind x in Gamma +)
+  | ( Gamma ) :: M :: Parens {{rdx [[Gamma]] }} {{coq ([[Gamma]])}} {{ tex [[Gamma]]}}
+  | Gamma1  Gamma2 :: M  :: concat {{coq TODO}} {{rdx TODO}} 
+
+Env  :: Env ::=  {{com Environments }}
+  | empty :: :: Empty 
+  | ( x : gU ) Env :: :: Ext
+  | ( Env ) :: M :: Parens {{rdx [[Env]] }} {{coq ([[Env]])}} {{ tex [[Env]]}}
+  | Env1  Env2 :: :: concat 
+
+
+  terminals :: 'terminals_' ::=
+    % | terminals \\ :: M :: linebreak {{ tex [[terminals]] \\}}
+    | let :: :: let
+    | S :: :: StructName  {{ tex \mathsf{S} }}
+    | E :: :: EnumName  {{ tex \mathsf{E} }}
+    | D :: :: TraitName {{ tex \mathsf{D} }} 
+    | where :: :: where
+    | in :: :: in
+    | as :: :: as
+    | := :: :: assign
+    | Pi :: :: Pi {{ tex \Pi }}
+    | Delta :: :: Delta {{ tex \Delta }}
+    | SGamma :: :: SGamma {{ tex \Gamma }}
+    | <: :: :: coerce {{ tex \blacktriangleright}}
+    | = :: :: equal 
+    | << :: :: langle {{ tex \langle }}
+    | >> :: :: rangle {{ tex \rangle }}
+    | ; :: :: semicolon
+    | : :: :: colon
+    | :s :: :: scolon {{tex : }}
+    | Set :: :: Type {{tex \TypeType }}
+    | ==> :: :: cimplies {{ tex \Longrightarrow}}
+    | & :: :: ref
+    | * :: :: deref
+    | () :: :: unit
+    | Exists :: :: Exists {{tex \exists }}
+    | ForAll :: :: ForAll {{tex \forall }}
+    | => :: :: Synth {{tex \Rightarrow}}
+    | <= :: :: Check {{tex \Leftarrow}}
+    | ~=~ :: :: Consistent {{tex \cong }}
+    | =~> :: :: GSynth {{tex  \Rightarrow }}
+    | <~= :: :: GCheck {{tex  \Leftarrow }}
+    | \                   ::   :: lambda     {{ tex \lambda }}
+    | -->                 ::   :: red        {{ tex \longrightarrow }}
+    | s-->                ::    :: sred {{ tex \longrightarrow }}
+    |  ->                 ::   :: arrow      {{ tex \rightarrow }}
+    | -=> :: :: otherarrow {{ tex \rightarrow }}
+    | ~> :: :: typereduce {{tex \leadsto }}
+    | <~ :: :: typereducerev {{tex \leadsfrom\ }}
+    | |-                  ::   :: turnstile  {{ tex \vdash }}
+    | ||- :: :: doubleTurnstile {{tex \Vdash}}
+    | |-> :: :: mapsto {{tex \mapsto }}
+    | |=> :: :: Mapsto {{tex \Mapsto }}
+    | elem                  ::   :: elem  {{ tex \in }}
+    | nelem :: :: nelem {{ tex \not\in }}
+    | :$: :: :: dollarapp {{ tex \  }}
+    | ->l :: :: arrow_l {{ tex {\rightarrow_\ell} }}
+    | <: :: :: subtypeof {{tex <:}}
+    | notfree :: :: notfree
+    | | :: :: mid {{tex \mid}}
+    | __ :: :: hole {{ tex \square }}
+    | ~[ :: :: lbr {{ tex \sim\!\!\![ }}
+    | ]~ :: :: rbr {{ tex ]\!\!\!\sim }}
+    | FN :: :: fn {{ tex \ottkw{fn} }}
+    | empty :: :: empty {{ tex \cdot }}
+    | ==== :: :: eq {{ tex = }}
+    | =/= :: :: neq {{ tex \neq }}
+    | =v= :: :: Downarrow {{ tex \Downarrow }}
+    | . :: :: dot {{ tex \ldotp}}
+    | U :: :: union {{ tex \cup}}
+    % | |~ :: :: entailconstr {{ tex \entailconstr}}
+    % | =~= :: :: constreq {{ tex \eqconstr }}
+    % | ~=~ :: :: subeq {{ tex \coerceconstr }}
+    | /\ :: :: and {{ tex \sqcap }}
+    % | \/ :: :: or {{ tex \vee }}
+    | Lambda :: :: Lambda {{ tex \Lambda }}
+    | True :: :: True {{ tex \top}}
+    | ? :: :: Huh {{tex {\qm } }}
+    | error :: :: Error {{ tex \mathsf{err} }}
+
+    formula :: 'formula_' ::=
+    | NOTEX { formula } :: M :: Notex {{tex }} {{rdx [[formula]]}} {{coq [[formula]]}}
+    | NORDX { formula } :: M :: Nordx {{tex [[formula]] }} {{rdx }} {{coq [[formula]]}}
+     | formula \\ :: :: lbh {{ tex [[formula]] \\\\ }}
+      | formula1 && formula2 :: :: Combine {{tex [[formula1]] \qquad [[formula2]]}} {{rdx [[formula1]] [[formula2]] }}
+      | gt =/= gt' for any gt1 , gt2 :: :: NotAnn {{tex [[gt]] \neq [[gt']] \text{ for any } [[gt1]], [[gt2]] }}
+      | judgement           ::   :: judgement
+      % | formula1 .. formulan :: :: dots
+      | |- Gamma :: :: GammaWF {{rdx }}
+      | x fresh :: :: fresh {{rdx (where  [[x]] ,(gensym)) }}
+      % | ( formula ) :: M :: parens {{tex [[formula]]}} {{rdx [[formula]] }} {{coq ([[formula]])}}
+      | gU =/= gU' :: :: Tneq {{rdx (side-condition ,(not (alpha-equivalent? L (term [[gU]]) (term [[gU']])))) }} {{coq ([[gU]] <> [[gU']])}}
+      | gU not<< gU' :: :: NotLeq {{rdx (side-condition ,(not (judgment-holds (MorePrecise [[gU]] [[gU']])))) }}  {{tex [[gU]] \not\sqsubseteq [[gU']]}}
+      | gU ===== gU' :: :: Teq {{rdx (side-condition , (alpha-equivalent? L (term [[gU]]) (term [[gU']]))) }} {{coq ([[gU]] = [[gU']])}}
+      % | mV ==== gU :: :: Teq {{rdx (error "TODO") }} {{coq ([[mV]] = Some([[gU]]))}}
+      | eT ==== gT :: :: EvIsTerm {{rdx (side-condition ,(alpha-equivalent? L  (term [[eT]]) (term [[gT]]))) }} {{coq ([[eT]] = [[gT]]) }}
+      % | iinf ==== jinf :: :: Ueq {{rdx (error "TODO") }} {{coq [[iinf]] = [[jinf]]}}
+      | i < j :: :: InfLt {{tex [[i]] < [[j]] }} {{rdx (side-condition  ,(< (term [[i]]) (term [[j]]))) }} {{coq False }} %TODO
+      | i > 0 :: :: Pos {{rdx (side-condition ,(> (term [[i]]) 0)) }} {{coq ([[i]] > 0)}}
+      | 0 < i < j :: :: InfLeq {{tex 0 < [[i]] < [[j]] }} {{rdx (side-condition ,(and (< 0 (term [[i]])) (<= (term [[i]]) (term [[j]])))) }} {{coq False }} %TODO
+      | z nelem FV ( gu ) :: :: fvCheck {{rdx  }} {{coq ~(Exists_list (fun x => z = [[z]]) (vars_term [[gu]]))}}
+      | et =/= error :: :: TermNeq {{rdx (side-condition ,(not (alpha-equivalent? L (term [[et]]) (term TermError)))) }} {{coq ([[et]] <> TermError)}}
+      | et1 , et2 =/= error :: :: TermNeq2 {{rdx (side-condition ,(not (or (alpha-equivalent? L (term [[et1]]) (term TermError)) (alpha-equivalent? L (term [[et2]]) (term TermError)) ))) }} {{coq (TODO)}}
+      | gU /\ gU' undefined :: :: MeetUndef {{rdx (side-condition ,(empty? (judgment-holds (Meet [[gU]] [[gU']] gU_9999) gU_9999))) }} {{coq False}}
+      | ep1 /\ ep2 undefined :: :: EvMeetUndef {{rdx (side-condition ,(empty? (judgment-holds (Meet (type-in-ev [[ep1]]) (type-in-ev [[ep2]]) gU_9999) gU_9999))) }} {{coq False}}
+
+      % | ep1 . ep2 undefined :: :: TransUndef {{rdx (side-condition ,(empty? (judgment-holds (ConsistentTrans [[ep1]] [[ep2]] ep_9999) ep_9999))) }} {{coq False}}
+      % | dom ep undefined :: :: DomUndef {{rdx (side-condition ,(empty? (judgment-holds (EvDom [[ep]] ep_9999) ep_9999))) }} {{coq False}}
+      | dom gU undefined :: :: DomTyUndef {{rdx (side-condition ,(empty? (judgment-holds (Domain [[gU]] gU_9999) gU_9999))) }} {{coq False}}
+      | dom ep undefined :: :: DomEvUndef {{rdx (side-condition ,(empty? (judgment-holds (Domain (type-in-ev [[ep]]) gU_9999) gU_9999))) }} {{coq False}}
+
+      % | [ _  / ev ] cod ep undefined :: :: CodUndef {{rdx (error "TODO") }} {{coq False}}
+      % | [ _  / ev ] cod gU undefined :: :: CodSubUndef {{ tex {[ [[ev]] / {\_} ]} \ottkw{cod}\ [[gU]]\ \ottkw{undefined} }}
+      | ~< :: :: Prec {{tex \prec}}
+      % | CanSynth tt :: :: CanSynth {{rdx (where #f (is-check-only [[tt]]))}} {{tex }}
+      % | CannotSynth tt :: :: CannotSynth {{rdx (where #t (is-check-only [[tt]]))}} {{tex }}
+      | SynthError tt :: :: SynthError {{rdx (side-condition ,(error 'typechecking "Cannot synthesize type for ~a, try adding an annotation?" (pt (term [[tt]]))))}} {{tex }}
+      | CheckError tt gU :: :: CheckError {{rdx (side-condition ,(error 'typechecking "Cannot check ~a against type ~a" (pt (term [[tt]])) (pt (term [[gU]]))))}} {{tex }}
+      | CheckSynthError tt gU gU' :: :: CheckSynthError {{rdx (side-condition ,(error 'typechecking "Expression ~a has type ~a which can't be used in context expecting ~a" (pt (term [[tt]]) ) (pt (term [[gU]])) (pt (term [[gU']]))))}} {{tex }}
+      | gU ~/~ gU' :: :: NotConsistent {{rdx (side-condition ,(not (judgment-holds (Consistent [[gU]] [[gU']])))) }} 
+      | NotSetPair gU gU' :: :: NotSetPair {{rdx (where #f (is-set-pair [[gU]] [[gU']]))}} {{tex }}
+      | RuntimeError ep1 ep2 et :: :: RuntimeError {{rdx (side-condition ,(error 'RuntimeError "Can't cast:\n    ~a\nto\n   ~a\nin term ~a" (printEvType (term [[ep1]])) (printEvType (term [[ep2]])) (pt (term [[et]])) ))}} {{tex }}
+      | ( gu' := if gU == gU' then gu else gu'' ) :: M :: IfCheck {{coq TODO }} {{rdx (where [[gu']] ,(if (alpha-equivalent? (term [[gU]]) (term [[gU']])) (term [[gu]]) (term [[gu'']])))}}      | not-currently-defined x :: M :: NotDefined {{rdx (side-condition ,(not (hash-has-key? currently-defined-vars (term [[x]])) )) }} {{coq TODO}} {{tex }}
+      | x |-> ( et , gu , gU ) :: M :: VarDefined {{coq TODO}} {{tex }} {{rdx (where (ENTTriple [[et]] [[gu]] [[gU]]) ,(and (hash-has-key? currently-defined-vars (term [[x]]) ) (hash-ref currently-defined-vars (term [[x]])) ))}} 
+      | x elem FV ( gU ) :: :: FVElem {{tex [[x]] \in \mathsf{FV}([[gU]]) }}
+      % | x nelem FV ( gU ) :: :: FVNelem {{tex [[x]] \not\in \mathsf{FV}([[gU]]) }}
+      % | gV' /< gU :: :: PrecUndef {{tex [[gV']] \not\prec [[gU]]}} {{rdx (error "TODO") }} {{coq False (*TODO*)}}
+      | NotSets gU gU' :: :: NotSets {{rdx (side-condition ,(not (judgment-holds (BothSets [[gU]] [[gU']])) ))}}
+
+
+
+% grammar 
+
+
+iinf {{tex {i_{\infty} } }}, jinf {{tex { j_{\infty} } }} :: Universe ::= {{rdx number}}
+  | i :: :: Level {{rdx [[i]]}} 
+  | 0 :: M :: Zero {{rdx 0 }} {{coq (UniverseLevel 0) }} 
+  | infty :: :: Inf {{ tex \infty }} {{rdx +inf.0}}
+  | LEVEL ( i ) :: M :: Tag {{tex [[i]] }} {{rdx [[i]] }} {{coq (UniverseLevel [[i]]) }}
+  | iinf |_| jinf :: M :: Max {{tex [[iinf]] \sqcup [[jinf]]}} {{rdx (max [[iinf]] [[jinf]]) }} {{coq (uni_max [[iinf]] [[jinf]] )}}
+  % | universe gu :: M :: OfType {{rdx (error "TODO") }} {{coq (uni_for [[gu]]) }} %TODO implement this
+
+is, js :: LevelMultiSet ::=
+  | { i } :: :: Singleton
+  | is ++ js :: :: Sum 
+
+iinfs, jinfs :: UniverseMultiSet ::=
+  | { iinf } :: :: Singleton
+  | iinfs ++ jinfs :: :: Sum 
+
+ent :: ENT ::=
+  | ( et , gu ,  gU ) :: :: Triple
+
+parsing
+  StaticAtomicParens <= SCanonicalParens
+  AtomicParens <= CanonicalParens
+  SCanonicalParens <= StaticAtomicParens
+  CanonicalParens <= AtomicParens
+  formula_Combine left formula_Combine
+
+substitutions
+    single   tt x :: tsubst
+
+
+subrules
+  u <:: gu
+  RR <:: gRR
+  % gru <:: term
+  % gu <:: term
+  gtSynth <:: gt
+  gtCheckOnly <:: gt
+  t <:: gt
+  t <:: tt
+  gt <:: tt
+  et <:: tt
+  ttSynth <:: tt
+  e <:: ge
+  % ge <:: spine
+  SGamma <:: Gamma
+  Gamma <:: Env
+  % sv <:: ev
+  % sa <:: t
+  % sa <:: es
+  % se <:: ve
+  ev <:: et
+  rv <:: et
+  rv <:: ev
+  % ve <:: es
+  % se <:: t
+  sv <:: t
+
+contextrules
+  EC _:: tt :: tt
+  SC _:: tt :: tt
+
+% typeOrder {{tex \stackrel{?}{<} }} :: TypeOrder ::=
+%   | < :: ::   LT {{tex \prec}}
+%   | /< :: :: NLT {{tex \not\prec}}
+
+
+embed {{coq
+Definition uni_max (ii : iinf) (ji : iinf) : iinf := 
+  match ii with
+     | UniverseInf => ji
+    | UniverseLevel i => match ji with
+      | UniverseInf => UniverseInf
+      | UniverseLevel j => UniverseLevel (Coq.Arith.Max.max i j)
+      end 
+    end .
+    
+
+}}
+
+embed {{rdx 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Hand-written implementations
+;; These are mostly to speed up type-checking and running GDTL programs
+;; They should match the inductive definitions in the ott file
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; The (precision) meet of two types/terms
+;; Throws an exception if the meet does not exist
+
+(define (meet gu_1 gu_2)
+  (with-handlers ([exn:fail:redex? (lambda (exn) (error 'RuntimeError "Incompatible types:\n    ~a\nand\n   ~a" (pt gu_1) (pt gu_2) ))])
+    (meet_ (term (^ ,gu_1 ,gu_2)))
+  ))
+
+
+(define meet_
+  (term-match/single L
+               [(^ CanonicalDyn gu) (term gu)]
+               [(^ gu CanonicalDyn) (term gu)]
+               [(^ (CanonicalAtomic (AtomicSet i)) (CanonicalAtomic (AtomicSet i))) (term (CanonicalAtomic (AtomicSet i)))]
+               [(^ (CanonicalAtomic (AtomicSpine x SpineEmpty)) (CanonicalAtomic (AtomicSpine x SpineEmpty))) (term (CanonicalAtomic (AtomicSpine x SpineEmpty)))]
+               [(^ (CanonicalAtomic (AtomicSpine x (SpineCons ge_1 gu_1))) (CanonicalAtomic (AtomicSpine x (SpineCons ge_2 gu_2))))
+                (term-let ([(CanonicalAtomic (AtomicSpine x ge_3)) (meet (term (CanonicalAtomic (AtomicSpine x ge_1))) (term (CanonicalAtomic (AtomicSpine x ge_2))))])
+                          (term (CanonicalAtomic (AtomicSpine x (SpineCons ge_3 ,(meet (term gu_1) (term gu_2)))))))]
+               [(^ (CanonicalLam x gu_1) (CanonicalLam y gu_2))
+                (let ([z (gensym)])
+                 (term (CanonicalLam ,z ,(meet (term (substitute gu_1 x ,z)) (term (substitute gu_2 y ,z))) )))]
+               [(^ (CanonicalPi x gU_11 gU_12) (CanonicalPi y gU_21 gU_22))
+                (let ([z (gensym)])
+                 (term (CanonicalPi ,z ,(meet (term gU_11) (term gU_21)) ,(meet (term (substitute gU_12 x ,z)) (term (substitute gU_22 y ,z))) )))]
+               ))
+
+;;Find the eta-expanded form of gu at type gU
+(define (eta-expand gu gU)
+  (first (judgment-holds (GEtaExpandC ,gu gu_ret ,gU) gu_ret)
+))
+
+;;Compute the normal form from replacing x_old by gu_new at type gU in gu
+(define (hsub x_old gu_new gU gu) ((hsub_ gu) x_old gu_new gU) )
+
+(define hsub_
+  (term-match/single L
+                     [CanonicalDyn (lambda (x_old gu_new gU) (term CanonicalDyn))]
+                     [(CanonicalLam x gu) (lambda (x_old gu_new gU)
+                                            (term (CanonicalLam x ,(hsub x_old gu_new gU (term gu)) )))]
+                     [(CanonicalPi x gU_1 gU_2)
+                      (lambda (x_old gu_new gU)
+                        (term (CanonicalPi x
+                                         ,(hsub x_old gu_new gU (term gU_1)) 
+                                         ,(hsub x_old gu_new gU (term gU_2)))))]
+                     [(CanonicalAtomic (AtomicSet i)) (lambda (x_old gu_new gU)
+                                                        (term (CanonicalAtomic (AtomicSet i))))]
+                     [(CanonicalAtomic (AtomicSpine x ge))
+                      (lambda (x_old gu_new gU) (if (equal? (term x) x_old)
+                                                    (term-let ([(TermPair gu_ret1 gU_ret2) ((hsub-spine (term ge)) x_old gu_new gU)])
+                                                               (term gu_ret1)
+                                                               )
+                                                               (term (CanonicalAtomic (AtomicSpine x ,((hsub-map-spine (term ge)) x_old gu_new gU)) ))))]
+                     )
+  )
+
+;; Helpers for hsub
+
+;;Perform a substitution in each element of a spine
+(define hsub-map-spine
+  (term-match/single L
+                     [SpineEmpty (lambda (x_old gu_new gU) (term SpineEmpty))]
+                     [(SpineCons ge gu) (lambda (x_old gu_new gU)
+                                          (term (SpineCons ,((hsub-map-spine (term ge)) x_old gu_new gU) ,(hsub x_old gu_new gU (term gu)))))]))
+
+;; Perform a hereditary substitution on a spine whose head is the variable being replaced
+(define hsub-spine
+  (term-match/single L
+                     [SpineEmpty (lambda (x gu_new gU) (term (TermPair ,gu_new ,gU)))]
+                     [(SpineCons ge gu) (lambda (x gu_new gU) (hsub-spine-withsub (term (TermPair ,(hsub x gu_new gU (term gu)) ,( (hsub-spine (term ge)) x gu_new gU) )) )) ]))
+
+;; Perform a hereditary subtitution on a cons-spine whose head is the variable being replaced,
+;; Given the result of substituting on all but the last element of the spine
+(define hsub-spine-withsub
+  (term-match/single L
+                     [(TermPair gu_subbed (TermPair (CanonicalLam x gu_body) (CanonicalPi y gU_dom gU_cod) ))
+                      (let ([gu_val (hsub (term x) (term gu_subbed) (term gU_dom) (term gu_body))]
+                            [gU_type (hsub (term y) (term gu_subbed) (term gU_dom) (term gU_cod))])
+                       (term (TermPair ,(eta-expand gu_val gU_type) ,gU_type )))]
+                     [(TermPair gu_subbed (TermPair gu_spine CanonicalDyn)) (term (TermPair CanonicalDyn CanonicalDyn))]
+                     [(TermPair gu_subbed (TermPair CanonicalDyn (CanonicalPi y gU_dom gU_cod)) ) (term (TermPair CanonicalDyn ,(hsub (term y) (term gu_subbed) (term gU_dom) (term gU_cod))))]))
+
+;; A performance hack
+;; We leave all definitions as variables in elaborated form
+;; And insert them immediately before evaluating
+;; This prevents us from having to re-typecheck definitions
+(define perform-elab-substs
+  (term-match/single L 
+                     [x (if (hash-has-key? currently-defined-vars (term x) ) 
+                            (redex-let L ([ (ENTTriple et gu gU) (hash-ref currently-defined-vars (term x)) ]) (term et)  )
+                            (term x) )]
+                     [(TermLam x et) (term (TermLam x ,(perform-elab-substs (term et)))) ]
+                     [(TermApp et_11 et_22) (term (TermApp ,(perform-elab-substs (term et_11)) ,(perform-elab-substs (term et_22))))]
+                     [(TermPi x eT_11 eT_22) (term (TermPi x ,(perform-elab-substs (term eT_11)) ,(perform-elab-substs (term eT_22))))]
+                     [(TermSet i) (term (TermSet i))]
+                     [TermDyn (term TermDyn)]
+                     [(TermEp ep et) (term (TermEp ep ,(perform-elab-substs (term et))))]
+                     [TermError (term TermError)]
+                     ))
+
+;; Compute the domain of a function type or ?
+(define dom
+  (term-match/single L
+                     [CanonicalDyn (term CanonicalDyn)]
+                     [(CanonicalPi x gU gU_2) (term gU)]
+                     [_ (error "Cannot treat as a function type")]))
+
+;; Helpers for manipulating universe levels
+(define-metafunction L 
+  succ : i -> i
+  [(succ i) ,(+ (term i) 1)])
+  
+  (define-metafunction L 
+  pred : i -> i
+  [(pred i) ,(- (term i) 1)])
+
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Computes replacing of x_old by et_new in et, where et_new has normal form gu at type gU
+;; Substitution on evidence terms
+;; Because evidence terms contain evidence, when performing a substitution
+;; We may also need to subsitute in the evidence
+;; Since this is (type-directed) hereditary substitution on normal forms,
+;; We need to know the type and normal form of the value we're inserting
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define-metafunction L 
+  esubst : et var et gu gU -> et 
+  [(esubst x_old x_old et_new gu gU) et_new ]
+  [(esubst y x_old et_new gu gU) y (side-condition (not (equal? (term x_old) (term y)))) ]
+  [(esubst (TermPi y eT_1 eT_2) x_old et_new gu gU) 
+    (TermPi y (esubst eT_1 x_old et_new gu gU) (esubst eT_2 x_old et_new gu gU ))
+    (side-condition (not (equal? (term x_old) (term y))))
+  ]
+  [(esubst (TermLam y et) x_old et_new gu gU) 
+    (TermLam y (esubst et x_old et_new gu gU ))
+    (side-condition (not (equal? (term x_old) (term y))))]
+  [(esubst (TermApp et_1 et_2) x_old et_new gu gU) (TermApp (esubst et_1 x_old et_new gu gU) (esubst et_2 x_old et_new gu gU))]
+  [(esubst (TermEp (EvidenceEv gU_1 ) et) x_old et_new gu gU) (TermEp (EvidenceEv gU_new) (esubst et x_old et_new gu gU))
+    (judgment-holds (GHsub  x_old gU gu gU_1 gU_new))]
+  [(esubst (TermSet i) x_old et_new gu gU) (TermSet i) ]
+  [(esubst TermDyn x_old et_new gu gU) TermDyn]
+)
+
+;; Test whether a term can possibly synthesize a type
+(define-metafunction L 
+ is-check-only : term -> boolean
+ [(is-check-only TermDyn) #t]
+ [(is-check-only (TermPi x TT_1 TT_2)) #t]
+ [(is-check-only (TermLam x tt)) #t]
+ [(is-check-only tt) #f] 
+)
+
+;;;;;;;;;;;;;;;;;;;
+;; Checks whether the input types areof the form (Set i) (Set j)
+;; where i < j
+;; We need this because Set i and Set j are not *consistent*, we can only convert between them in one direction
+;; So when we switch between synthesis and checking, we need to tell whether we're checking the types for Consistency
+;; Or checking if we can raise from a lower universe to a higher one
+;;;;;;;;;;;;;;;;;;
+
+(define-metafunction L 
+ is-set-pair : gU gU_V -> boolean
+ [(is-set-pair (CanonicalAtomic (AtomicSet i)) (CanonicalAtomic (AtomicSet j))) #t (side-condition (< (term i) (term j)))]
+ [(is-set-pair gU gU_V) #f] 
+)
+
+
+;; Get the typed wrapped in evidence
+(define-metafunction L 
+ type-in-ev : ep -> gU
+ [(type-in-ev (EvidenceEv gU)) gU]
+)
+
+
+;; Pretty-print a term
+(define (pt tm)
+  (with-handlers ([exn:fail:redex?
+                   (lambda (exn) (format "~a" tm))])
+    (pretty-term tm)
+    ))
+
+
+;; Pattern-matcher for pretty-printing terms 
+(define pretty-term
+    (term-match/single L
+    [x (symbol->string (term x))]
+    [(TermLam x tt) (string-append "(λ " (pt (term x)) " . " (pt (term tt)) ")")]
+    [(TermPi x TT_1 TT_2) (string-append "(( " (pt (term x)) " : " (pt (term TT_1)) ") -> " (pt (term TT_2)) ")")]
+    [(TermSet i) (string-append "Set" (number->string (term i)))]
+    [(TermApp tt_1 tt_2) (string-append "(" (pt (term tt_1)) " " (pt (term tt_2)) ")")]
+    [TermDyn "?"]
+    [TermError "⊥"]
+    [(TermAnn tt_1 tt_2) (string-append (pt (term tt_1)) " :: " (pt (term tt_2)))]
+    [(TermDynAnn gU) (string-append "?" (pt (term gU)))]
+    [(TermEp (EvidenceEv Gamma gU ) tt) (string-append "〈" (pt (term gU)) "〉" (pt (term tt)))]
+    [(CanonicalAtomic grr) (pt (term grr))]
+    [(CanonicalLam x gu) (string-append "(λ " (pt (term x)) " . " (pt (term gu)) ")")]
+    [(CanonicalPi x gU gU_V) (string-append "(( " (pt (term x)) " : " (pt (term gU)) ") -> " (pt (term gU_V)) ")")]
+    [(AtomicSet i) (string-append "Set" (number->string (term i)))]
+    [CanonicalDyn "?"]
+    [(AtomicSpine x ge) (string-append "(" (pt (term x)) " " (pt (term ge)) ")")]
+    [SpineEmpty ""]
+    [(SpineCons ge gu) (string-append (pt (term ge)) " " (pt (term gu)))]
+    
+    ))
+
+;; Print the type wrapped in evidence
+(define (printEvType ep)
+ (term-let ([(EvidenceEv gU ) ep]) (pt (term gU))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Ott's notion of context doesn't play nice with Redex
+;; So we extend our language with our own notion of evaluation contexts
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define-extended-language LContext
+  L
+  (redexContext RC ::= 
+    hole
+    (TermApp RC et)
+    (TermApp ev RC)
+    (TermPi x RC eT)
+    (TermEp ep RC))
+)
+
+
+;;;;;;;;;;;;;;;;
+;; The contextual-closure of our single-small-step reduction relation
+;;;;;;;;;;;;;;;
+(define Red
+  (reduction-relation LContext
+  (--> et_1 et_2 (judgment-holds (Step et_1 et_2)))
+  )
+)
+
+ 
+}}
+
+embed {{rdx
+#|
+}}
+
+defns
+EnvJudgements :: '' ::=
+
+
+defn 
+( x : gU ) elem Gamma :: :: GVarLook :: GVarLook {{ com Variable Lookup }}  {{rdx-mode I O I }} by
+
+--------------------- :: Head
+( x : gU ) elem (x : gU) Gamma
+
+x =/= y
+( x : gU1 ) elem  Gamma
+--------------------- :: Tail
+( x : gU1 ) elem (y : gU2) Gamma
+
+defn 
+x nelem Gamma :: :: GVarFree :: GFreeLook {{ com Free Variable Check }} {{rdx-mode I I }} by
+
+--------------------- :: Nil
+x nelem empty
+
+x  =/= y 
+x nelem Gamma
+--------------------- :: Cons
+x nelem (y : gU) Gamma
+
+% defn 
+% Gamma extends Gamma' :: :: EnvExtension :: EnvExtension {{ com Environment Extension }} by
+
+% --------------------- :: Nil
+% Gamma extends Gamma
+
+% Gamma extends Gamma'
+% --------------------- :: Cons
+% (x : gU)Gamma extends Gamma'
+
+embed {{rdx
+|#
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Environment helpers, implemented by hand for speed
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Returns the type for x in environment Gamma, or #f if x is not in Gamma
+(define (gVarLook x Gamma)
+  ((gVarLook_ Gamma) x)
+  )
+
+(define gVarLook_
+  (term-match/single L 
+                     [EnvEmpty (lambda (x) #f)]
+                     [(EnvExt y gU Gamma) (lambda (x) (if (equal? x (term y))
+                                                          (term gU)
+                                                          (gVarLook x (term Gamma)) 
+                                                          ))]
+                     ))
+
+;; Returns whether x is free in Gamma 
+(define (gVarFree x Gamma)
+  ((gVarFree Gamma) x)
+  )
+
+(define gVarFree_
+  (term-match/single L 
+                     [EnvEmpty #t]
+                     [(EnvExt y gU Gamma) (lambda (x) (if (equal? x (term y))
+                                                          #f
+                                                          (gVarFree x (term Gamma)) 
+                                                          ))]))
+;;Judgment-form versions of the above functions
+
+(define-judgment-form
+  L
+  #:mode (GVarLook I O I)
+  #:contract (GVarLook x gU Gamma)
+
+  [
+   (where gU ,(gVarLook (term x) (term Gamma)))
+   ------------------------------------- "GVarLookHead"
+   (GVarLook x gU Gamma)]
+
+  )
+(define-judgment-form L 
+ 
+  #:mode (GVarFree I I)
+  #:contract (GVarFree x Gamma)
+
+  ;; #source file ./ott/lang_simple.ott  lines 895 - 899 
+  [
+   (side-condition ,(gVarFree (term x) (term Gamma)))
+   ---------------------------------- "GFreeLookCons"
+   (GVarFree x Gamma)]
+  )
+
+}}
+
+
+% defns
+%   TypeOrders :: '' ::= 
+
+
+
+% defn
+%   Gamma |- universe gu = iinf  :: :: Universe :: Universe  {{ com Gradual Universe Calculation}} {{rdx-mode I I O }}
+% by
+
+
+%   i > 0
+%   ------------------------------ :: Type
+%   Gamma |- universe Set i = LEVEL(i + 1)
+
+%   (x : gU) elem Gamma
+%   Gamma |- universe gU = i
+%   i > 0
+%   ------------------------------ :: Var
+%   Gamma |- universe x = i - 1
+
+%   Gamma |- universe gU1 = i
+%   (x : gU1) Gamma |- universe gU2 = j
+%   ------------------------------ :: Pi
+%   Gamma |- universe (x : gU1) -> gU2 = i |_| j
+
+%   Gamma |- universe gu = i
+%   ------------------------------ :: Lam
+%   Gamma |- universe (\x . gu) = i
+
+%   Gamma |- universe x ge = i
+%   Gamma |- universe gu = j
+%   --------------------------------:: Spine
+%   Gamma |- universe x ge gu = i |_| j
+
+%   --------------------------------:: Dyn
+%   Gamma |- universe ? = infty
+
+%   defn
+%   SGamma |- suniverse u = i  :: :: SUniverse :: SUniverse  {{ com Static Universe Calculation}} 
+%     {{tex [[SGamma]] \vdash \mathcal{U}([[u]]) = [[i]] }} {{rdx-mode I I O }}
+% by
+
+%   i > 0
+%   ------------------------------ :: Type
+%   SGamma |- suniverse Set i = i + 1
+
+%   (x : U) elem SGamma
+%   SGamma |- suniverse U = i
+%   i > 0
+%   ------------------------------ :: Var
+%   SGamma |- suniverse x = i - 1
+
+
+%   SGamma |- suniverse U1 = i
+%   (x : U1) SGamma |- suniverse U2 = j
+%   ------------------------------ :: Pi
+%   SGamma |- suniverse (x : U1) -> U2 = max i j
+
+%   ------------------------------ :: Lam
+%   SGamma |- suniverse (\x . u) = 0
+
+%   SGamma |- suniverse x e = i
+%   SGamma |- suniverse u = j
+%   --------------------------------:: Spine
+%   SGamma |- suniverse x e u = max i j
+
+
+
+ 
+
+embed {{rdx 
+  #|
+}}
+
+
+defns
+  SHsubs :: '' ::= 
+
+defn 
+[ x @ U  / u1 ]s u2 ==== u3 :: :: SHsub :: SHsub {{ com Static Hereditary Substitution }} 
+{{ tex {[ [[u1]] / {[[x]]} ]}^{[[U]] } [[u2]]= [[u3]] }}
+{{rdx-mode I I I I O }}
+by
+
+
+
+
+
+    [ x @ U  / u ]s U1 ==== U1'
+    [ x @ U  / u ]s U2 ==== U2'
+    x =/= y
+------------------------------------ :: Pi
+     [ x @ U  / u ]s (y : U1) -> U2 ==== ( y : U1') -> U2'
+
+
+   x =/= y
+------------------------------------- :: DiffNil
+   [x @ U  / u ]s y ==== y 
+
+  x  =/= y 
+  [x @ U  / u ]s y  e ==== y e'
+  [x @ U  / u ]s u2  ==== u3
+------------------------------------- :: DiffCons
+   [x @ U  / u ]s y  e u2 ==== y e' u3
+
+
+
+-------------------------------------- :: Type
+     [ x @ U  / u ]s Set i ==== Set i
+
+
+    [ x @ U  / u ]s u2 ==== u3
+    x  =/= y 
+------------------------------------ :: Lam
+     [ x @ U  / u ]s (\ y . u2) ==== (\ y . u3)
+
+
+
+
+
+  [x @ U  / u1 ]s  e u2 ==== u3 @ U'
+------------------------------------- :: Spine
+   [x @ U  / u1 ]s x e u2 ==== u3
+
+
+
+
+
+defn 
+[ x @ U  / u ]s e ==== u' @ U' :: :: SHsubR :: SHsubR {{ com Static Atomic Hereditary Substitution }} 
+{{ tex {[ [[u]] / {[[x]]} ]}^{[[U]] } {[[x]][[e]] }=\ {[[u']]}\ :\ {[[U']]} }}
+{{rdx-mode I I I I O O }}
+by
+
+------------------------------------- :: Head
+   [x @ U  / u ]s empty  ==== u @ U
+
+%Only defined when substituting with terms that synthesize
+%want to presere synthesis
+   [x @ U  / u1 ]s  e ==== (\y . u'1) @ (y : U'1) -> U'2  &&   [x @ U  / u1 ]s u2 ==== u3
+  %  V1 < U
+   [y @ U'1  / u3 ]s u'1 ==== u'2 &&   [y @ U'1  / u3 ]s U'2 ==== U'3
+------------------------------------- :: Spine
+   [x @ U  / u1 ]s e u2 ==== u'2 @ U'3
+
+
+defns
+  SCanonical :: '' ::= 
+
+defn 
+  |-s SGamma :: :: SWF :: SWF {{com Well Formed Static Environments}} {{tex \vdash [[SGamma]]}}
+  {{rdx-mode I }}
+by
+  
+  ----------------- :: Empty
+  |-s empty
+
+    |-s SGamma  &&    SGamma |- U :s Set  &&    x nelem SGamma
+  ----------------- :: Ext
+  |-s (x : U)SGamma
+
+defn 
+SGamma |- U :s Set :: :: StaticType :: StaticType
+{{rdx-mode I I }} {{com Well-formed Types with Unknown Level}}
+{{tex [[SGamma]] \vdash [[U]] : \TypeType }}
+
+by
+
+
+
+
+SGamma |- rr => Set i
+-------------------- :: Type
+SGamma |- rr :s Set
+
+
+
+    SGamma |- U1 :s Set
+    |-s (x : U1)SGamma
+    (x : U1)SGamma |- U2 :s Set  
+------------------------ :: Pi
+    SGamma |- (x : U1) -> U2 :s Set
+
+
+defn 
+SGamma |- rr => U  :: :: SCSynth :: SCSynth {{ com Static Well-Formed Atomics }} 
+{{rdx-mode I I O }}
+by
+
+
+i > 0
+------------------------ :: Type
+    SGamma |- Set i => Set (i + 1)
+
+
+    |-s SGamma
+    (x : U) elem SGamma
+------------------------ :: Var
+    SGamma |- x  => U
+
+
+
+
+    SGamma |- x e => (y : U1) -> U2
+    SGamma |- u <= U1  &&    [y  @ U1  / u ]s U2 ==== U3 
+------------------------ :: App
+    SGamma |- x e u => U3
+
+
+defn
+SGamma |- u <= U  :: :: SCCheck :: SCCheck {{ com Static Well-Formed Canonical Forms }} 
+{{rdx-mode I I I }}
+by
+
+
+SGamma |- rr => RR
+-------------------- :: Synth
+SGamma |- rr <= RR
+
+SGamma |- RR => Set i
+0 < i < j
+-------------------- :: Level
+SGamma |- RR <= Set j 
+
+
+|-s (x : U1) SGamma  && (x : U1) SGamma |- u <= U2
+-------------------- :: Lam
+SGamma |- (\ x . u)  <= (x : U1) -> U2
+
+    SGamma |- U1 <= Set i
+    |-s (x : U1)SGamma  &&    (x : U1)SGamma |- U2 <= Set i  
+------------------------ :: Pi
+    SGamma |- (x : U1) -> U2 <= Set i
+
+
+defns
+  StaticJudgements :: '' ::=
+
+defn 
+SGamma |- t => U  :: :: SSynth :: SSynth {{ com Static Synthesis }} 
+{{rdx-mode I I O }}
+by
+
+  SGamma |- U <~ T  :s Set
+  SGamma |- t <= U
+------------------------ :: Ann
+  SGamma |- (t : T) => U
+
+i > 0
+------------------------ :: Type
+  SGamma |- Set i => Set (i + 1)
+
+
+    |-s SGamma
+    (x : U) elem SGamma
+------------------------ :: Var
+    SGamma |- x  => U
+
+
+
+
+
+    SGamma |- t1 => (x : U1) -> U2  &&    SGamma |- u <~ t2 <= U1 
+    [x  @ U1  / u ]s U2 ==== U3 
+------------------------ :: App
+    SGamma |- t1 t2 => U3
+
+defn
+SGamma |- t <= U  :: :: SCheck :: SCheck {{ com Static Checking }} 
+{{rdx-mode I I I }}
+by
+
+
+SGamma |- t => U
+-------------------- :: Synth
+SGamma |- t <= U
+
+SGamma |- T => Set i
+0 < i < j
+-------------------- :: Level
+SGamma |- T <= Set j
+
+    SGamma |- U <~ T1 <= Set i &&        |-s (x : U)SGamma
+    (x : U)SGamma |- T2 <= Set i
+------------------------ :: Pi
+    SGamma |- (x : T1) -> T2 <= Set i
+
+
+|-s (x : U1) SGamma 
+ (x : U1) SGamma |- t <= U2
+-------------------- :: Lam
+SGamma |- (\ x . t)  <= (x : U1) -> U2
+
+
+
+
+
+
+defn 
+SGamma |- U <~ T :s Set :: :: StaticTypeNorm :: StaticTypeNorm
+{{rdx-mode I O I }} {{com Normalization for Types with Unknown Level}}
+{{tex [[SGamma]] \vdash [[U]] \leadsfrom [[T]] : \TypeType }}
+
+by
+
+SGamma |- T ~> U => Set i
+----------------------- :: Synth
+SGamma |- U <~ T :s Set
+
+SGamma |- U1<~ T1 :s Set
+(x:U1)SGamma |- U2 <~ T2 :s Set
+----------------------- :: Pi
+SGamma |-  (x : U1)  -> U2 <~ (x : T1)  -> T2  :s Set
+
+defn 
+SGamma |- t ~> u => U  :: :: SNormSynth :: SNormSynth {{ com Static Normalization Synthesis }} 
+{{rdx-mode I I O O }}
+by
+
+  SGamma |- U <~ T :s Set
+  SGamma |- u <~ t <= U
+------------------------ :: Ann
+  SGamma |- (t : T) ~> u => U
+
+i > 0
+------------------------ :: Type
+  SGamma |- Set i ~> Set i => Set (i + 1)
+
+
+    |-s SGamma
+    (x : U) elem SGamma
+    x =eta u : U
+------------------------ :: Var
+    SGamma |- x ~> u => U
+
+
+
+
+
+    SGamma |- t1 ~> (\x . u1) => (x : U1) -> U2
+    SGamma |- u2 <~ t2 <= U1
+    [x  @ U1  / u2 ]s u1 ==== u3  &&    [x  @ U1  / u2 ]s U2 ==== U3
+------------------------ :: App
+    SGamma |- t1 t2 ~> u3 => U3
+
+
+
+defn
+SGamma |- u <~ t <= U  :: :: SNormCheck :: SNormCheck {{ com Static Normalization Checking }} 
+{{rdx-mode I O I I }}
+by
+
+
+SGamma |- t ~> u => U
+-------------------- :: Synth
+SGamma |- u <~ t <= U
+
+SGamma |- T ~> U => Set i 
+0 < i < j
+-------------------- :: Level
+SGamma |- U <~ T <= Set j
+
+
+    SGamma |- U1 <~ T1  <= Set i
+    |-s (x : U1)SGamma
+    (x : U1)SGamma |- U2 <~ T2 <= Set i  
+------------------------ :: Pi
+    SGamma |- (x : U1) -> U2 <~ (x : T1) -> T2  <= Set i
+
+|-s (x : U1) SGamma
+(x : U1) SGamma |- u <~ t <= U2
+-------------------- :: Lam
+SGamma |- (\ x . u) <~ (\ x . t) <= (x : U1) -> U2
+
+defn rr =eta u : U :: :: EtaExpand :: EtaExpand {{tex [[rr]]\leadsto_\eta [[u]]: [[U]]}} {{com Eta Expansion }}
+{{rdx-mode I O I }}
+by
+
+---------------- :: Atomic
+rr =eta rr : RR 
+
+
+y =eta u : U1  &&  x e u =eta u : U2
+---------------- :: Pi
+x e =eta (\y . u) : (y : U1) -> U2
+
+
+embed {{rdx 
+  |#
+
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Hereditary substitution on environments
+  ;;;;;;;;;;;;;;;;;;;;;;;;;
+}}
+ 
+ 
+
+
+
+
+
+defns
+GHsubsEtc :: '' ::=
+
+% defn
+% dom ep ==== ep' :: :: EvDomain :: EvDomain {{com Gradual Domain }} {{tex \ottkw{dom}\ [[ep]]= [[ep']] }}
+% {{rdx-mode I O }}
+% by
+
+% dom gU ==== gU'
+% -------------------- :: Unwrap
+% dom << gU >> ==== << gU' >>
+
+
+
+% defn
+% cod gU ==== gV :: :: CoDomain :: CoDomain {{com Gradual Codomain }} {{tex \ottkw{cod}\ [[gU]]= [[gV]] }}
+% {{rdx-mode I O }}
+% by
+
+% ------------------- :: Pi
+% cod (x : gU1) -> gU2 ==== gU2
+
+% ------------------- :: Dyn
+% cod ? ==== ?
+
+defn 
+gU ~< gU' :: :: GradualOrder :: GradualOrder {{ tex [[gU]] \prec [[gU']] }}
+by
+
+defn 
+gU ~/< gU' :: :: GradualOrderN :: GradualOrderN {{ tex [[gU]] \not\prec [[gU']] }}
+by
+
+defn 
+[ x @ gU  / gu ] Gamma ==== Gamma' :: :: GradualEnvSub :: GradualEnvSub {{ com Approximate Substitution on Gradual Environments }} {{ tex {[ [[gu]] / {[[x]]} ]}^{[[gU]] } [[Gamma]] = [[Gamma']] }}
+{{rdx-mode I I I I O }}
+by
+
+----------------------------- :: Empty
+[ x @ gU  / gu ] empty ==== empty
+
+x =/= y
+[ x @ gU  / gu ] gU1 ==== gU2
+[ x @ gU  / gu ] Gamma ==== Gamma'
+----------------------------- :: VarDiff
+[ x @ gU  / gu ] (y : gU1)Gamma ==== (y : gU2)Gamma'
+
+[ x @ gU  / gu ] Gamma ==== Gamma'
+----------------------------- :: VarSame
+[ x @ gU  / gu ] (x : gU')Gamma ==== Gamma'
+
+
+embed {{ rdx #| }}
+
+defns
+GHsubsEtcc :: '' ::=
+
+defn
+dom gU1 ==== gU2 :: :: Domain :: Domain {{com Gradual Domain }} {{tex \ottkw{dom}\ [[gU1]]= [[gU2]] }}
+{{rdx-mode I O }}
+by
+
+------------------- :: Pi
+dom (x : gU1) -> gU2 ==== gU1
+
+------------------- :: Dyn
+dom ? ==== ?
+
+defn 
+[ x @ gU  / gu1 ] gu2 ==== gu3 :: :: GHsub :: GHsub {{ com Approximate Hereditary Substitution }} {{ tex {[ [[gu1]] / {[[x]]} ]}^{[[gU]] } [[gu2]] = [[gu3]] }}
+% {{rdx-mode I I I I O }} 
+by
+   
+ 
+------------------------------------ :: Type
+     [ x @ gU  / gu ] Set i ==== Set i
+
+
+------------------------------------ :: Dyn
+     [ x @ gU  / gu ] ? ==== ?
+
+    x =/= y
+    [ x @ gU  / gu ] gU1 ==== gU1'
+    [ x @ gU  / gu ] gU2 ==== gU2'
+------------------------------------ :: Pi {{ rdx-omit }}
+     [ x @ gU  / gu ] (y : gU1) -> gU2 ==== ( y : gU1') -> gU2'
+
+    z fresh
+     [ x @ gU  / gu ] gU1 ==== gU1'
+    [ x @ gU  / gu ] [y |=> z ]gU2 ==== gU2'
+------------------------------------ :: PiRdxAlpha {{tex-omit }}
+     [ x @ gU  / gu ] (y : gU1) -> gU2 ==== (z : gU1') -> gU2'
+
+
+    x  =/= y 
+    [ x @ gU  / gu ] gu2 ==== gu3
+------------------------------------ :: Lam {{ rdx-omit }}
+     [ x @ gU  / gu ] (\ y . gu2) ==== (\ y . gu3)
+
+    z fresh
+    [ x @ gU  / gu ] [y |=> z ]gu2 ==== gu2'
+------------------------------------ :: LamRdxAlpha {{tex-omit }}
+     [ x @ gU  / gu ] (\ y . gu2) ==== (\ z . gu2')
+
+   x =/= y
+------------------------------------- :: DiffNil
+   [x @ gU  / gu ] y ==== y 
+
+  x  =/= y 
+  [x @ gU  / gu ] y  ge ==== y ge'
+  [x @ gU  / gu ] gu2  ==== gu3
+------------------------------------- :: DiffCons
+   [x @ gU  / gu ] y  ge gu2 ==== y ge' gu3
+
+
+
+   [x @ gU  / gu ] ge  ==== gu2 @ gU2
+------------------------------------- :: Spine
+   [x @ gU  / gu ] x ge  ==== gu2
+
+%Only defined when substituting with terms that synthesize
+% ------------------------------------- :: SpineAppDyn
+%    [x @ gU  / (? : gU) ] (x ge) ==== ?
+
+%Only defined when substituting with terms that synthesize
+%TODO: this rule goes away with Eta-long?
+  %  gu1 =/= ?
+%    [x @ gU  / gu1 ] gu2 ==== gu3
+%    [x @ gU  / gu1 ] (x ge) ==== y ge'
+% ------------------------------------- :: SpineAppSpine
+%    [x @ gU  / gu1 ] (x ge gu2) ==== y ge' gu3
+
+   
+
+defn 
+[ x @ gU  / gu ] ge ==== gu2 @ gU2 :: :: GHsubR :: GHsubR {{ com Approximate Atomic Hereditary Substitution }} {{ tex {[ [[gu]] / {[[x]]} ]}^{[[gU]] } [[x]][[ge]] = {[[gu2]]} : {[[gU2]]} }}
+{{rdx-mode I I I I O O  }} 
+by
+
+    ------------------------------------- :: Head
+   [x @ gU  / gu ] empty  ==== gu @ gU
+
+
+
+        [x @ gU  / gu ] ge ==== ? @ (y : gU1) -> gU2 &&    [y @ gU1  / gu2 ] gU2 ==== gU3
+    % [x @ gU  / gu ] gv ==== gv2
+  ------------------------------------- :: DynSpine
+    [x @ gU  / gu ] ge gu2 ==== ? @ gU3
+
+    [x @ gU  / gu ] ge ==== (\y . gu2) @ (y : gU1) -> gU2 &&  [x @ gU  / gu ] gu1 ==== gu3 && gU1 ~< gU
+    [y @ gU1  / gu3 ] gu2 ==== gu4 &&     [y @ gU1  / gu3 ] gU2 ==== gU3 &&    gu4 =getac gu5 : gU3 
+    %TODO need this?
+  ------------------------------------- :: LamSpine {{rdx-omit }}
+    [x @ gU  / gu ] ge gu1 ==== gu5 @ gU3
+
+    [x @ gU  / gu ] ge ==== (\y . gu2) @ (y : gU1) -> gU2 &&   gU1 ~/< gU
+    %TODO need this?
+  ------------------------------------- :: LamSpineOrd {{rdx-omit }}
+    [x @ gU  / gu ] ge gu1 ==== ? @ ?
+
+        % gu1 =/= ?
+    % [x @ gU  / gu1 ] gu2 ==== gu3
+    [x @ gU  / gu1 ] ge ==== gu2 @ ?
+  ------------------------------------- :: DynType
+    [x @ gU  / gu1 ] ge gu2 ==== ? @ ?
+
+
+
+    [x @ gU  / gu ] ge ==== (\y1 . gu2) @ (y2 : gU1) -> gU2
+    [x @ gU  / gu ] gu1 ==== gu3  &&    [y1 @ gU1  / gu3 ] gu2 ==== gu4
+    % gV' ~< gU %TODO add back with Gamma?
+    [y2 @ gU1  / gu3 ] gU2 ==== gU3 && gu4 =getac gu5 : gU3
+  ------------------------------------- :: LamSpineRdxAlpha {{tex-omit }}
+    [x @ gU  / gu ] ge gu1 ==== gu5 @ gU3
+
+
+    % gu1 =/= ?
+
+embed {{ rdx 
+|#
+
+;;;;;;;;;;;;;;;;;
+;; Judgment form versions of hereditary substitution and other related functions
+;;;;;;;;;;;;;;;;
+
+(define-judgment-form L 
+ 
+  #:mode (GHsub I I I I O)
+  #:contract (GHsub x gU gu_11 gu_22 gu_33)
+
+  [ (where gu_33 ,(hsub (term x) (term gu_11) (term gU) (term gu_22)))
+  --------------------------------------
+  (GHsub x gU gu_11 gu_22 gu_33)
+  ]
+
+)
+
+(define-judgment-form L 
+ 
+  #:mode (Domain I O)
+  #:contract (Domain gU gU_2)
+
+  [ (where gU_2 ,(dom (term gU)))
+  --------------------------------------
+  (Domain gU gU_2)
+  ]
+
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Functions to substitute into the codomain of a function type
+;; or the body of a function
+;; Used to compute the return type and normal form (respectively) of function application.
+;; Produces ? if the input is ?
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+}}
+
+defns
+GHsubsEtccc :: '' ::=
+
+% defn 
+%   [ _ / gu ] cod ep ==== ep' :: :: EvCodSub :: EvCodSub {{ com Gradual Codomain Substitution}} {{ tex [ [[gu]] / {\_} ]  \ottkw{cod}\ [[ep]] = [[ep']] }}
+%   {{rdx-mode I I O }}
+% by
+
+% dom gU ==== gU'
+% -------------------- :: Unwrap
+% [ _ / gu ] cod << gU >> ==== << gU' >>
+
+defn 
+  [ _ / gu ] cod gU ==== gU' :: :: CodSub :: CodSub {{ com Gradual Codomain Substitution}} {{ tex [ [[gu]] / {\_} ]  \ottkw{cod}\ [[gU]] = [[gU']] }}
+  {{rdx-mode I I O }}
+by
+
+[ x @ gU1  / gu ] gU2 ==== gU2'
+----------------------------- :: Pi
+[ _  / gu ] cod (x : gU1) -> gU2 ==== gU2'
+
+----------------------------- :: Dyn
+[ _  / gu] cod ? ==== ?
+
+% defn
+%   IsSimp gU :: :: IsSimp :: IsSimp {{com Simple Arrow Type Check}} 
+% by 
+
+% --------------------- :: Dyn
+% IsSimp ?
+
+% x nelem FV( gV )
+% ---------------------- :: Pi
+% IsSimp (x : gU) -> gV
+
+% defn
+%   IsDep gU :: :: IsDep :: IsDep {{com Simple Arrow Type Check}} 
+% by 
+
+
+% x elem FV(gV)
+% ---------------------- :: Pi
+% IsDep (x : gU) -> gV
+
+defn 
+  [ _ @ gU  / gu ] body gu2 ==== gu3 :: :: BodySub :: BodySub {{ com Gradual Function Body Substitution}} {{ tex {[ [[gu]] / {\_} ]}^{[[gU]] } \ottkw{body}\ [[gu2]]= [[gu3]] }}
+  {{rdx-mode I I I O }}
+by
+
+[ x @ gU  / gu ] gu2 ==== gu'2
+----------------------------- :: Pi
+[ _ @ gU  / gu ] body (\ x . gu2) ==== gu'2
+
+----------------------------- :: Dyn
+[ _ @ gU  / gu] body ? ==== ?
+
+
+embed {{rdx 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Well-formedness checks for gradual canonical forms
+;; GradualType checks if there's some (Set i) that a given type checks against
+;; WF checks if an environment is well formed (i.e. if each type in it checks against some Set i)
+;; GCSynth synthesizes types for atomic (neutral) forms
+;; And GCCheck checks a canonical form against a given type
+;;
+;; Consistent checks if two types are consistent i.e. equal, except for possible occurrences of ?
+;; ConsistentType checks if a type is (Set i) or ?. Used in type-checking Pi-types.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+}}
+
+
+defns
+  GCanonical :: '' ::= 
+
+defn 
+Gamma |- gU : Set :: :: GradualType :: GradualType
+{{rdx-mode I I }} {{com Well-Formed Gradual Types with Unkown Level}}
+{{tex [[Gamma]] \vdash [[gU]] : \TypeType }}
+
+by
+
+Gamma |- grr =~> ?
+-------------------- :: DynTy
+Gamma |- grr : Set
+
+Gamma |- grr =~> Set i
+-------------------- :: Type
+Gamma |- grr : Set
+
+
+
+    Gamma |- gU1 : Set
+    |- (x : gU1)Gamma
+    (x : gU1)Gamma |- gU2 : Set
+------------------------ :: Pi
+    Gamma |- (x : gU1) -> gU2 : Set
+
+
+-------------------- :: DynVal
+Gamma |- ? : Set
+
+defn 
+  wf|- Gamma :: :: WF :: WF {{com Well Formed Gradual Environments}}
+  {{rdx-mode I}} {{tex \vdash [[Gamma]] }}
+by
+  
+  ----------------- :: Empty
+  wf|- empty
+
+    wf|- Gamma && Gamma |- gU : Set
+    x nelem Gamma
+  ----------------- :: Ext
+  wf|- (x : gU)Gamma
+
+defn 
+Gamma |- grr =~> gU  :: :: GCSynth :: GCSynth {{ com Well-formed Gradual Atomic Forms }} 
+{{rdx-mode I I O }}
+by
+
+i > 0
+------------------------ :: Type
+    Gamma |- Set i =~> Set (i + 1)
+
+
+    |- Gamma
+    (x : gU) elem Gamma
+------------------------ :: Var
+    Gamma |- x  =~> gU
+
+
+
+
+    Gamma |- x ge =~> gU
+    dom gU ==== gU2
+    Gamma |- gu <~= gU2
+    % We need to annotate in substitution, to presere synthesis
+    [_    / gu ] cod gU ==== gU3
+------------------------ :: App
+    Gamma |- x ge gu =~> gU3
+
+defn
+Gamma |- gu <~= gU  :: :: GCCheck :: GCCheck {{ com Well-formed Gradual Canonical Forms }} 
+{{rdx-mode I I I }} 
+by
+
+
+Gamma |- grr =~> gU
+gU ~=~ gU'
+-------------------- :: Synth
+Gamma |- grr <~= gU'
+
+Gamma |- gRR =~> Set i
+0 < i < j
+-------------------- :: Level
+Gamma |- gRR <~= Set j
+
+
+|- (x : gU1) Gamma
+(x : gU1) Gamma |- gu <~= gU2
+-------------------- :: LamPi {{rdx-omit }}
+Gamma |- (\ x . gu)  <~= (x : gU1) -> gU2
+
+
+z fresh
+|- (z : gU1) Gamma
+(z : gU1) Gamma |- [x |=> z]gu <~= [y |=> z]gU2
+-------------------- :: LamPiRdxAlpha {{tex-omit }}
+Gamma |- (\ x . gu)  <~= (y : gU1) -> gU2
+
+|- (x : ?) Gamma
+(x : ?) Gamma |- gu <~= ?
+-------------------- :: LamDyn
+Gamma |- (\ x . gu)  <~= ?
+
+    gU3 ~=~ Set
+    Gamma |- gU1 <~= gU3
+    |- (x : gU1)Gamma
+    (x : gU1)Gamma |- gU2 <~= gU3
+------------------------ :: Pi
+    Gamma |- (x : gU1) -> gU2 <~= gU3
+
+
+Gamma |- gU : Set 
+-------------------- :: Dyn
+Gamma |- ? <~= gU
+
+
+defn
+gU ~=~ Set  :: :: ConsistentType :: ConsistentType {{ com Type Consistency with Unknown Level }} 
+{{ tex [[gU]] \cong \TypeType }}
+{{rdx-mode I }}
+by
+
+------------------------ :: Type
+Set i ~=~ Set
+
+------------------------ :: Dyn
+? ~=~ Set
+
+defn
+gU ~=~ gU'  :: :: Consistent :: Consistent {{ com Consistency of Gradual Canonical Terms }} 
+{{ tex [[gU]] \cong [[gU']] }}
+{{rdx-mode I I }}
+by
+  
+
+
+
+-------------------------:: Eq
+  gu ~=~ gu
+
+  gU1 ~=~ gU1'
+  gU2 ~=~ gU2' 
+-------------------------:: Pi {{rdx-omit }}
+  ( x : gU1) -> gU2 ~=~ (x : gU1') -> gU2'
+
+
+  z fresh
+  gU1 ~=~ gU'1
+  [x |=> z]gU2 ~=~ [y |=> z]gU'2
+-------------------------:: PiRdxAlpha {{tex-omit }}
+  ( x : gU1) -> gU2 ~=~ (y : gU'1) -> gU'2
+
+      gu ~=~ gu'
+-------------------------:: Lam {{rdx-omit }}
+  (\ x . gu ) ~=~ (\ x . gu' )
+
+
+      z fresh
+      [x |=> z ]gu ~=~ [y |=> z]gu'      
+-------------------------:: LamRdxAlpha {{tex-omit }}
+  (\ x . gu ) ~=~ (\ y . gu' )
+
+  x ge ~=~ x ge'
+  gu ~=~ gu'
+-------------------------:: App
+  x ge gu ~=~ x ge' gu' 
+
+------------------------ :: DynL
+? ~=~ gu
+
+-------------------------:: DynR
+gu ~=~ ?
+
+embed {{rdx 
+;;;;;;;;;;
+;; The meet of two pieces of evidence is just the meet of the wrapped types
+;;;;;;;;;;;
+
+}}
+
+defns
+PrecisionJudgements :: '' ::=
+
+defn 
+  ep1 /\ ep2 ==== ep3 :: :: EvMeet :: EvMeet {{tex [[ep1]]\sqcap [[ep2]] = [[ep3]]}}
+  {{rdx-mode I I O }} {{com Precision Meet of Evidence}}
+by
+
+ gU1 /\ gU2 ==== gU3
+--------------------- :: Unwrap
+ << gU1 >> /\ <<gU2>> ==== <<gU3>>
+
+embed {{ rdx #| }}
+
+defns
+PrecisionJudgementss :: '' ::=
+
+defn 
+  gU1 /\ gU2 ==== gU3 :: :: Meet :: Meet {{tex [[gU1]]\sqcap [[gU2]] = [[gU3]]}}
+  {{rdx-mode I I O }} {{com Precision Meet of Gradual Canonical Forms}}
+by
+
+
+   gU1 /\ gU'1 ==== gU''1
+   gU2 /\ gU'2 ==== gU''2
+  ------------------------ :: Pi {{rdx-omit }}
+  (x : gU1) -> gU2 /\ (x : gU'1) -> gU'2 ==== (x : gU''1) -> gU''2
+
+
+  z fresh
+  gU1 /\ gU'1 ==== gU''1
+  [x |=> z]gU2 /\ [y |=> z]gU'2 ==== gU''2
+  ------------------------ :: PiRdxAlpha {{tex-omit }}
+  (x : gU1) -> gU2 /\ (y : gU'1) -> gU'2 ==== (z : gU''1) -> gU''2
+
+   gu /\ gu' ==== gu''
+  ------------------------- :: Lam {{rdx-omit }}
+  \ x . gu /\ \x . gu' ==== \ x . gu''
+
+
+   z fresh
+     [x |=> z]gu /\ [y |=> z]gu' ==== gu''
+  ------------------------- :: LamRdxAlpha {{tex-omit }}
+  \ x . gu /\ \y . gu' ==== \ z . gu''
+
+  gu /\ gu' ==== gu''
+  x ge /\ x ge' ==== x ge''
+  -------------------------- :: App
+  x ge gu /\ x ge' gu' ==== x ge'' gu''
+
+  ----------------------- :: DynL
+  ? /\ gU ==== gU
+
+  gU =/= ?
+  ----------------------- :: DynR
+  gU /\ ? ==== gU
+
+  gu =/= ?
+  ------------------------ :: Refl
+  gu /\ gu ==== gu 
+
+
+defn
+ gU << gU'  :: :: MorePrecise :: MorePrecise {{ com Precision of Canonical Forms }} 
+{{ tex [[gU]]\sqsubseteq [[gU']] }}
+{{rdx-mode I I }}
+by
+
+  gU1 << gU'1 
+   gU2 << gU'2 
+  ------------------------ :: Pi {{rdx-omit }}
+  (x : gU1) -> gU2 << (x : gU'1) -> gU'2 
+
+
+  z fresh
+  gU1 << gU'1 
+  [x |=> z]gU2 << [y |=> z]gU'2
+  ------------------------ :: PiRdxAlpha {{tex-omit }}
+  (x : gU1) -> gU2 << (y : gU'1) -> gU'2 
+
+   gu << gu' 
+  ------------------------- :: Lam {{rdx-omit }}
+  \ x . gu << \x . gu' 
+
+
+   z fresh
+     [x |=> z]gu << [y |=> z]gu' 
+  ------------------------- :: LamRdxAlpha {{tex-omit }}
+  \ x . gu << \y . gu' 
+
+  gu << gu' 
+  x ge << x ge' 
+  -------------------------- :: App
+  x ge gu << x ge' gu' 
+
+
+  ----------------------- :: Dyn
+  gU << ? 
+
+  gU =/= ?
+  ------------------------ :: Refl
+  gU << gU 
+
+
+embed {{ rdx 
+|#
+
+;;;;;;;;;;;;;;;;;;
+;; Judgment-form version of Meet and our precision operation
+;;;;;;;;;;;;;;;;;;
+
+(define-judgment-form L 
+ 
+  #:mode (Meet I I O)
+  #:contract (Meet gU_11 gU_22 gU_33)
+
+  [
+  (where gU_3 ,(meet (term gU_1) (term gU_2)))
+  ---------------------------------
+  (Meet gU_1 gU_2 gU_3)
+  ]
+
+)
+
+(define-judgment-form L 
+ 
+  #:mode (MorePrecise I I)
+  #:contract (MorePrecise gU gU_^)
+
+  [
+  (Meet gU_1 gU_2 gU_1)
+  ---------------------------------
+  (MorePrecise gU_1 gU_2)
+  ]
+
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Definitions for whether a term (not canonical form) is more precise than another
+;; Used to express our version of the gradual guarantee.
+;;
+;; Additionally, we define EvConsistent tests whether ep is evidence that gU1 ~=~ gU2
+;; It does so by seeing if ep is a wrapper around a type more precise than another
+;; This is used when checking our evidence terms
+;; TODO: get evidence-term typing working in Redex
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+ }}
+
+defns
+PrecisionJudgementsss :: '' ::=
+
+
+defn
+ gt << gt'  :: :: TermPrecise :: TermPrecise {{ com Precision of Gradual Terms }} 
+{{ tex [[gt]]\sqsubseteq [[gt']] }}
+{{rdx-mode I I }}
+by
+
+  gT1 << gT'1 
+   gT2 << gT'2 
+  ------------------------ :: Pi {{rdx-omit }}
+  (x : gT1) -> gT2 << (x : gT'1) -> gT'2 
+
+
+
+
+   gt << gt' 
+  ------------------------- :: Lam {{rdx-omit }}
+  \ x . gt << \x . gt' 
+
+
+
+  gt1 << gt1' 
+  gt2 << gt2'
+  -------------------------- :: App
+  gt1 gt2 << gt1' gt2' 
+
+  gt1 << gt2
+  gT1 << gT2
+  ----------------------- :: Ascr
+  gt1 : gT1 << gt2 : gT2  
+
+  % gt =/= gt' : gT for any gt' , gT
+  ----------------------- :: Dyn
+  gt << ? 
+
+  ------------------------ :: Refl
+  gT << gT 
+
+defn
+ ep <<e ep'  :: :: EvPrecise :: EvPrecise {{ com Precision of Evidence Terms }} 
+{{ tex [[ep]]\sqsubseteq [[ep']] }}
+{{rdx-mode I I }}
+by
+
+gU << gU'
+---------------------- :: Unwrap
+<< gU >> <<e << gU' >>
+
+defn
+ et << et'  :: :: EvTermPrecise :: EvTermPrecise {{ com Precision of Evidence Terms }} 
+{{ tex [[et]]\sqsubseteq [[et']] }}
+{{rdx-mode I I }}
+by
+
+eT1 << eT'1 
+   eT2 << eT'2 
+  ------------------------ :: Pi {{rdx-omit }}
+  (x : eT1) -> eT2 << (x : eT'1) -> eT'2 
+
+
+
+   et << et' 
+  ------------------------- :: Lam {{rdx-omit }}
+  \ x . et << \x . et' 
+
+
+  et1 << et1' 
+  et2 << et2'
+  -------------------------- :: App
+  et1 et2 << et1' et2' 
+
+  et1 << et2
+  ep1 <<e ep2
+  ----------------------- :: Ascr
+  ep1 et1 << ep2 et2  
+
+  ----------------------- :: Dyn
+  eT << ? 
+
+  ----------------------- :: Err
+  error << eT 
+
+  ------------------------ :: Refl
+  eT << eT 
+
+defn
+ep |- gU ~=~ gU'  :: :: EvConsistent :: EvConsistent {{ com Consistency Supported by Evidence }} 
+{{ tex [[ep]]\vdash [[gU]] \cong [[gU']] }}
+{{rdx-mode I I I }}
+by
+
+gU1 /\ gU2 ==== gU3
+gU << gU3
+---------------------- :: Def
+<< gU>> |- gU1 ~=~ gU2 
+
+embed {{ rdx #| }}
+
+defns
+EtaPrecisionJudgments :: '' ::=
+
+defn
+ gu <<n gu'  :: :: EtaPrecise :: EtaPrecise  {{ tex [[gu]]\sqsubseteq^\eta [[gu']] }} {{ rdx-mode I I }} 
+by
+
+defn
+ Gamma << Gamma'  :: :: GammaPrecise :: GammaPrecise  {{ tex [[Gamma]]\sqsubseteq [[Gamma']] }} {{rdx-mode I I}} 
+by
+
+defn
+ Gamma <<n Gamma'  :: :: EtaGammaPrecise :: EtaGammaPrecise  {{ tex [[Gamma]]\sqsubseteq^\eta [[Gamma']] }} {{rdx-mode I I}} 
+by
+
+embed {{ rdx |# 
+
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Type-checking judgments for gradual terms
+;; GSynth computes the type for the given term
+;; GSynth checks a term against the given type
+;; The gtSynth syntactic class speeds up pattern matching by restricting us to terms that can synthesize
+
+;;GradualTypeNorm computes the normal form for a term while checking that it types against some (Set i)
+;;GNSynth and GNCheck are like GSynth and GCheck, but produce an (approximate) normal form for the given term.
+
+;; The GEta judgments to help with eta-expanding terms and neutrals
+;; so that we always produce eta-long normal forms
+
+;; GElabSynth and GElabCheck are like GSynth and GCheck, but elaborate the given term
+;; into an evidence term that we can run.
+;; The main change is that we drop annotations, and ascribe initial evidence wherever
+;; we apply the consistency relation during typechecking, so that its applications are explicit
+;; in the terms. 
+;; All functons and ? occurrences are also ascribed with evidence.
+
+;; GradualNESynth and GradualNECheck perform normalization and elaboration simultaneously,
+;; which sometimes speeds us up to avoid duplicate traversals
+
+;; The GradualSynthCheck judgments (for normalization, elaboration, and combined)
+;; are optimizations to avoid computing the synthesized type of a term twice
+;; when checking if we should apply universe cumulativity or consistency
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+}}
+
+
+
+
+defns
+GradualJudgements :: '' ::=
+
+
+
+
+
+
+defn 
+Gamma |- gtSynth =~> gU  :: :: GSynth :: GSynth {{ com Gradual Synthesis }} 
+{{rdx-mode I I O }}
+by
+
+  Gamma |- gU <~ gT : Set => i
+  Gamma |- gt <~= gU
+------------------------ :: Ann
+  Gamma |- (gt : gT) =~> gU
+
+i > 0
+------------------------ :: Type
+  Gamma |- Set i =~> Set (i + 1)
+
+
+    (x : gU) elem Gamma
+    |- Gamma
+------------------------ :: Var
+    Gamma |- x  =~> gU
+
+
+
+
+
+    Gamma |- gtSynth1 =~> gU    &&       NORDX{ Gamma |- gu <~ gt2 <~= texdom gU }
+    NOTEX{ dom gU ==== gU' && Gamma |- gu <~ gt2 <~= gU' } 
+   [_   / gu ] cod gU ==== gU2 
+------------------------ :: App
+    Gamma |- gtSynth1 gt2 =~> gU2
+
+% Gamma |- gU : Set 
+-------------------- :: Dyn
+Gamma |- ? =~> ?
+
+
+
+% CannotSynth gs
+% SynthError gs
+% ------------------------------ :: SynthRdxError
+%   Gamma |- gs =~> ?
+
+
+defn
+Gamma |- gt <~= gU  :: :: GCheck :: GCheck {{ com Gradual Checking }} 
+{{rdx-mode I I I }}
+by
+
+
+% CanSynth gt
+Gamma |- gtSynth =~> gU' \\ 
+gU' ~=~ gU
+-------------------- :: Synth
+Gamma |- gtSynth <~= gU
+
+% CanSynth gt
+Gamma |- gTSynth =~> Set i \\
+0 < i < j
+-------------------- :: Level
+Gamma |- gTSynth <~= Set j
+
+% CanSynth gt
+% Gamma |- gt =~> gU
+% gU ~/~ gV
+% NotSetPair gU gV
+% CheckSynthError gt gU gV 
+% ------------------------------ :: CheckSynthRdxError
+%   Gamma |- gt <~= gV
+
+    Gamma |- gU' <~ gT1 <~= gU &&    gU ~=~ Set 
+      |- (x : gU')Gamma  &&    (x : gU')Gamma |- gT2 <~= gU
+------------------------ :: Pi
+    Gamma |- (x : gT1) -> gT2 <~= gU
+
+
+|- (x : gU1) Gamma \\ 
+(x : gU1) Gamma |- gt <~= gU2
+-------------------- :: LamPi {{rdx-omit }}
+Gamma |- (\ x . gt)  <~= (x : gU1) -> gU2
+
+
+z fresh
+|- (z : gU1) Gamma
+(z : gU1) Gamma |- [x |=> z]gt <~= [y |=> z]gU2
+-------------------- :: LamPiRdxAlpha {{tex-omit }}
+Gamma |- (\ x . gt)  <~= (y : gU1) -> gU2
+
+
+|- (x : ?) Gamma \\
+(x : ?) Gamma |- gt <~= ?
+-------------------- :: LamDyn
+Gamma |- (\ x . gt)  <~= ?
+
+
+
+% CannotSynth gt
+% NotCheckPair gt gV
+% CheckError gt gV 
+% ------------------------------ :: CheckRdxError
+%   Gamma |- gt <~= gV
+
+
+
+
+defn 
+Gamma |- gU <~ TT : Set => i :: :: GradualTypeNorm :: GradualTypeNorm
+{{rdx-mode I O I }} {{com Approximate Normalization and Level Inference }}
+{{tex [[Gamma]] \vdash [[gU]] \leadsfrom [[TT]] : \TypeType_{\Rightarrow [[i]]} }}
+by
+
+Gamma |- TTSynth ~> gU =~> Set i
+----------------------- :: Synth
+Gamma |- gU <~ TTSynth : Set => i
+
+
+Gamma |- gU1 <~ TT_1 : Set => i
+(x:gU1)Gamma |- gU2 <~ TT_2 : Set => j
+----------------------- :: Pi
+Gamma |- (x : gU1)  -> max i j gU2 <~ (x : TT_1)  -> TT_2   : Set => max i j 
+
+
+----------------------- :: Dyn
+Gamma |- ? <~ ? : Set => omega
+
+defn
+gu :eta gU :: :: GEtaLong :: GEtaLong {{tex [[gu]] :_\eta [[gU]]}}
+{{rdx-mode I I }} {{com Eta-long Canonical Forms}}
+by
+
+---------------- :: Atomic
+grr :eta  gRR
+
+---------------- :: AtomicDyn
+grr :eta ?
+
+
+gu :eta gU
+---------------- :: Lam {{rdx-omit }}
+(\ x . gu) :eta ( x : gU') -> gU 
+
+z fresh
+[x |=> z]gu :eta [y |=> z]gU
+---------------- :: LamRdxAlpha {{tex-omit }}
+(\ x . gu) :eta ( y : gU') -> gU 
+
+---------------- :: Dyn
+? :eta gU
+
+---------------- :: Pi
+(x : gU) -> gU' :eta gU''
+
+defn
+grr =geta gu : gU :: :: GEtaExpand :: GEtaExpand {{tex [[grr]]\leadsto_\eta [[gu]]: [[gU]]}}
+{{rdx-mode I O I }} {{com Eta-expansion of Gradual Atomic Forms}}
+by
+
+---------------- :: Atomic
+grr =geta grr : gRR
+
+---------------- :: Dyn
+grr =geta grr : ?
+
+
+y =geta gu : gU1
+x ge gu =geta gu2 : gU2
+---------------- :: Pi
+x ge =geta (\y . gu2) : (y : gU1) -> gU2
+
+
+defn
+gu =getac gu' : gU :: :: GEtaExpandC :: GEtaExpandC {{tex [[gu]]\leadsto_\eta [[gu']]: [[gU]]}}
+{{rdx-mode I O I }} {{com Eta-expansion of Gradual Canonical Forms}}
+by
+
+grr =geta gu : gU
+---------------- :: Atomic
+grr =getac gu : gU
+
+gu =getac gu' : gU2
+---------------- :: Lam {{rdx-omit }}
+(\ x . gu ) =getac (\ x . gu') : (x : gU1) -> gU2
+
+z fresh
+[x |=> z]gu =getac gu' : [x |=> z]gU2
+---------------- :: LamRdxAlpha {{tex-omit }}
+(\ x . gu ) =getac (\ z . gu') : (y : gU1) -> gU2
+
+gU1 =getac gU'1 : gU''
+gU2 =getac gU'2 : gU''
+------------- :: Pi 
+( x : gU1) -> gU2 =getac (x : gU'1) -> gU'2 : gU''
+
+
+------------- :: Dyn
+? =getac ? : gU
+
+------------- :: DynType
+gu =getac gu : ?
+
+% defn
+% gu =fetac gv : gV :: :: FEtaExpandC :: FEtaExpandC {{tex [[gu]]\leadsto_{\eta_{\textsc{Fun} } } [[gv]]: [[gV]]}}
+% {{rdx-mode I O I }}
+% by
+
+% gu =getac gv : (x : gU) -> gV
+% ------------------------ :: Pi
+% gu =fetac gv : (x : gU) -> gV
+
+% x fresh
+% ------------------------ :: Dyn
+% y ge =fetac (\ x . y ge x ) : ?
+
+
+defn 
+Gamma |- tt ~> gu =~> gU  :: :: GNSynth :: GNSynth {{ com Approximate Normalization Synthesis }} 
+{{rdx-mode I I O O }} 
+%{{rdx-inv ,(judgment-holds (GEtaLong gv gU))}}
+by
+
+  Gamma |- gU <~ gT : Set => i
+  Gamma |- gu <~ gt <~= gU
+------------------------ :: Ann
+  Gamma |- (gt : gT) ~> gu =~> gU
+
+i > 0
+------------------------ :: Type
+  Gamma |- Set i ~> Set i =~> Set (i + 1)
+
+
+    not-currently-defined x
+    |- Gamma
+    (x : gU) elem Gamma
+    x =geta gu : gU
+------------------------ :: Var
+    Gamma |- x ~> gu =~> gU
+
+    x |-> (et,gu,gU)
+------------------------ :: VarLook {{tex-omit }}
+    Gamma |- x ~> gu =~> gU
+
+
+
+
+
+  NOTEX{ x fresh && Gamma |- tt1 ~> gu1 =~> gU && gu1 =getac gu1' : (x : ?) -> ? }
+  NORDX { Gamma |- tt1 ~> gu1 =~> gU && gu1 =getac gu1' : (_ : ?) -> ?  }
+     dom gU ==== gU1 && Gamma |- gu2 <~ tt2 <~= gU1    
+      [_  @ gU1  / gu2 ] body gu1' ==== gu3 
+    [_    / gu2 ] cod gU ==== gU2 && gu3 =getac gu3' : gU2
+------------------------ :: App 
+    Gamma |- tt1 tt2 ~> gu3' =~> gU2
+
+
+% Gamma |- gU : Set 
+-------------------- :: Dyn
+Gamma |-  ? ~> ? =~> ?
+
+Gamma |-  gu <~ et  <~= gU
+-------------------- :: Ev 
+Gamma |-  << gU >> et ~> gu =~> gU
+
+
+defn
+Gamma |- gu <~ ( ttSynth , gu' , gU' ) <~= gU :: :: GNSynthCheck :: GNSynthCheck {{ com  }} 
+{{rdx-mode I O I I I I }} 
+by
+
+0 < i < j
+------------------- :: Level
+Gamma |- gU <~ (TTSynth,gU,Set i) <~= Set j
+
+NotSets gU gU'
+gU /\ gU' ==== gU''
+(gu := if gU' == gU'' then gu else ?)
+------------------- :: Consistent
+Gamma |- gu <~ (ttSynth,gu,gU') <~= gU
+
+
+defn
+Gamma |- gu <~ tt <~= gU  :: :: GNCheck :: GNCheck {{ com Approximate Normalization Checking }} 
+{{rdx-mode I O I I }} 
+by
+
+
+Gamma |- ttSynth ~> gu' =~> gU'
+Gamma |- gu <~ (ttSynth, gu', gU') <~= gU 
+-------------------- :: SynthRdx {{ tex-omit }}
+Gamma |- gu <~ ttSynth <~= gU
+
+% CanSynth tt
+Gamma |- tt ~> gu =~> gU' 
+gU ~=~ gU' 
+gU' << gU
+-------------------- :: Synth {{ rdx-omit }}
+Gamma |- gu <~ tt <~= gU
+
+
+% CanSynth tt
+Gamma |- tt ~> gu =~> gU' 
+gU ~=~ gU' 
+gU' not<< gU
+-------------------- :: Approx {{ rdx-omit }}
+Gamma |- ? <~ tt <~= gU
+
+% CanSynth tt
+Gamma |- TT ~> gU =~> Set i
+0 < i < j 
+-------------------- :: Level  {{ rdx-omit }}  
+Gamma |- gU <~ TT <~= Set j
+
+
+  %TODO: Pi types not only atomic, since can have ? as parts?
+  % Or ? is atomic, annotated with its type?
+  Gamma |- gU1 <~ TT1 <~= Set i 
+  |- (x : gU1)Gamma
+  (x : gU1)Gamma |- gU2 <~ TT2 <~= Set i 
+------------------------ :: PiType
+  Gamma |- (x : gU1) -> i gU2 <~ (x : TT1) -> TT2 <~= Set i 
+
+  Gamma |- gU1 <~ TT1 <~= ?
+  |- (x : gU1)Gamma
+  (x : gU1)Gamma |- gU2 <~ TT2 <~= ?
+------------------------ :: PiDyn
+  Gamma |- (x : gU1) -> omega gU2 <~ (x : TT1) -> TT2 <~= ?
+
+|- (x : gU1) Gamma
+(x : gU1) Gamma |- gu <~ tt <~= gU2
+-------------------- :: LamPi {{rdx-omit }}
+Gamma |- (\ x . gu) <~ (\ x . tt) <~= (x : gU1) -> gU2
+
+z fresh
+|- (z : gU1) Gamma
+(z : gU1) Gamma |- gu <~ [x |=> z]tt <~= [y |=> z]gU2
+-------------------- :: LamPiRdxAlpha {{tex-omit }}
+Gamma |- (\ z . gu) <~ (\ x . tt) <~= (y : gU1) -> gU2
+
+|- (x : ?) Gamma
+(x : ?) Gamma |- gu <~ tt <~= ?
+-------------------- :: LamDyn
+Gamma |- (\ x . gu) <~ (\ x . tt) <~= ?
+
+
+
+
+
+
+
+
+% Gamma |- et ~> gu =~> gU'
+% gU /\ gU' ==== gU'' 
+% (gu' := if gU'' == gU' then gu else ? )
+% ------------------------- :: EvRdx {{ tex-omit }}
+% Gamma |- gu' <~ ep et <~= gU
+
+
+
+
+
+defn 
+Gamma |- gtSynth ~~> et =~~> gU  :: :: GElabSynth :: GElabSynth {{ com Gradual Synthesis Elaboration }} 
+{{rdx-mode I I O O }} {{tex [[Gamma]] \vdash [[gtSynth]] \rightarrowtriangle [[et]] \Rightarrow [[gU]] }}
+by
+
+  Gamma |- gU <~ gT : Set => i
+  Gamma |- et <~~ gt <~~= gU
+------------------------ :: Ann
+  Gamma |- (gt : gT) ~~> et =~~> gU
+
+i > 0
+------------------------ :: Type
+  Gamma |- Set i ~~> Set i =~~> Set (i + 1)
+
+
+    not-currently-defined x
+    |- Gamma
+    (x : gU) elem Gamma
+------------------------ :: Var
+    Gamma |- x ~~> x =~~> gU
+
+    x |-> (et , gu , gU)
+------------------------ :: VarLook {{ tex-omit }}
+    Gamma |- x ~~> x =~~> gU
+
+
+
+
+    Gamma |- gtSynth1 ~~> et1 =~~> (x : gU) -> gU2
+    Gamma |- gu <~ et2 <~~ gt2 <~~= gU1
+    [x @ gU1   / gu ] gU2 ==== gU2' 
+------------------------ :: AppPi
+    Gamma |- gtSynth1 gt2 ~~>  et1 et2 =~~> gU2'
+
+    Gamma |- gtSynth1 ~~> et1 =~~> ?
+    Gamma |- gu <~ et2 <~~ gt2 <~~= ?
+------------------------ :: AppDyn
+    Gamma |- gtSynth1 gt2 ~~>  (<< (_ : ?) -> ? >>et1) et2 =~~> ?
+
+% Gamma |- gU : Set 
+-------------------- :: Dyn
+Gamma |-  ? ~~> << ?>>  ?  =~~> ?
+
+
+
+defn
+Gamma |- et' <~~ ( gtSynth , et , gU' ) <~~= gU :: :: GElabSynthCheck :: GElabSynthCheck {{ com  }} 
+{{rdx-mode I O I I I I }} 
+by
+
+0 < i < j
+------------------- :: Level
+Gamma |- eT <~~ (gTSynth,eT,Set i) <~~= Set j
+
+% ------------------- :: Eq
+% Gamma |-  es <~~ (tt,es,gV) <~= gV
+
+% gU =/= gV
+NotSets gU'' gU
+gU'' /\ gU ==== gU'
+------------------- :: Consistent
+Gamma |- << gU' >> et <~~ (gtSynth,et,gU) <~~= gU''
+
+defn
+Gamma |- et <~~ gt <~~= gU  :: :: GElabCheck :: GElabCheck {{ com Gradual Checking Elaboration }} 
+{{rdx-mode I O I I }} {{tex [[Gamma]] \vdash [[et]] \leftarrowtriangle [[gt]] \Leftarrow [[gU]] }}
+by
+
+
+% CanSynth gt
+% Gamma |- gt ~~> et =~~> gV'
+% gV' ===== gV
+% -------------------- :: SynthEq
+% Gamma |- et <~~ gt <~~= gV
+
+
+Gamma |- gtSynth ~~> et' =~~> gU' 
+% gU =/= gV
+Gamma |- et <~~ (gtSynth , et', gU' ) <~~= gU
+-------------------- :: SynthRdx
+Gamma |- et <~~ gtSynth <~~= gU
+
+% CanSynth gt
+Gamma |- gtSynth ~~> et =~~> gU' 
+% gU =/= gV
+gU /\ gU' ==== gU''
+-------------------- :: Synth {{rdx-omit }}
+Gamma |- << gU''>> et <~~ gtSynth <~~= gU
+
+% CanSynth gt
+Gamma |- gTSynth ~~> eT =~~> Set i
+0 < i < j 
+-------------------- :: Level  {{rdx-omit }}
+Gamma |- eT <~~ gTSynth <~~= Set j
+
+% CanSynth gt
+% Gamma |- gt ~~> et =~~> gU
+% gU ~/~ gV
+% NotSetPair gU gV
+% CheckSynthError gt gU gV 
+% ------------------------------ :: CheckSynthRdxError
+%   Gamma |- Set 0 <~~ gt <~~= gV
+
+
+  %TODO: Pi types not only atomic, since can have ? as parts?
+  % Or ? is atomic, annotated with its type?
+  gU ~=~ Set
+  Gamma |- gU1 <~ eT1 <~~ gT1 <~~= gU
+  |- (x : gU1)Gamma
+  (x : gU1)Gamma |- eT2 <~~ gT2 <~~= gU
+------------------------ :: Pi
+  Gamma |- (x : eT1) -> eT2 <~~ (x : gT1) -> gT2 <~~= gU
+
+|- (x : gU1) Gamma
+(x : gU1) Gamma |- et <~~ gt <~~= gU2 
+-------------------- :: LamPi {{rdx-omit }}
+Gamma |- << (x : gU1) -> gU2 >> (\ x . et) <~~ (\ x . gt) <~~= (x : gU1) -> gU2
+
+z fresh
+|- (z : gU) Gamma
+(z : gU1) Gamma |- et <~~ [x |=> z]gt <~~= [y |=> z]gU2 
+%TODO don't double substitute
+-------------------- :: LamPiRdxAlpha {{tex-omit }}
+Gamma |- <<(z : gU1) -> [y |=> z]gU2 >> (\ z . et) <~~ (\ x . gt) <~~= (y : gU1) -> gU2
+
+|- (x : ?) Gamma
+(x : ?) Gamma |- et <~~ gt <~~= ?
+-------------------- :: LamDyn
+Gamma |- << ? >> (\ x . et) <~~ (\ x . gt) <~~= ?
+
+
+
+
+% CannotSynth gt
+% NotCheckPair gt gV 
+% CheckError gt gV 
+% ------------------------------ :: CheckRdxError
+%   Gamma |- Set 0 <~~ gt <~~= gV
+
+
+defn 
+Gamma |- gtSynth ~~> et ~> gu =~~> gU  :: :: GradualNESynth :: GradualNESynth {{ com  }} 
+{{rdx-mode I I O O O }}
+by
+
+  Gamma |- gU <~ gT : Set => i
+  Gamma |- gu <~ et <~~ gt <~~= gU
+------------------------ :: Ann
+  Gamma |- (gt : gT) ~~> et ~> gu =~~> gU
+
+i > 0
+------------------------ :: Type
+  Gamma |- Set i ~~> Set i ~> Set i =~~> Set (i + 1)
+
+
+    not-currently-defined x
+    |- Gamma
+    (x : gU) elem Gamma
+    x =geta gu : gU
+------------------------ :: Var 
+    Gamma |- x ~~> x ~> gu =~~> gU
+
+    x |-> (et , gu , gU)
+------------------------ :: VarLook {{tex-omit }}
+    Gamma |- x ~~> x ~> gu =~~> gU
+
+
+
+
+    Gamma |- gtSynth1 ~~> et1 ~> gu =~~> gU
+    NOTEX { x fresh &&  gu =getac gu' : (x : ?) -> ? } 
+    NORDX { gu =getac gu' : (_ : ?) -> ? } 
+    dom gU ==== gU1
+    Gamma |- gu2 <~ et2 <~~ gt2 <~~= gU1 
+    [_  @ gU1  / gu2 ] body gu' ==== gu'' 
+    [_  / gu2 ] cod gU ==== gU2 
+    gu'' =getac gu''' : gU2
+------------------------ :: App
+    Gamma |- gtSynth1 gt2 ~~> (<<(_ : ?) -> ?>>et1) et2 ~> gu''' =~~> gU2
+
+    
+
+% CannotSynth gs
+SynthError gs
+------------------------------ :: SynthRdxError {{tex-omit }}
+  Gamma |- gs  ~~> Set 0 ~> Set 0 =~~> Set0
+
+defn
+ BothSets gU gU' :: :: BothSets :: BothSets {{rdx-mode I I}}
+by
+
+------------------------------ :: Rule
+BothSets Set i Set j
+
+defn
+Gamma |- gu <~ et1 <~~ ( gtSynth , gu' ,  et , gU' ) <~= gU :: :: GradualNESynthCheck :: GradualNESynthCheck {{ com  }} 
+{{rdx-mode I O O I I I I I }} 
+by
+
+0 < i < j
+------------------- :: Level
+Gamma |- gU <~ eT <~~ (gTSynth,gU,eT,Set i) <~= Set j
+
+% ------------------- :: Eq
+% Gamma |-  gu <~ es <~~ (gs,gu,es,gV) <~= gV
+
+
+NotSets gU gU'
+gU /\ gU' ==== gU''
+(gu'' := if gU' == gU'' then gu' else ?)
+------------------- :: Consistent
+Gamma |- gu'' <~ << gU'' >> et' <~~ (gtSynth,gu',et',gU') <~= gU
+
+
+defn
+Gamma |- gu <~ et <~~ gt <~~= gU  :: :: GradualNECheck :: GradualNECheck {{ com  }} 
+{{rdx-mode I O O I I }}
+by
+
+
+
+
+% CanSynth gt
+% Gamma |- gt ~~> et ~> gu =~~> gV'
+% gV' ===== gV
+% -------------------- :: SynthEq
+% Gamma |- gu <~ et <~~ gt <~~= gV
+
+
+Gamma |- gtSynth ~~> et' ~> gu' =~~> gU'
+Gamma |- gu'' <~ et'' <~~ ( gtSynth , gu' ,  et' , gU' ) <~= gU
+-------------------- :: SynthRdx {{ tex-omit }}
+Gamma |- gu''  <~  et'' <~~ gtSynth <~~= gU
+
+
+% CanSynth gt
+Gamma |- gtSynth ~~> et ~> gu =~~> gU''
+% gU =/= gV
+gU /\ gU'' ==== gU'
+(gu' := if gU'' == gU' then gu else ? )
+-------------------- :: Synth {{rdx-omit }}
+Gamma |- gu'  <~ << gU'>> et <~~ gtSynth <~~= gU
+
+% CanSynth gt
+Gamma |- gTSynth ~~> eT ~> gU =~~> Set i
+0 < i < j 
+-------------------- :: Level {{rdx-omit }}
+Gamma |- gU <~ eT <~~ gTSynth <~~= Set j
+
+% CanSynth gt
+% Gamma |- gt ~~> et =~~> gU
+% gU ~/~ gV
+% NotSetPair gU gV
+% CheckSynthError gt gU gV 
+% ------------------------------ :: CheckSynthRdxError
+%   Gamma |-  Set 0 <~ Set 0 <~~ gt <~~= gV
+
+
+  %TODO: Pi types not only atomic, since can have ? as parts?
+  % Or ? is atomic, annotated with its type?
+  gU'' ~=~ Set
+  Gamma |- gU1 <~ eT1 <~~ gT1 <~~= gU''
+  |- (x : gU1)Gamma
+  (x : gU1)Gamma |- gU2 <~ eT2 <~~ gT2 <~~= gU''
+------------------------ :: Pi
+  Gamma |- (x : gU1) -> gU2 <~ (x : eT1) -> eT2 <~~ (x : gT1) -> gT2 <~~= gU''
+
+|- (x : gU1) Gamma
+(x : gU1) Gamma |- gu <~ et <~~ gt <~~= gU2
+-------------------- :: LamPi {{rdx-omit }}
+Gamma |- (\ x . gu) <~ (\ x . et) <~~ (\ x . gt) <~~= (x : gU1) -> gU2
+
+z fresh
+|- (z : gU1) Gamma
+(z : gU1) Gamma |- gu <~ et <~~ [x |=> z]gt <~~= [y |=> z]gU2
+-------------------- :: LamPiRdxAlpha {{tex-omit }}
+Gamma |- (\ z . gu) <~  (\ z . et) <~~ (\ x . gt) <~~= (y : gU1) -> gU2
+
+|- (x : ?) Gamma
+(x : ?) Gamma |- gu <~ et <~~ gt <~~= ?
+-------------------- :: LamDyn
+Gamma |- (\ x . gu) <~ (\ x . et) <~~ (\ x . gt) <~~= ?
+
+Gamma |- gU : Set 
+-------------------- :: Dyn
+Gamma |-  ? <~  << gU>> ? <~~ ?  <~~= gU
+
+
+% CannotSynth gt
+% NotCheckPair gt gV 
+% CheckError gt gV 
+% ------------------------------ :: CheckRdxError
+%   Gamma |- Set 0 <~  Set 0 <~~ gt <~~= gV
+
+embed {{ rdx #| }}
+
+defns
+  InternalTyping :: '' ::= 
+
+
+defn 
+Gamma |- et : gU  :: :: EvType :: EvType {{ com Evidence Term Typing }}
+{{rdx-mode I I I }}
+by
+
+
+
+    |- Gamma
+    (x : gU) elem Gamma
+------------------------ :: Var
+    Gamma |- x  : gU
+
+
+
+
+    Gamma |- et1 : ( x : gU1) -> gU2    
+    Gamma |- et2 : gU1
+    Gamma |- gu2 <~ et2 <~= gU1
+    [ x @ gU1 / gu2 ] gU2 ==== gU3 
+------------------------ :: App
+    Gamma |- et1 et2 : gU3
+
+%         Gamma |- es : gV   &&   dom gV ====  gU 
+%         IsSimp gV && [_  @ gU  / ? ] cod gV ==== gV2 
+% ------------------------ :: AppSimple
+%     Gamma |- es et : gV2
+
+      gU ~=~ Set
+    Gamma |- gU' <~ eT1 <~= gU
+    |- (x : gU')Gamma
+    (x : gU')Gamma |- eT2 : gU
+------------------------ :: Pi
+    Gamma |- (x : eT1) -> eT2  : gU 
+
+i > 0
+------------------------ :: Type
+  Gamma |- Set i : Set (i + 1)
+
+
+Gamma |- et : gU'
+ep |- gU' ~=~ gU
+-------------------- :: Ev
+Gamma |- ep et : gU
+
+Gamma |- eT : Set i
+0 < i < j
+-------------------- :: Level
+Gamma |- eT : Set j
+
+  
+
+
+
+|- (x : gU1) Gamma
+(x : gU1) Gamma |- et : gU2
+-------------------- :: Lam
+Gamma |- << (x : gU1) -> gU2 >> (\ x . et)  : (x : gU1) -> gU2
+
+
+% |- (x : ?) Gamma
+% (x : ?) Gamma |- et : ?
+% -------------------- :: LamDyn
+% Gamma |- << ? >>(\ x . et)  : ?
+
+Gamma |- gU : Set
+ep |- gU ~=~ gU 
+-------------------- :: Dyn
+Gamma |- ep ?   : gU
+
+
+
+defn 
+  t1 s--> t2 :: :: SimpleStep :: SimpleStep  {{com Simple Small-Step Semantics}}
+  {{rdx-mode I O }}
+by
+
+  ---------------------------- :: Ann
+  (sv : T ) s--> sv
+
+  ---------------------------- :: App
+  (\ x . t) sv s--> [ sv / x ] t
+
+
+  t1 s--> t2 
+  ------------------------------ :: Context
+  SC[t1] s--> SC[t2]
+
+embed {{ rdx |# 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; The dynamic semantics for programs
+;; We merge layered evidence, and compose evidence when applying functions
+;; The meet and dom functiosn throw exceptions (i.e. runtime type errors)
+;; any time the meet or domains do not exist
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+}}
+
+
+defns
+  SemanticsJudgements :: '' ::= 
+
+
+
+
+
+  
+
+
+defn 
+  et1 --> et2 :: :: Step :: Step {{com Evidence-based Small-Step Semantics}}
+  {{rdx-mode I O }}
+by
+
+   ep1 /\ ep2  ==== ep3
+  ---------------------------- :: Ascr
+  ep1 (ep2 rv) --> ep3 rv
+
+
+
+  ep1 /\ ep2 undefined
+  RuntimeError ep1 ep2 rv
+  ---------------------------- :: AscrFail {{ rdx-omit }}
+  ep1 (ep2 rv) --> error
+
+
+  empty |- gu <~ ev <~= texdom gU  &&  [ _  / gu ] cod gU ==== gU2
+  ---------------------------- :: AppDyn
+  (<<gU>> ?) ev --> <<gU2>> ?
+
+
+%TODO urgent: need substitution to be different for canonical vs terms
+
+
+
+  %   dom gU ==== gV1
+  % empty |- gv <~ ev <~= gV1
+  % [_ @ gV1 / gv ] cod gU ==== gV2
+  % ---------------------------- :: AppDyn
+  % ?_( empty , gU ) ev --> ?_(empty, gV2)  
+
+      gU' /\ texdom gU ==== gU1 &&      empty |- gu <~ rv <~= gU1  &&       [ _  / gu ] cod gU ==== gU2
+  ---------------------------- :: AppEv
+  ( << gU>> (\ x . et)) (<<gU'>> rv) --> <<gU2>> ( [ <<gU1>> rv ~ gu / x @ gU1 ] et )
+
+  
+
+    empty |- gu <~ rv <~= texdom gU  &&    [ _  / gu ] cod gU ==== gU2
+    % (<<gU1>> (\ x . et)) (<<?>> rv) --> es
+    ---------------------------- :: AppEvRaw
+  ( << gU>> (\ x . et)) rv -->  <<gU2>> ( [ (<<gU1>> rv) ~ gu / x @ gU1 ] et )
+
+  % ---------------------------- :: App
+  % (\ x . et) ev --> [ev / x] et  
+
+
+
+  texdom gU /\ gU' undefined
+  ---------------------------- :: AppFailTrans {{ rdx-omit }}
+  ( << gU>> (\ x . et)) (<<gU'>> rv) --> error
+
+  % [ _  / ev ] cod gU undefined 
+  % RuntimeError ep3 ep2 (ru rv)
+  % ---------------------------- :: AppFailCod
+  % (<<gU1>> ru) ev --> error
+
+  % dom ep1  undefined
+  % ---------------------------- :: AppFailDom {{ rdx-omit }}
+  % (ep1 rv) ev --> error
+
+
+
+
+
+
+  % dom gU  undefined
+  % RuntimeError <<gU>> <<  (x : ?) -> ? >> (? ev)
+  % ---------------------------- :: AppDynFail
+  % (ep1 ?) ev --> error
+
+
+
+  et1 --> et2 
+  et1 , et2 =/= error   
+  ------------------------------ :: Context {{ rdx-omit }}
+  EC[et1] --> EC[et2]
+
+  et --> error
+  ------------------------------ :: ContextErr {{ rdx-omit }}
+  EC[et] --> error
+  
+% defn 
+%   ep1 . ep2 ==== ep3 :: :: ConsistentTrans :: ConsistentTrans {{tex [[ep1]]\circ [[ep2]]= [[ep3]]}}
+%   {{rdx-mode I I O }}
+% by
+
+%   gU1 /\ gU2 ==== gU3
+%   gV1 /\ gV2 ==== gV3
+%   -------------------------------------------------- :: Def
+%   << gU1 , gV1 >> . << gU2 , gV2>> ==== <<  gU3, gV3>>
+
+% defn
+%   dom ep1 ==== ep2 :: :: EvDom :: EvDom
+%   {{rdx-mode I O }}
+% by
+
+%   dom gU ==== gU'
+%   dom gV ==== gV'
+% -------------------------- :: Pair
+%   dom << gU , gV >> ==== <<  gU', gV' >>
+
+
+% defn
+%   [ _ / ev ] cod ep1 ==== ep2 :: :: EvCod :: EvCod
+%   {{rdx-mode I I O }}
+% by
+
+%   dom gU ==== gU1
+%   dom gV ==== gV1
+%   empty |- gu <~ ev <~= gU1
+%   empty |- gv <~ ev <~= gV1 
+%   [ _ @ gU1  / gu ] cod gU ==== gU2 
+%   [ _ @ gV1  / gv ] cod gV ==== gV2 
+% -------------------------- :: Pair
+%   [ _ / ev ] cod <<  gU, gV>> ==== << empty, gU2, gV2 >>
+
+% defn
+%   [ _ / et ] cod gU1 ==== gU2 :: :: EvCod :: EvCod
+%   {{rdx-mode I I O }} {{com Codomain Subtitution with Evidence Terms}}
+%   {{ tex [ [[et]] / {\_} ]  \ottkw{cod}\ [[gU1]] = [[gU2]] }}
+% by
+
+%   NORDX{ empty |- gu <~ et <~= texdom gU }
+%   NOTEX{ dom gU ==== gU' && empty |- gu <~ et <~= gU' }
+%   [ _  / gu ] cod gU ==== gU2
+% -------------------------- :: Sub
+%   [ _ / et ] cod gU ==== gU2
+
+% defn
+%   [ _ / et ] cod ep1 ==== ep2 :: :: EvEvCod :: EvEvCod
+%   {{rdx-mode I I O }} {{com Codomain Subtitution with Evidence Terms}}
+%   {{ tex [ [[et]] / {\_} ]  \ottkw{cod}\ [[ep1]] = [[ep2]] }}
+% by
+
+%   NORDX{ empty |- gu <~ et <~= texdom gU }
+%   NOTEX{ dom gU ==== gU' && empty |- gu <~ et <~= gU' }
+%   [ _  / gu ] cod <<gU>> ==== <<gU2>>
+% -------------------------- :: Sub
+%   [ _ / et ] cod <<gU>> ==== <<gU2>>
+
+
+
+% embed {{ coq
+
+% Notation " g |-- v <== t " := (GCCheck g v t ) (at level 80, right associativity).
+% Notation " g |-- v ==> t " := (GCSynth g v t) (at level 80, right associativity).
+% Notation " [ x @ T |-> u ] v === ret " := (GHsub x T u v ret) (at level 80, right associativity).
+
+% Notation " u =~= v " := (ConsistentEq u v) (at level 80, right associativity).
+
+% Notation " [ x @ T1 ] --> T2 " := (AtomicPi x T1 T2) (at level 80, right associativity).
+
+
+
+% }}
+
+embed {{rdx
+
+;;;;;;;;;;;;;;;;;;;;;
+;; A judgment form to get both the elaborated evidence term
+;; and normal form for a term
+;; and wrap them up with their type in a tuple
+;;;;;;;;;;;;;;;;;;;;;
+
+(define-judgment-form
+  L
+  #:mode (ElabNormType I I O)
+  [ 
+  (GradualNESynth Gamma gt et gu gU)
+  (where et_subbed ,(perform-elab-substs (term et)))
+  ---------------------------------
+  (ElabNormType Gamma gt (ENTTriple et_subbed gu gU))]
+
+)
+
+
+
+
+
+}}
+
+
